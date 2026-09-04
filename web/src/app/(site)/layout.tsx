@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Cinzel, Manrope } from "next/font/google";
+import { CustomerAuthProvider } from "@/components/auth/CustomerAuthContext";
+import { AuthModal } from "@/components/auth/AuthModal";
 import { BookingProvider } from "@/components/booking/BookingContext";
 import { BookingModal } from "@/components/booking/BookingModal";
 import { Header } from "@/components/layout/Header";
@@ -26,22 +28,30 @@ export const metadata: Metadata = {
   description:
     "Премиальный прокат квадроциклов при усадьбе «Берегиня». Авторские маршруты около 25 минут от Казани.",
   icons: {
-    icon: [{ url: "/favicon.png", type: "image/png" }, { url: "/favicon.ico" }],
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.png", type: "image/png", sizes: "32x32" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+    ],
     apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: "/favicon.ico",
   },
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru" className={`${cinzel.variable} ${manrope.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-base text-ink antialiased">
-        <BookingProvider>
-          <Header />
-          <main className="flex-1 main-with-sticky">{children}</main>
-          <Footer />
-          <StickyBookBar />
-          <BookingModal />
-        </BookingProvider>
+      <body className="min-h-full flex flex-col bg-canvas text-ink antialiased">
+        <CustomerAuthProvider>
+          <BookingProvider>
+            <Header />
+            <main className="flex-1 main-with-sticky">{children}</main>
+            <Footer />
+            <StickyBookBar />
+            <AuthModal />
+            <BookingModal />
+          </BookingProvider>
+        </CustomerAuthProvider>
       </body>
     </html>
   );

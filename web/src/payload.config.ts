@@ -3,6 +3,7 @@ import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
 import { sqliteAdapter } from "@payloadcms/db-sqlite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { ru } from "@payloadcms/translations/languages/ru";
 import sharp from "sharp";
 
 import { Users } from "./collections/Users";
@@ -20,12 +21,33 @@ const dirname = path.dirname(filename);
 export default buildConfig({
   admin: {
     user: Users.slug,
+    theme: "light",
     meta: {
-      titleSuffix: "· Вольница CMS",
+      titleSuffix: "· Вольница CRM",
     },
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      providers: ["./admin/components/RoleTheme#RoleTheme"],
+      beforeDashboard: ["./admin/components/CrmHome#CrmHome"],
+      logout: {
+        Button: "./admin/components/ManagerLogout#ManagerLogout",
+      },
+      graphics: {
+        Logo: "./admin/components/Logo#Logo",
+        Icon: "./admin/components/Icon#Icon",
+      },
+      views: {
+        account: {
+          Component: "./admin/components/ManagerAccountView#ManagerAccountView",
+        },
+      },
+    },
+  },
+  i18n: {
+    supportedLanguages: { ru },
+    fallbackLanguage: "ru",
   },
   collections: [Users, Media, Gallery, Products, Customers, Leads, Notifications],
   globals: [SiteSettings],

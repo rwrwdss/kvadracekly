@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { hideFromManager, isAdmin } from "@/access/roles";
 import { seoFields, utmFields } from "@/cms/fields/seoUtm";
 
 /** Живые фото галереи — только загруженные через CMS */
@@ -10,9 +11,13 @@ export const Gallery: CollectionConfig = {
     defaultColumns: ["title", "category", "published", "updatedAt"],
     group: "Контент",
     description: "На сайте показываются только опубликованные живые фото из этой коллекции.",
+    hidden: ({ user }) => hideFromManager(user),
   },
   access: {
     read: () => true,
+    create: ({ req }) => isAdmin(req.user),
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
   },
   fields: [
     {

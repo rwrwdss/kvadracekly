@@ -4,34 +4,32 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { NAV, SITE } from "@/data/site";
 import { useBooking } from "@/components/booking/BookingContext";
+import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
-    <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
+    <Link href="/" className="flex items-center group min-w-0" aria-label={SITE.name}>
       <figure className="m-0 shrink-0">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={SITE.logo}
           alt={SITE.logoAlt}
-          width={40}
-          height={40}
-          className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
+          width={160}
+          height={136}
+          className={
+            compact
+              ? "h-11 w-auto sm:h-12 max-w-[9.5rem] sm:max-w-[11rem] object-contain object-left"
+              : "h-14 w-auto max-w-[12rem] object-contain object-left"
+          }
         />
       </figure>
-      <span className={compact ? "hidden sm:block min-w-0" : "block min-w-0"}>
-        <span className="font-display block text-xs sm:text-sm tracking-[0.14em] sm:tracking-[0.18em] uppercase text-ink group-hover:text-accent transition-colors truncate">
-          {SITE.name}
-        </span>
-        <span className="block text-[9px] sm:text-[10px] tracking-[0.12em] sm:tracking-[0.16em] uppercase text-mute truncate">
-          {SITE.tagline}
-        </span>
-      </span>
     </Link>
   );
 }
 
 export function Header() {
   const { openBooking } = useBooking();
+  const { user, openAuth, logout, loading } = useCustomerAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -73,13 +71,31 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          {!loading && user ? (
+            <Link
+              href="/lk"
+              className="hidden sm:inline-flex text-[11px] tracking-[0.1em] uppercase text-mute hover:text-accent max-w-[9rem] truncate"
+              title={user.phone}
+            >
+              {user.name}
+            </Link>
+          ) : !loading ? (
+            <button
+              type="button"
+              className="hidden sm:inline-flex text-[11px] tracking-[0.1em] uppercase text-mute hover:text-accent"
+              onClick={() => openAuth({ intent: "header" })}
+            >
+              Вход
+            </button>
+          ) : null}
+
           <button
             type="button"
             className="btn btn-ghost hidden sm:inline-flex !py-2.5 !px-3.5"
             onClick={() => openBooking({ source: "header" })}
           >
             <CalendarIcon />
-            Забронировать
+            Запись
           </button>
 
           <button
@@ -114,6 +130,29 @@ export function Header() {
             >
               Личный кабинет
             </Link>
+            {user ? (
+              <button
+                type="button"
+                className="py-3.5 text-left text-sm tracking-[0.12em] uppercase text-faint"
+                onClick={() => {
+                  setMenuOpen(false);
+                  void logout();
+                }}
+              >
+                Выйти ({user.name})
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="py-3.5 text-left text-sm tracking-[0.12em] uppercase text-mute"
+                onClick={() => {
+                  setMenuOpen(false);
+                  openAuth({ intent: "mobile_menu" });
+                }}
+              >
+                Вход / регистрация
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-primary mt-4 w-full"

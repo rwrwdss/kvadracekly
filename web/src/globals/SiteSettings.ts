@@ -1,10 +1,16 @@
 import type { GlobalConfig } from "payload";
+import { hideFromManager, isAdmin } from "@/access/roles";
+import { BOOKING_SLOTS, SLOT_CAPACITY } from "@/lib/booking/slots";
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
   label: "Настройки сайта",
+  admin: {
+    hidden: ({ user }) => hideFromManager(user),
+  },
   access: {
     read: () => true,
+    update: ({ req }) => isAdmin(req.user),
   },
   fields: [
     {
@@ -18,6 +24,68 @@ export const SiteSettings: GlobalConfig = {
       type: "text",
       label: "Слоган",
       defaultValue: "Территория свободы",
+    },
+    {
+      name: "booking",
+      type: "group",
+      label: "Календарь записи (очередь)",
+      admin: {
+        description:
+          "Управляет умным календарём на сайте (кнопка «Забронировать» в шапке). Заявки — в разделе CRM → Заявки.",
+      },
+      fields: [
+        {
+          name: "enabled",
+          type: "checkbox",
+          label: "Календарь включён",
+          defaultValue: true,
+        },
+        {
+          name: "slotCapacity",
+          type: "number",
+          label: "Записей на один слот времени",
+          defaultValue: SLOT_CAPACITY,
+          min: 1,
+          max: 10,
+          admin: {
+            description:
+              "Сколько отдельных заявок можно принять на одно время (например 14:00). По умолчанию 3.",
+          },
+        },
+        {
+          name: "slotHint",
+          type: "text",
+          label: "Слоты на сайте",
+          defaultValue: BOOKING_SLOTS.join(", "),
+          admin: {
+            readOnly: true,
+            description: "Фиксированные слоты: 10:00–20:00 каждые 2 часа.",
+          },
+        },
+        {
+          name: "closedDates",
+          type: "array",
+          label: "Закрытые дни",
+          labels: { singular: "День", plural: "Закрытые дни" },
+          admin: {
+            description: "Эти даты нельзя выбрать в календаре на сайте.",
+          },
+          fields: [
+            {
+              name: "date",
+              type: "text",
+              label: "Дата (ГГГГ-ММ-ДД)",
+              required: true,
+              admin: { placeholder: "2026-09-15" },
+            },
+            {
+              name: "note",
+              type: "text",
+              label: "Причина (для себя)",
+            },
+          ],
+        },
+      ],
     },
     {
       name: "defaultSeo",
@@ -64,13 +132,12 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "channelHint",
           type: "text",
-          label: "Канал (через env)",
+          label: "Канал уведомлений",
           admin: {
             readOnly: true,
-            description:
-              "NOTIFY_CHANNEL=log|telegram|email · TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID или NOTIFY_EMAIL_TO",
+            description: "Настраивается администратором на сервере.",
           },
-          defaultValue: "Смотрите переменные окружения Vercel / .env",
+          defaultValue: "Telegram / Email — через настройки сервера",
         },
       ],
     },

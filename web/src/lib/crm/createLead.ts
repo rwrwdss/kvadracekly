@@ -1,11 +1,15 @@
 import type { Payload } from "payload";
 import { normalizePhone } from "@/lib/phone";
+import { assertSlotAvailable } from "@/lib/booking/availability";
+import { formatBookingDate, parseBookingDateValue, type BookingSlot, MAX_GUESTS } from "@/lib/booking/slots";
+import { bookableError, clampCompletedThrough } from "@/lib/booking/progress";
 
 export type CreateLeadInput = {
   name?: string;
   phone?: string;
   date?: string;
   route?: string;
+  guests?: number | string;
   message?: string;
   source?: string;
   tariff?: string;
@@ -33,6 +37,12 @@ export async function createLead(
   const name = input.name?.trim() || "";
   const phoneRaw = input.phone?.trim() || "";
   const phone = normalizePhone(phoneRaw);
+  const routeTitle = input.route?.trim() || "";
+  const guestsRaw = Number(input.guests);
+  const guests =
+    Number.isFinite(guestsRaw) && guestsRaw >= 1
+      ? Math.min(MAX_GUESTS, Math.floor(guestsRaw))
+      : 1;
 
   if (!name || name.length < 2) {
     return { ok: false, error: "Укажите имя (минимум 2 символа)", status: 400 };
@@ -45,9 +55,24 @@ export async function createLead(
     };
   }
 
+  const parsed = parseBookingDateValue(input.date?.trim() || "");
+  if (!parsed?.dateKey || !parsed.slot) {
+    return {
+      ok: false,
+      error: "Выберите дату и время в календаре",
+      status: 400,
+    };
+  }
+
+  const slotCheck = await assertSlotAvailable(payload, parsed.dateKey, parsed.slot);
+  if (!slotCheck.ok) {
+    return { ok: false, error: slotCheck.error, status: 409 };
+  }
+
+  const dateDisplay = formatBookingDate(parsed.dateKey, parsed.slot);
+  const timeSlot = parsed.slot as BookingSlot;
   const now = new Date();
 
-  // Антиспам: та же телефонная заявка за последние 2 минуты
   const recent = await payload.find({
     collection: "leads",
     where: {
@@ -80,8 +105,11 @@ export async function createLead(
   });
 
   let customerId: number | string;
+  let completedThrough = 0;
+
   if (existing.docs[0]) {
     customerId = existing.docs[0].id;
+    completedThrough = clampCompletedThrough(existing.docs[0].completedThrough);
     await payload.update({
       collection: "customers",
       id: customerId,
@@ -89,6 +117,7 @@ export async function createLead(
         name,
         lastLeadAt: now.toISOString(),
       },
+      overrideAccess: true,
     });
   } else {
     const customer = await payload.create({
@@ -96,10 +125,17 @@ export async function createLead(
       data: {
         name,
         phone,
+        completedThrough: 0,
         lastLeadAt: now.toISOString(),
       },
+      overrideAccess: true,
     });
     customerId = customer.id;
+  }
+
+  const locked = bookableError(routeTitle, completedThrough);
+  if (locked) {
+    return { ok: false, error: locked, status: 403 };
   }
 
   const productId =
@@ -113,8 +149,11 @@ export async function createLead(
       customer: customerId,
       name,
       phone,
-      date: input.date?.trim() || "",
-      route: input.route?.trim() || "",
+      dateKey: parsed.dateKey,
+      timeSlot,
+      date: dateDisplay,
+      route: routeTitle,
+      guests,
       message: input.message?.trim() || "",
       source: input.source?.trim() || "booking_modal",
       tariff: input.tariff?.trim() || "",
@@ -123,14 +162,16 @@ export async function createLead(
       utm: input.utm || {},
       ...(Number.isFinite(productId) ? { product: productId } : {}),
     },
+    overrideAccess: true,
   });
 
   await notifyLeadCreated(payload, {
     leadId: lead.id,
     name,
     phone,
-    date: input.date?.trim() || "",
-    route: input.route?.trim() || "",
+    date: dateDisplay,
+    route: routeTitle,
+    guests,
     source: input.source?.trim() || "booking_modal",
     message: input.message?.trim() || "",
   });
@@ -146,6 +187,7 @@ async function notifyLeadCreated(
     phone: string;
     date: string;
     route: string;
+    guests: number;
     source: string;
     message: string;
   },
@@ -156,6 +198,7 @@ async function notifyLeadCreated(
     `Телефон: ${data.phone}`,
     data.route ? `Маршрут: ${data.route}` : null,
     data.date ? `Дата: ${data.date}` : null,
+    `Гостей: ${data.guests}`,
     `Источник: ${data.source}`,
     data.message ? `Комментарий: ${data.message}` : null,
   ]
@@ -183,7 +226,6 @@ async function notifyLeadCreated(
       }
       status = "sent";
     } else if (channel === "email") {
-      // Базовый канал: логируем; SMTP/Resend можно подключить через env позже
       console.info("[NOTIFY:email]", text);
       if (!process.env.NOTIFY_EMAIL_TO) {
         throw new Error("NOTIFY_EMAIL_TO не задан — заявка в CRM, email не отправлен");
@@ -210,6 +252,7 @@ async function notifyLeadCreated(
         error: error || undefined,
         lead: typeof data.leadId === "number" ? data.leadId : Number(data.leadId),
       },
+      overrideAccess: true,
     });
 
     await payload.update({
@@ -219,6 +262,7 @@ async function notifyLeadCreated(
         notifiedAt: status === "sent" ? new Date().toISOString() : undefined,
         notifyError: error || undefined,
       },
+      overrideAccess: true,
     });
   } catch (err) {
     console.error("[NOTIFY:persist]", err);

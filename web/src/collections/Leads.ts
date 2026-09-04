@@ -1,18 +1,105 @@
 import type { CollectionConfig } from "payload";
+import { isAdmin, isStaff } from "@/access/roles";
+import { BOOKING_SLOTS, formatBookingDate, parseBookingDateValue } from "@/lib/booking/slots";
+import { clampCompletedThrough, findRouteByTitle } from "@/lib/booking/progress";
+
+const SLOT_OPTIONS = BOOKING_SLOTS.map((s) => ({ label: s, value: s }));
+
+function adminOnlyField() {
+  return {
+    condition: (_: unknown, __: unknown, { user }: { user?: unknown }) => isAdmin(user as never),
+  };
+}
+
+async function bumpCustomerProgress(args: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  req: any;
+  customerId: number | string | null | undefined;
+  routeTitle: string | null | undefined;
+  status: string | null | undefined;
+}) {
+  if (args.status !== "done") return;
+  const route = findRouteByTitle(String(args.routeTitle || ""));
+  if (!route || !args.customerId) return;
+
+  const customer = await args.req.payload.findByID({
+    collection: "customers",
+    id: args.customerId,
+    depth: 0,
+    overrideAccess: true,
+  });
+  if (!customer) return;
+
+  const current = clampCompletedThrough(customer.completedThrough);
+  if (route.progressOrder <= current) return;
+
+  await args.req.payload.update({
+    collection: "customers",
+    id: args.customerId,
+    data: { completedThrough: route.progressOrder },
+    overrideAccess: true,
+  });
+}
 
 export const Leads: CollectionConfig = {
   slug: "leads",
   labels: { singular: "Заявка", plural: "Заявки" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "phone", "route", "source", "status", "createdAt"],
+    defaultColumns: ["name", "phone", "dateKey", "timeSlot", "assignee", "status", "createdAt"],
     group: "CRM",
+    description: "Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут.",
+    listSearchableFields: ["name", "phone", "route"],
+    components: {
+      beforeListTable: ["./admin/components/LeadsBoard#LeadsBoard"],
+    },
   },
   access: {
-    create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: ({ req }) => !req.user || isAdmin(req.user),
+    read: ({ req }) => isStaff(req.user),
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
+  },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        if (!data) return data;
+
+        if (data.dateKey && data.timeSlot) {
+          data.date = formatBookingDate(String(data.dateKey), String(data.timeSlot));
+          return data;
+        }
+
+        if (typeof data.date === "string" && data.date.trim()) {
+          const parsed = parseBookingDateValue(data.date);
+          if (parsed) {
+            data.dateKey = parsed.dateKey;
+            if (parsed.slot) data.timeSlot = parsed.slot;
+            if (parsed.slot) data.date = formatBookingDate(parsed.dateKey, parsed.slot);
+          }
+        }
+
+        return data;
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req }) => {
+        const becameDone = doc.status === "done" && previousDoc?.status !== "done";
+        if (!becameDone) return;
+
+        const customerId =
+          typeof doc.customer === "object" && doc.customer
+            ? doc.customer.id
+            : doc.customer;
+
+        await bumpCustomerProgress({
+          req,
+          customerId,
+          routeTitle: doc.route,
+          status: doc.status,
+        });
+      },
+    ],
   },
   fields: [
     {
@@ -22,18 +109,79 @@ export const Leads: CollectionConfig = {
       label: "Клиент",
       admin: { position: "sidebar" },
     },
+    {
+      name: "assignee",
+      type: "relationship",
+      relationTo: "users",
+      label: "Ответственный",
+      admin: {
+        position: "sidebar",
+        description: "Менеджер, который взял заявку себе.",
+      },
+    },
     { name: "name", type: "text", label: "Имя", required: true },
     { name: "phone", type: "text", label: "Телефон", required: true, index: true },
-    { name: "date", type: "text", label: "Желаемая дата" },
+    {
+      type: "row",
+      fields: [
+        {
+          name: "dateKey",
+          type: "text",
+          label: "Дата",
+          index: true,
+          admin: {
+            width: "50%",
+            placeholder: "2026-09-15",
+          },
+        },
+        {
+          name: "timeSlot",
+          type: "select",
+          label: "Время",
+          index: true,
+          options: SLOT_OPTIONS,
+          admin: { width: "50%" },
+        },
+      ],
+    },
+    {
+      name: "date",
+      type: "text",
+      label: "Дата и время",
+      admin: {
+        readOnly: true,
+        ...adminOnlyField(),
+      },
+    },
+    {
+      name: "guests",
+      type: "number",
+      label: "Гостей",
+      defaultValue: 1,
+      min: 1,
+      max: 20,
+    },
     { name: "route", type: "text", label: "Маршрут" },
     { name: "tariff", type: "text", label: "Тариф" },
     { name: "message", type: "textarea", label: "Комментарий" },
-    { name: "source", type: "text", label: "Источник", index: true },
-    { name: "pageUrl", type: "text", label: "Страница" },
+    {
+      name: "source",
+      type: "text",
+      label: "Источник",
+      index: true,
+      admin: adminOnlyField(),
+    },
+    {
+      name: "pageUrl",
+      type: "text",
+      label: "Страница",
+      admin: adminOnlyField(),
+    },
     {
       name: "utm",
       type: "group",
       label: "UTM",
+      admin: adminOnlyField(),
       fields: [
         { name: "source", type: "text", label: "utm_source" },
         { name: "medium", type: "text", label: "utm_medium" },
@@ -56,24 +204,36 @@ export const Leads: CollectionConfig = {
         { label: "Отмена", value: "cancelled" },
         { label: "Спам", value: "spam" },
       ],
+      admin: {
+        position: "sidebar",
+        description: "«Закрыта» — заезд состоялся, клиенту открывается следующий маршрут.",
+      },
     },
     {
       name: "product",
       type: "relationship",
       relationTo: "products",
       label: "Товар",
+      admin: adminOnlyField(),
     },
     {
       name: "notifiedAt",
       type: "date",
-      label: "Уведомление отправлено",
-      admin: { date: { pickerAppearance: "dayAndTime" }, position: "sidebar" },
+      label: "Уведомление",
+      admin: {
+        date: { pickerAppearance: "dayAndTime" },
+        position: "sidebar",
+        ...adminOnlyField(),
+      },
     },
     {
       name: "notifyError",
       type: "text",
       label: "Ошибка уведомления",
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        ...adminOnlyField(),
+      },
     },
   ],
 };

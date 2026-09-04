@@ -1,18 +1,24 @@
 import type { CollectionConfig } from "payload";
+import { isAdmin, isStaff } from "@/access/roles";
 
 export const Customers: CollectionConfig = {
   slug: "customers",
   labels: { singular: "Клиент", plural: "Клиенты" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "phone", "lastLeadAt", "updatedAt"],
+    defaultColumns: ["name", "phone", "completedThrough", "lastLeadAt"],
     group: "CRM",
+    description: "Карточка гостя и прогресс маршрутов для записи.",
+    listSearchableFields: ["name", "phone"],
+    components: {
+      beforeListTable: ["./admin/components/CustomersBoard#CustomersBoard"],
+    },
   },
   access: {
-    create: () => true,
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: ({ req }) => !req.user || isAdmin(req.user),
+    read: ({ req }) => isStaff(req.user),
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
   },
   fields: [
     { name: "name", type: "text", label: "Имя", required: true },
@@ -25,12 +31,25 @@ export const Customers: CollectionConfig = {
       index: true,
     },
     { name: "email", type: "email", label: "Email" },
-    { name: "notes", type: "textarea", label: "Заметки менеджера" },
+    {
+      name: "completedThrough",
+      type: "number",
+      label: "Пройдено уровней",
+      defaultValue: 0,
+      min: 0,
+      max: 4,
+      admin: {
+        step: 1,
+        description:
+          "0 — новичок · 1 — озеро → Памятник · 2 → Родник · 3 → Экспедиция · 4 — всё пройдено.",
+      },
+    },
+    { name: "notes", type: "textarea", label: "Заметки" },
     {
       name: "lastLeadAt",
       type: "date",
       label: "Последняя заявка",
-      admin: { date: { pickerAppearance: "dayAndTime" } },
+      admin: { date: { pickerAppearance: "dayAndTime" }, readOnly: true },
     },
   ],
 };

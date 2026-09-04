@@ -1,76 +1,60 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ROUTES, formatPrice } from "@/data/site";
+import { useEffect, useMemo } from "react";
+import { ROUTES, SITE, formatPrice } from "@/data/site";
 import { Breadcrumbs, difficultyClass } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
+import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 
-/** Демо-ЛК: прогресс хранится локально до Payload auth. */
 export default function LkPage() {
-  const [completedThrough, setCompletedThrough] = useState(0);
-  const [authed, setAuthed] = useState(false);
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const { user, loading, openAuth, logout, refresh } = useCustomerAuth();
 
-  const rows = useMemo(
-    () =>
-      ROUTES.map((route) => {
-        const unlocked = route.progressOrder <= completedThrough + 1;
-        const done = route.progressOrder <= completedThrough;
-        return { route, unlocked, done };
-      }),
-    [completedThrough],
-  );
+  useEffect(() => {
+    if (!loading && user) void refresh();
+  }, [loading, user, refresh]);
 
-  if (!authed) {
+  const progress = user?.progress;
+  const rows = useMemo(() => {
+    const completedThrough = progress?.completedThrough ?? 0;
+    const unlockedOrder = progress?.unlockedOrder ?? 1;
+    return ROUTES.map((route) => {
+      const unlocked = route.progressOrder <= unlockedOrder;
+      const done = route.progressOrder <= completedThrough;
+      return { route, unlocked, done };
+    });
+  }, [progress]);
+
+  if (loading) {
     return (
       <section className="pt-28 pb-20 md:pt-32">
-        <div className="container-site max-w-md">
+        <div className="container-site">
+          <p className="text-mute text-sm">Загрузка…</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (!user) {
+    return (
+      <section className="pt-28 pb-20 md:pt-32">
+        <div className="container-site max-w-xl">
           <Breadcrumbs
             items={[
               { label: "Главная", href: "/" },
               { label: "Личный кабинет" },
             ]}
           />
-          <h1 className="section-title text-[clamp(1.8rem,4vw,2.4rem)]">
-            {mode === "login" ? "Вход" : "Регистрация"}
-          </h1>
-          <p className="mt-3 text-sm text-mute">
-            В ЛК открывается прогресс трасс: сначала только «Зелёное озеро», затем следующие по
-            порядку после отметки администратора.
+          <h1 className="section-title text-[clamp(1.8rem,4vw,2.4rem)]">Личный кабинет</h1>
+          <p className="mt-3 text-sm text-mute leading-relaxed">
+            Войдите по имени и телефону — покажем открытые маршруты и дадим записаться только на
+            доступный уровень.
           </p>
-
-          <form
-            className="mt-8 grid gap-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              setAuthed(true);
-            }}
-          >
-            {mode === "register" && (
-              <label className="grid gap-1.5 text-sm">
-                <span className="text-mute">Имя</span>
-                <input className="input" name="name" required placeholder="Имя" />
-              </label>
-            )}
-            <label className="grid gap-1.5 text-sm">
-              <span className="text-mute">Email</span>
-              <input className="input" type="email" name="email" required placeholder="you@mail.ru" />
-            </label>
-            <label className="grid gap-1.5 text-sm">
-              <span className="text-mute">Пароль</span>
-              <input className="input" type="password" name="password" required placeholder="••••••••" />
-            </label>
-            <button type="submit" className="btn btn-primary mt-2">
-              {mode === "login" ? "Войти" : "Создать аккаунт"}
-            </button>
-          </form>
-
           <button
             type="button"
-            className="mt-6 text-sm text-mute hover:text-accent"
-            onClick={() => setMode(mode === "login" ? "register" : "login")}
+            className="btn btn-primary mt-6 w-full sm:w-auto"
+            onClick={() => openAuth({ intent: "lk" })}
           >
-            {mode === "login" ? "Нет аккаунта? Регистрация" : "Уже есть аккаунт? Войти"}
+            Войти / зарегистрироваться
           </button>
         </div>
       </section>
@@ -80,23 +64,40 @@ export default function LkPage() {
   return (
     <section className="pt-28 pb-20 md:pt-32">
       <div className="container-site">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+        <Breadcrumbs
+          items={[
+            { label: "Главная", href: "/" },
+            { label: "Личный кабинет" },
+          ]}
+        />
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <Breadcrumbs
-              items={[
-                { label: "Главная", href: "/" },
-                { label: "Личный кабинет" },
-              ]}
-            />
             <h1 className="section-title text-[clamp(1.8rem,4vw,2.4rem)]">Мои маршруты</h1>
-            <p className="mt-3 text-sm text-mute max-w-xl">
-              Открыт следующий доступный уровень. После заезда менеджер в CRM отметит прохождение —
-              откроется следующая трасса.
+            <p className="mt-3 text-sm text-mute max-w-2xl leading-relaxed">
+              {user.name} · {user.phone}. Пройдено уровней {progress?.completedThrough ?? 0} из 4.
+              Запись только на открытый маршрут.
             </p>
           </div>
-          <button type="button" className="btn btn-ghost" onClick={() => setAuthed(false)}>
+          <button type="button" className="btn btn-ghost w-full sm:w-auto" onClick={() => void logout()}>
             Выйти
           </button>
+        </div>
+
+        <div className="mt-6 flex flex-col sm:flex-row flex-wrap gap-3">
+          <BookButton
+            prefill={{
+              source: "lk_queue",
+              route: rows.find((r) => r.unlocked && !r.done)?.route.title || ROUTES[0].title,
+            }}
+          >
+            Записаться на открытый маршрут
+          </BookButton>
+          <a
+            href={`tel:${SITE.phone.replace(/[^\d+]/g, "")}`}
+            className="btn btn-ghost w-full sm:w-auto"
+          >
+            {SITE.phone}
+          </a>
         </div>
 
         <div className="mt-10 grid gap-4">
@@ -107,7 +108,7 @@ export default function LkPage() {
                 unlocked ? "" : "opacity-60"
               }`}
             >
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`badge ${difficultyClass(route.difficulty)}`}>
                     {route.difficultyLabel}
@@ -127,38 +128,26 @@ export default function LkPage() {
                   </p>
                 )}
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 shrink-0">
                 {unlocked ? (
-                  <BookButton prefill={{ route: route.title, source: "lk_booking" }}>
+                  <BookButton
+                    prefill={{ route: route.title, source: "lk_booking" }}
+                    className="w-full sm:w-auto"
+                  >
                     Забронировать
                   </BookButton>
                 ) : (
-                  <button type="button" className="btn btn-ghost opacity-50 cursor-not-allowed" disabled>
-                    🔒 Закрыто
+                  <button
+                    type="button"
+                    className="btn btn-ghost opacity-50 cursor-not-allowed w-full sm:w-auto"
+                    disabled
+                  >
+                    Закрыто
                   </button>
                 )}
               </div>
             </article>
           ))}
-        </div>
-
-        <div className="mt-10 card-dark p-6">
-          <p className="section-label">Демо для приёмки UI</p>
-          <p className="mt-2 text-sm text-mute">
-            Пока нет Payload: имитация отметки админа «маршрут пройден».
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="btn btn-ghost"
-              onClick={() => setCompletedThrough((v) => Math.min(4, v + 1))}
-            >
-              Отметить следующий как пройденный
-            </button>
-            <button type="button" className="btn btn-ghost" onClick={() => setCompletedThrough(0)}>
-              Сбросить прогресс
-            </button>
-          </div>
         </div>
       </div>
     </section>

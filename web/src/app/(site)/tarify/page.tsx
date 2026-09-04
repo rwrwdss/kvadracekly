@@ -1,11 +1,33 @@
 import type { Metadata } from "next";
 import { IMAGES, ROUTES, formatPrice } from "@/data/site";
-import { PageHero, difficultyClass } from "@/components/ui/PageHero";
+import { PageHero } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
+import { TariffsCarousel } from "@/components/tariffs/TariffsCarousel";
+import {
+  IconCamera,
+  IconFuel,
+  IconHelmet,
+  IconHouse,
+  IconMoon,
+  IconRoute,
+  IconUsers,
+} from "@/components/ui/Icons";
 
 export const metadata: Metadata = { title: "Тарифы" };
 
-const badgeMap = ["Стандарт", "Премиум", "Премиум+", "Легенда"] as const;
+const HERO_CHIPS = [
+  { t: "Инструктор", Icon: IconUsers },
+  { t: "Экипировка", Icon: IconHelmet },
+  { t: "Топливо", Icon: IconFuel },
+  { t: "Маршрут", Icon: IconRoute },
+] as const;
+
+const EXTRAS = [
+  { t: "Пассажир на двухместной технике", price: "от 2 000 ₽", Icon: IconUsers },
+  { t: "Индивидуальный маршрут", price: "по запросу", Icon: IconRoute },
+  { t: "Фото / видео / GoPro", price: "от 1 500 ₽", Icon: IconCamera },
+  { t: "Пакеты с усадьбой «Берегиня»", price: "по запросу", Icon: IconHouse },
+] as const;
 
 export default function TariffsPage() {
   return (
@@ -22,80 +44,60 @@ export default function TariffsPage() {
         imageAlt={IMAGES.heroTariffs.alt}
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl text-xs sm:text-sm">
-          {["Инструктор", "Экипировка", "Топливо", "Маршрут"].map((t) => (
-            <div key={t} className="chip p-3 text-ink">
+          {HERO_CHIPS.map(({ t, Icon }) => (
+            <div key={t} className="chip p-3 text-ink flex items-center gap-2">
+              <span className="text-accent shrink-0">
+                <Icon size={16} />
+              </span>
               {t}
             </div>
           ))}
         </div>
       </PageHero>
 
-      <section className="py-16 md:py-20">
-        <div className="container-site grid gap-8 lg:grid-cols-[1.6fr_0.8fr]">
-          <div className="grid gap-5 md:grid-cols-2">
-            {ROUTES.map((route, i) => (
-              <article key={route.id} className="card-dark overflow-hidden flex flex-col">
-                <div
-                  className="aspect-[16/9] bg-cover bg-center relative"
-                  role="img"
-                  aria-label={route.imageAlt}
-                  style={{ backgroundImage: `url(${route.image})` }}
-                >
-                  <span className="absolute top-3 left-3 badge badge-medium">{badgeMap[i]}</span>
-                </div>
-                <div className="p-5 flex flex-col flex-1 gap-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="font-display text-xl uppercase tracking-wide">{route.title}</h3>
-                    <span className={`badge ${difficultyClass(route.difficulty)}`}>
-                      {route.difficultyLabel}
-                    </span>
-                  </div>
-                  <p className="text-sm text-mute flex-1">{route.description}</p>
-                  <div className="text-xs text-faint uppercase tracking-wide flex gap-3">
-                    <span>{route.duration}</span>
-                    <span>·</span>
-                    <span>{route.distance}</span>
-                  </div>
-                  <ul className="text-sm text-mute space-y-1 border-t border-[var(--border-subtle)] pt-3">
-                    <li>✓ Маршрут с инструктором</li>
-                    <li>✓ Базовая экипировка</li>
-                    <li>✓ Техника и топливо в программе</li>
-                  </ul>
-                  <div className="flex items-center justify-between gap-3 pt-2">
-                    <p className="text-accent font-semibold text-lg">{formatPrice(route.price)}</p>
-                    <BookButton
-                      className="!px-3"
-                      prefill={{ route: route.title, tariff: badgeMap[i], source: "tariff_select" }}
-                    >
-                      Выбрать
-                    </BookButton>
-                  </div>
-                </div>
-              </article>
-            ))}
+      <section className="py-14 sm:py-16 md:py-20">
+        <div className="container-site grid gap-8 lg:grid-cols-[1.6fr_0.8fr] lg:items-start">
+          <div>
+            <p className="section-label mb-4 md:hidden">Тарифы</p>
+            <TariffsCarousel routes={ROUTES} />
           </div>
 
           <aside className="space-y-5">
-            <div className="card-dark p-6">
+            <div className="card-dark p-5 sm:p-6">
               <p className="section-label">Дополнительно</p>
-              <ul className="mt-4 space-y-3 text-sm text-mute">
-                <li>Пассажир на двухместной технике</li>
-                <li>Индивидуальный маршрут</li>
-                <li>Фото / видео / GoPro</li>
-                <li>Пакеты с усадьбой «Берегиня»</li>
+              <ul className="mt-4 space-y-4">
+                {EXTRAS.map(({ t, price, Icon }) => (
+                  <li key={t} className="flex items-start gap-3 text-sm">
+                    <span className="text-accent mt-0.5 shrink-0">
+                      <Icon size={18} />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-mute leading-snug">{t}</p>
+                      <p className="mt-1 text-xs text-accent">{price}</p>
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
-            <div className="card-dark p-6">
-              <p className="section-label">Ночной квест</p>
-              <p className="mt-3 text-2xl text-accent font-semibold">15 000 ₽</p>
+            <div className="card-dark p-5 sm:p-6">
+              <div className="flex items-center gap-2">
+                <span className="text-accent">
+                  <IconMoon size={20} />
+                </span>
+                <p className="section-label">Ночной квест</p>
+              </div>
+              <p className="mt-3 text-2xl text-accent font-semibold">{formatPrice(15000)}</p>
               <p className="text-sm text-mute mt-1">ориентир за двоих</p>
-              <BookButton className="mt-5 w-full" prefill={{ route: "Ночной квест", source: "tariff_night" }}>
+              <BookButton
+                className="mt-5 w-full"
+                prefill={{ route: "Ночной квест", source: "tariff_night" }}
+              >
                 Забронировать квест
               </BookButton>
             </div>
-            <div className="card-dark p-6">
+            <div className="card-dark p-5 sm:p-6">
               <p className="section-label">Скидки</p>
-              <p className="mt-3 text-sm text-mute">
+              <p className="mt-3 text-sm text-mute leading-relaxed">
                 Группам и постоянным гостям — уточняйте при бронировании. Прогресс маршрутов
                 открывает следующие уровни в личном кабинете.
               </p>
@@ -104,13 +106,15 @@ export default function TariffsPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-void">
+      <section className="py-14 sm:py-16 bg-void">
         <div className="container-site flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h2 className="section-title text-[clamp(1.5rem,3vw,2.2rem)]">Не можете выбрать?</h2>
+            <h2 className="section-title text-[clamp(1.45rem,4vw,2.2rem)]">Не можете выбрать?</h2>
             <p className="mt-3 text-sm text-mute">Подскажем тариф под опыт и состав группы.</p>
           </div>
-          <BookButton prefill={{ source: "tariff_help" }}>Подобрать тариф</BookButton>
+          <BookButton className="w-full md:w-auto" prefill={{ source: "tariff_help" }}>
+            Подобрать тариф
+          </BookButton>
         </div>
       </section>
     </>

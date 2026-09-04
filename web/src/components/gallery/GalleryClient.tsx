@@ -1,8 +1,17 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentType } from "react";
 import { Breadcrumbs } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
+import {
+  IconAtv,
+  IconCamera,
+  IconHouse,
+  IconList,
+  IconMoon,
+  IconRoute,
+  IconTrees,
+} from "@/components/ui/Icons";
 
 type Item = {
   id: string;
@@ -13,6 +22,15 @@ type Item = {
 };
 
 type Category = { id: string; label: string };
+
+const CAT_ICONS: Record<string, ComponentType<{ size?: number }>> = {
+  all: IconList,
+  atv: IconAtv,
+  routes: IconRoute,
+  nature: IconTrees,
+  night: IconMoon,
+  manor: IconHouse,
+};
 
 export function GalleryClient({
   items,
@@ -40,24 +58,31 @@ export function GalleryClient({
               { label: "Галерея" },
             ]}
           />
-          <h1 className="section-title">{intro.title}</h1>
+          <h1 className="section-title text-[clamp(1.6rem,5vw,2.75rem)]">{intro.title}</h1>
           <p className="section-label mt-3">{intro.subtitle}</p>
           <p className="mt-4 max-w-2xl text-[15px] sm:text-sm text-mute leading-relaxed">
             {intro.description}
           </p>
 
           {items.length > 0 && (
-            <div className="mt-8 flex flex-wrap gap-2">
-              {categories.map((c) => (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setCat(c.id)}
-                  className={`btn !py-2 !px-3 ${cat === c.id ? "btn-primary" : "btn-ghost"}`}
-                >
-                  {c.label}
-                </button>
-              ))}
+            <div className="hide-scrollbar mt-8 -mx-4 px-4 flex gap-2 overflow-x-auto snap-x snap-mandatory pb-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:overflow-visible">
+              {categories.map((c) => {
+                const Icon = CAT_ICONS[c.id] ?? IconCamera;
+                const active = cat === c.id;
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => setCat(c.id)}
+                    className={`btn !py-2 !px-3 shrink-0 snap-start inline-flex items-center gap-2 ${
+                      active ? "btn-primary" : "btn-ghost"
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span>{c.label}</span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -91,7 +116,7 @@ export function GalleryClient({
                   <img
                     src={item.src}
                     alt={item.alt}
-                    className="w-full h-auto object-cover hover:scale-[1.02] transition-transform duration-500"
+                    className="w-full h-auto object-cover transition-transform duration-500 motion-safe:hover:scale-[1.02]"
                     style={{ aspectRatio: index % 3 === 1 ? "4/5" : "16/10" }}
                     loading="lazy"
                   />
@@ -104,7 +129,7 @@ export function GalleryClient({
           )}
         </div>
 
-        <div className="container-site mt-14 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-[var(--border-subtle)] p-6 md:p-8">
+        <div className="container-site mt-14 flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-[var(--border-subtle)] p-5 sm:p-6 md:p-8">
           <div>
             <p className="font-display text-xl uppercase tracking-wide">
               Каждый маршрут — новая история

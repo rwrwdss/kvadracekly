@@ -1,13 +1,18 @@
 import type { CollectionConfig } from "payload";
+import { hideFromManager, isAdmin } from "@/access/roles";
 
 export const Media: CollectionConfig = {
   slug: "media",
   labels: { singular: "Файл", plural: "Медиатека" },
   access: {
     read: () => true,
+    create: ({ req }) => isAdmin(req.user),
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
   },
   admin: {
     group: "Контент",
+    hidden: ({ user }) => hideFromManager(user),
   },
   upload: {
     staticDir: "media",

@@ -4,10 +4,13 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 
 type BookingPrefill = {
   route?: string;
@@ -26,13 +29,44 @@ type BookingContextValue = {
 const BookingContext = createContext<BookingContextValue | null>(null);
 
 export function BookingProvider({ children }: { children: ReactNode }) {
+  const { user, loading, openAuth, setPendingAction } = useCustomerAuth();
   const [open, setOpen] = useState(false);
   const [prefill, setPrefill] = useState<BookingPrefill>({});
+  const deferredPrefill = useRef<BookingPrefill | null>(null);
+  const hasDeferred = useRef(false);
 
-  const openBooking = useCallback((next?: BookingPrefill) => {
+  const startBooking = useCallback((next?: BookingPrefill) => {
     setPrefill(next ?? {});
     setOpen(true);
   }, []);
+
+  const openBooking = useCallback(
+    (next?: BookingPrefill) => {
+      if (loading) {
+        deferredPrefill.current = next ?? {};
+        hasDeferred.current = true;
+        return;
+      }
+
+      if (!user) {
+        setPendingAction(() => startBooking(next));
+        openAuth({ intent: "booking" });
+        return;
+      }
+
+      startBooking(next);
+    },
+    [loading, user, openAuth, setPendingAction, startBooking],
+  );
+
+  // После загрузки сессии — продолжить отложенную запись
+  useEffect(() => {
+    if (loading || !hasDeferred.current) return;
+    hasDeferred.current = false;
+    const next = deferredPrefill.current ?? undefined;
+    deferredPrefill.current = null;
+    openBooking(next);
+  }, [loading, openBooking]);
 
   const closeBooking = useCallback(() => {
     setOpen(false);

@@ -1,8 +1,16 @@
 "use client";
 
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useCallback, useEffect, useId, useMemo, useState } from "react";
 import { ROUTES, SITE } from "@/data/site";
 import { useBooking } from "@/components/booking/BookingContext";
+import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
+import { BookingCalendar } from "@/components/booking/BookingCalendar";
+import {
+  NIGHT_QUEST_TITLE,
+  buildProgress,
+  isRouteBookable,
+  type ProgressInfo,
+} from "@/lib/booking/progress";
 
 function readUtmFromUrl() {
   if (typeof window === "undefined") return {};
@@ -18,18 +26,40 @@ function readUtmFromUrl() {
 
 export function BookingModal() {
   const { open, prefill, closeBooking } = useBooking();
+  const { user } = useCustomerAuth();
   const titleId = useId();
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [route, setRoute] = useState("");
+  const [dateValue, setDateValue] = useState("");
   const [errorText, setErrorText] = useState("");
+  const [progress, setProgress] = useState<ProgressInfo>(() => buildProgress(0));
+  const [guests, setGuests] = useState(1);
+
+  const applyRouteForProgress = useCallback(
+    (pref: string, completedThrough: number) => {
+      if (pref && pref !== NIGHT_QUEST_TITLE && !isRouteBookable(pref, completedThrough)) {
+        const fallback =
+          ROUTES.find((r) => r.progressOrder === completedThrough + 1)?.title || ROUTES[0].title;
+        setRoute(fallback);
+        setErrorText(
+          `«${pref}» пока закрыт. По вашему прогрессу открыт «${fallback}». Следующие маршруты — после прохождения предыдущих.`,
+        );
+        return;
+      }
+      setRoute(pref);
+    },
+    [],
+  );
 
   useEffect(() => {
-    if (open) {
-      setStatus("idle");
-      setErrorText("");
-      setRoute(prefill.route ?? "");
-    }
-  }, [open, prefill]);
+    if (!open || !user) return;
+    setStatus("idle");
+    setErrorText("");
+    setDateValue("");
+    setGuests(1);
+    setProgress(user.progress || buildProgress(0));
+    applyRouteForProgress(prefill.route ?? "", user.progress?.completedThrough ?? 0);
+  }, [open, prefill, user, applyRouteForProgress]);
 
   useEffect(() => {
     if (!open) return;
@@ -44,18 +74,31 @@ export function BookingModal() {
     };
   }, [open, closeBooking]);
 
-  if (!open) return null;
+  const unlockedRoutes = useMemo(
+    () => ROUTES.filter((r) => r.progressOrder <= progress.unlockedOrder),
+    [progress.unlockedOrder],
+  );
+
+  if (!open || !user) return null;
+
+  const customer = user;
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!dateValue) {
+      setStatus("error");
+      setErrorText("Выберите дату и время в календаре");
+      return;
+    }
     setStatus("loading");
     setErrorText("");
     const form = new FormData(e.currentTarget);
     const payload = {
-      name: String(form.get("name") || ""),
-      phone: String(form.get("phone") || ""),
-      date: String(form.get("date") || ""),
-      route: String(form.get("route") || ""),
+      name: customer.name,
+      phone: customer.phone,
+      date: dateValue,
+      route: String(form.get("route") || route),
+      guests: Number(form.get("guests") || guests) || 1,
       message: String(form.get("message") || ""),
       source: prefill.source || "booking_modal",
       tariff: prefill.tariff || "",
@@ -93,7 +136,7 @@ export function BookingModal() {
         onClick={closeBooking}
       />
 
-      <div className="booking-sheet relative w-full sm:max-w-lg bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)] max-h-[min(92dvh,920px)] overflow-y-auto overscroll-contain">
+      <div className="booking-sheet relative w-full sm:max-w-xl bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)] max-h-[min(92dvh,920px)] overflow-y-auto overscroll-contain">
         <div className="sticky top-0 z-10 flex justify-center pt-3 pb-1 sm:hidden bg-elevated">
           <span className="h-1 w-10 rounded-full bg-white/20" aria-hidden />
         </div>
@@ -109,22 +152,24 @@ export function BookingModal() {
                 Оставить заявку
               </h2>
               <p className="text-sm text-mute mt-2 leading-relaxed">
-                Сохраним в CRM и свяжемся для подтверждения. Или позвоните{" "}
-                <a
-                  href={`tel:${SITE.phone.replace(/[^\d+]/g, "")}`}
-                  className="text-accent hover:underline"
-                >
-                  {SITE.phone}
-                </a>
+                {user.name} · {user.phone}. Открыт уровень до «
+                {unlockedRoutes[unlockedRoutes.length - 1]?.title || ROUTES[0].title}».
               </p>
             </div>
             <button
               type="button"
               onClick={closeBooking}
-              className="shrink-0 grid h-10 w-10 place-items-center border border-[var(--border-subtle)] text-mute hover:text-ink hover:border-accent transition-colors"
+              className="shrink-0 flex h-10 w-10 items-center justify-center border border-[var(--border-subtle)] text-mute hover:text-ink hover:border-accent transition-colors"
               aria-label="Закрыть"
             >
-              ×
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+                <path
+                  d="M1 1l12 12M13 1L1 13"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="square"
+                />
+              </svg>
             </button>
           </div>
 
@@ -135,8 +180,11 @@ export function BookingModal() {
               </div>
               <p className="text-accent section-label">Готово</p>
               <p className="mt-3 text-lg sm:text-xl font-display tracking-wide uppercase">
-                Заявка принята
+                Вы в очереди
               </p>
+              {dateValue && <p className="mt-2 text-sm text-accent">{dateValue}</p>}
+              {route && <p className="mt-1 text-sm text-mute">{route}</p>}
+              <p className="mt-1 text-sm text-mute">Гостей: {guests}</p>
               <p className="mt-2 text-sm text-mute">Скоро свяжемся по указанному телефону.</p>
               <button type="button" className="btn btn-primary mt-8 w-full sm:w-auto" onClick={closeBooking}>
                 Закрыть
@@ -144,57 +192,52 @@ export function BookingModal() {
             </div>
           ) : (
             <form onSubmit={onSubmit} className="grid gap-3.5 sm:gap-4">
+              <BookingCalendar value={dateValue} onChange={setDateValue} required />
+
               <label className="grid gap-1.5 text-sm">
-                <span className="text-mute">Имя</span>
-                <input
-                  name="name"
-                  required
-                  autoComplete="name"
+                <span className="text-mute">Количество человек</span>
+                <select
+                  name="guests"
                   className="input"
-                  placeholder="Как к вам обращаться"
-                />
+                  value={guests}
+                  onChange={(e) => setGuests(Number(e.target.value) || 1)}
+                  required
+                >
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
               </label>
+
               <label className="grid gap-1.5 text-sm">
-                <span className="text-mute">Телефон</span>
-                <input
-                  name="phone"
-                  required
-                  autoComplete="tel"
+                <span className="text-mute">Маршрут (по прогрессу)</span>
+                <select
+                  name="route"
                   className="input"
-                  placeholder="+7 (___) ___-__-__"
-                  inputMode="tel"
-                />
+                  value={route}
+                  onChange={(e) => setRoute(e.target.value)}
+                >
+                  <option value="">Подберём вместе</option>
+                  {unlockedRoutes.map((r) => (
+                    <option key={r.id} value={r.title}>
+                      {r.title} — {r.price.toLocaleString("ru-RU")} ₽
+                    </option>
+                  ))}
+                  <option value={NIGHT_QUEST_TITLE}>{NIGHT_QUEST_TITLE}</option>
+                </select>
+                <span className="text-[11px] text-faint leading-relaxed">
+                  Закрытые уровни скрыты. После заезда менеджер отметит прохождение в CRM.
+                </span>
               </label>
-              <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-4">
-                <label className="grid gap-1.5 text-sm">
-                  <span className="text-mute">Желаемая дата</span>
-                  <input name="date" type="date" className="input" />
-                </label>
-                <label className="grid gap-1.5 text-sm">
-                  <span className="text-mute">Маршрут</span>
-                  <select
-                    name="route"
-                    className="input"
-                    value={route}
-                    onChange={(e) => setRoute(e.target.value)}
-                  >
-                    <option value="">Подберём вместе</option>
-                    {ROUTES.map((r) => (
-                      <option key={r.id} value={r.title}>
-                        {r.title} — {r.price.toLocaleString("ru-RU")} ₽
-                      </option>
-                    ))}
-                    <option value="Ночной квест">Ночной квест</option>
-                  </select>
-                </label>
-              </div>
               <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Комментарий</span>
                 <textarea
                   name="message"
                   rows={3}
                   className="input resize-none min-h-[5.5rem]"
-                  placeholder="Количество человек, пожелания…"
+                  placeholder="Пожелания к выезду…"
                 />
               </label>
 
@@ -203,16 +246,22 @@ export function BookingModal() {
                   {errorText || "Не удалось отправить. Попробуйте ещё раз или позвоните нам."}
                 </p>
               )}
+              {status !== "error" && errorText && (
+                <p className="text-sm text-accent leading-relaxed">{errorText}</p>
+              )}
 
               <button
                 type="submit"
                 className="btn btn-primary mt-1 w-full"
                 disabled={status === "loading"}
               >
-                {status === "loading" ? "Отправка…" : "Отправить заявку"}
+                {status === "loading" ? "Отправка…" : "Встать в очередь"}
               </button>
               <p className="text-[11px] text-faint text-center leading-relaxed">
-                Нажимая кнопку, вы соглашаетесь на обработку заявки менеджером Вольницы.
+                Или позвоните{" "}
+                <a href={`tel:${SITE.phone.replace(/[^\d+]/g, "")}`} className="text-accent">
+                  {SITE.phone}
+                </a>
               </p>
             </form>
           )}

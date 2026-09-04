@@ -11,10 +11,17 @@ export function Footer() {
     <footer className="border-t border-[var(--border-subtle)] bg-void">
       <div className="container-site py-12 md:py-16 grid gap-10 md:grid-cols-[1.2fr_1fr_1fr]">
         <div>
-          <p className="font-display text-xl tracking-[0.14em] uppercase text-accent">
-            {SITE.name}
-          </p>
-          <p className="mt-2 text-sm text-mute max-w-sm">
+          <Link href="/" className="inline-block">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={SITE.logoFull}
+              alt={SITE.logoFullAlt}
+              width={200}
+              height={170}
+              className="h-16 w-auto sm:h-[4.5rem] object-contain object-left"
+            />
+          </Link>
+          <p className="mt-4 text-sm text-mute max-w-sm">
             Премиальный прокат квадроциклов при усадьбе «Берегиня». Авторские
             маршруты, техника и сервис — около 25 минут от Казани.
           </p>

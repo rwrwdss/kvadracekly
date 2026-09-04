@@ -52,7 +52,7 @@ export function PageHero({
           <p className="section-label mt-3 animate-fade-up-delay drop-shadow">{subtitle}</p>
         )}
         {description && (
-          <p className="mt-4 max-w-2xl text-mute text-[15px] sm:text-sm md:text-base leading-relaxed animate-fade-up-delay">
+          <p className="mt-4 max-w-2xl text-mute text-[15px] sm:text-sm md:text-[1rem] leading-relaxed animate-fade-up-delay drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
             {description}
           </p>
         )}

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isAdmin, isStaff } from "@/access/roles";
 
 export const Notifications: CollectionConfig = {
   slug: "notifications",
@@ -7,12 +8,13 @@ export const Notifications: CollectionConfig = {
     useAsTitle: "type",
     defaultColumns: ["type", "channel", "status", "createdAt"],
     group: "CRM",
+    description: "История сообщений о новых заявках.",
   },
   access: {
-    create: ({ req }) => Boolean(req.user),
-    read: ({ req }) => Boolean(req.user),
-    update: ({ req }) => Boolean(req.user),
-    delete: ({ req }) => Boolean(req.user),
+    create: ({ req }) => isStaff(req.user),
+    read: ({ req }) => isStaff(req.user),
+    update: ({ req }) => isAdmin(req.user),
+    delete: ({ req }) => isAdmin(req.user),
   },
   fields: [
     {
@@ -22,6 +24,7 @@ export const Notifications: CollectionConfig = {
       required: true,
       defaultValue: "lead_created",
       options: [{ label: "Новая заявка", value: "lead_created" }],
+      admin: { readOnly: true },
     },
     {
       name: "channel",
@@ -31,8 +34,9 @@ export const Notifications: CollectionConfig = {
       options: [
         { label: "Telegram", value: "telegram" },
         { label: "Email", value: "email" },
-        { label: "Лог (dev)", value: "log" },
+        { label: "Журнал", value: "log" },
       ],
+      admin: { readOnly: true },
     },
     {
       name: "status",
@@ -45,22 +49,29 @@ export const Notifications: CollectionConfig = {
         { label: "Отправлено", value: "sent" },
         { label: "Ошибка", value: "error" },
       ],
+      admin: { readOnly: true },
     },
     {
       name: "payload",
       type: "textarea",
-      label: "Текст / payload",
+      label: "Текст сообщения",
+      admin: { readOnly: true },
     },
     {
       name: "error",
       type: "text",
       label: "Ошибка",
+      admin: {
+        condition: (_, siblingData) => Boolean(siblingData?.error),
+        readOnly: true,
+      },
     },
     {
       name: "lead",
       type: "relationship",
       relationTo: "leads",
       label: "Заявка",
+      admin: { readOnly: true },
     },
   ],
 };

@@ -132,12 +132,18 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Доступ только у администраторов. Менеджеры работают в разделе CRM.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
   name?: string | null;
+  /**
+   * Менеджер видит только заявки, клиентов и уведомления.
+   */
+  role: 'admin' | 'manager';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -320,6 +326,8 @@ export interface Product {
   createdAt: string;
 }
 /**
+ * Карточка гостя и прогресс маршрутов для записи.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers".
  */
@@ -328,21 +336,34 @@ export interface Customer {
   name: string;
   phone: string;
   email?: string | null;
+  /**
+   * 0 — новичок · 1 — озеро → Памятник · 2 → Родник · 3 → Экспедиция · 4 — всё пройдено.
+   */
+  completedThrough?: number | null;
   notes?: string | null;
   lastLeadAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
 export interface Lead {
   id: number;
   customer?: (number | null) | Customer;
+  /**
+   * Менеджер, который взял заявку себе.
+   */
+  assignee?: (number | null) | User;
   name: string;
   phone: string;
+  dateKey?: string | null;
+  timeSlot?: ('10:00' | '12:00' | '14:00' | '16:00' | '18:00' | '20:00') | null;
   date?: string | null;
+  guests?: number | null;
   route?: string | null;
   tariff?: string | null;
   message?: string | null;
@@ -355,6 +376,9 @@ export interface Lead {
     content?: string | null;
     term?: string | null;
   };
+  /**
+   * «Закрыта» — заезд состоялся, клиенту открывается следующий маршрут.
+   */
   status?: ('new' | 'in_progress' | 'confirmed' | 'done' | 'cancelled' | 'spam') | null;
   product?: (number | null) | Product;
   notifiedAt?: string | null;
@@ -363,6 +387,8 @@ export interface Lead {
   createdAt: string;
 }
 /**
+ * История сообщений о новых заявках.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notifications".
  */
@@ -477,6 +503,7 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -626,6 +653,7 @@ export interface CustomersSelect<T extends boolean = true> {
   name?: T;
   phone?: T;
   email?: T;
+  completedThrough?: T;
   notes?: T;
   lastLeadAt?: T;
   updatedAt?: T;
@@ -637,9 +665,13 @@ export interface CustomersSelect<T extends boolean = true> {
  */
 export interface LeadsSelect<T extends boolean = true> {
   customer?: T;
+  assignee?: T;
   name?: T;
   phone?: T;
+  dateKey?: T;
+  timeSlot?: T;
   date?: T;
+  guests?: T;
   route?: T;
   tariff?: T;
   message?: T;
@@ -723,6 +755,30 @@ export interface SiteSetting {
   id: number;
   siteName?: string | null;
   tagline?: string | null;
+  /**
+   * Управляет умным календарём на сайте (кнопка «Забронировать» в шапке). Заявки — в разделе CRM → Заявки.
+   */
+  booking?: {
+    enabled?: boolean | null;
+    /**
+     * Сколько отдельных заявок можно принять на одно время (например 14:00). По умолчанию 3.
+     */
+    slotCapacity?: number | null;
+    /**
+     * Фиксированные слоты: 10:00–20:00 каждые 2 часа.
+     */
+    slotHint?: string | null;
+    /**
+     * Эти даты нельзя выбрать в календаре на сайте.
+     */
+    closedDates?:
+      | {
+          date: string;
+          note?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   defaultSeo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
@@ -736,7 +792,7 @@ export interface SiteSetting {
   };
   notify?: {
     /**
-     * NOTIFY_CHANNEL=log|telegram|email · TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID или NOTIFY_EMAIL_TO
+     * Настраивается администратором на сервере.
      */
     channelHint?: string | null;
   };
@@ -750,6 +806,20 @@ export interface SiteSetting {
 export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
   tagline?: T;
+  booking?:
+    | T
+    | {
+        enabled?: T;
+        slotCapacity?: T;
+        slotHint?: T;
+        closedDates?:
+          | T
+          | {
+              date?: T;
+              note?: T;
+              id?: T;
+            };
+      };
   defaultSeo?:
     | T
     | {

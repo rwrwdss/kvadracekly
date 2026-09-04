@@ -27,7 +27,8 @@
 
 @theme inline {
   --color-void: var(--bg-void);
-  --color-base: var(--bg-base);
+  /* Не называть `base`: в Tailwind v4 `text-base` станет цветом вместо font-size */
+  --color-canvas: var(--bg-base);
   --color-elevated: var(--bg-elevated);
   --color-card: var(--bg-card);
   --color-accent: var(--accent);
@@ -328,6 +329,15 @@ body {
   padding-bottom: calc(0.75rem + var(--safe-bottom));
 }
 
+/* Horizontal carousels / filter chips on mobile */
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .booking-sheet {
   border-radius: 16px 16px 0 0;
 }
@@ -375,11 +385,12 @@ body {
 }
 
 .sticker-icon {
-  display: block;
+  display: inline-flex;
   background: transparent;
   animation: sticker-float 3.6s ease-in-out infinite;
   filter: drop-shadow(0 0 0 transparent);
   transition: filter 0.35s ease, transform 0.35s ease;
+  will-change: transform;
 }
 
 .group:hover .sticker-icon {
