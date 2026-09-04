@@ -10,6 +10,8 @@ import { Media } from "./collections/Media";
 import { Gallery } from "./collections/Gallery";
 import { Products } from "./collections/Products";
 import { Leads } from "./collections/Leads";
+import { Customers } from "./collections/Customers";
+import { Notifications } from "./collections/Notifications";
 import { SiteSettings } from "./globals/SiteSettings";
 
 const filename = fileURLToPath(import.meta.url);
@@ -25,7 +27,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Gallery, Products, Leads],
+  collections: [Users, Media, Gallery, Products, Customers, Leads, Notifications],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "volnitsa-dev-secret-change-me",

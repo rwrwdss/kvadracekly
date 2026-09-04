@@ -6,7 +6,7 @@ export const Leads: CollectionConfig = {
   admin: {
     useAsTitle: "name",
     defaultColumns: ["name", "phone", "route", "source", "status", "createdAt"],
-    group: "CRM / Каталог",
+    group: "CRM",
   },
   access: {
     create: () => true,
@@ -15,17 +15,25 @@ export const Leads: CollectionConfig = {
     delete: ({ req }) => Boolean(req.user),
   },
   fields: [
+    {
+      name: "customer",
+      type: "relationship",
+      relationTo: "customers",
+      label: "Клиент",
+      admin: { position: "sidebar" },
+    },
     { name: "name", type: "text", label: "Имя", required: true },
-    { name: "phone", type: "text", label: "Телефон", required: true },
+    { name: "phone", type: "text", label: "Телефон", required: true, index: true },
     { name: "date", type: "text", label: "Желаемая дата" },
-    { name: "route", type: "text", label: "Маршрут / товар" },
+    { name: "route", type: "text", label: "Маршрут" },
     { name: "tariff", type: "text", label: "Тариф" },
     { name: "message", type: "textarea", label: "Комментарий" },
-    { name: "source", type: "text", label: "Источник" },
+    { name: "source", type: "text", label: "Источник", index: true },
+    { name: "pageUrl", type: "text", label: "Страница" },
     {
       name: "utm",
       type: "group",
-      label: "UTM с заявки",
+      label: "UTM",
       fields: [
         { name: "source", type: "text", label: "utm_source" },
         { name: "medium", type: "text", label: "utm_medium" },
@@ -39,6 +47,7 @@ export const Leads: CollectionConfig = {
       type: "select",
       label: "Статус",
       defaultValue: "new",
+      index: true,
       options: [
         { label: "Новая", value: "new" },
         { label: "В работе", value: "in_progress" },
@@ -53,6 +62,18 @@ export const Leads: CollectionConfig = {
       type: "relationship",
       relationTo: "products",
       label: "Товар",
+    },
+    {
+      name: "notifiedAt",
+      type: "date",
+      label: "Уведомление отправлено",
+      admin: { date: { pickerAppearance: "dayAndTime" }, position: "sidebar" },
+    },
+    {
+      name: "notifyError",
+      type: "text",
+      label: "Ошибка уведомления",
+      admin: { position: "sidebar" },
     },
   ],
 };

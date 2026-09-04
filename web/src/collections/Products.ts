@@ -11,7 +11,7 @@ export const Products: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "type", "price", "published", "updatedAt"],
-    group: "CRM / Каталог",
+    group: "Контент",
     description: "Карточки услуг с фото, описанием, SEO и UTM-метками.",
   },
   access: {

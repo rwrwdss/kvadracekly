@@ -61,24 +61,38 @@ export default function HomePage() {
             {
               t: "Старт и финиш",
               d: "База КФХ, усадьба «Берегиня». Все маршруты с возвратом на базу.",
+              icon: "/images/icons/start-finish.svg",
+              alt: "Иконка: старт и финиш у усадьбы",
             },
             {
               t: "Режим работы",
               d: `${SITE.hours}. Ночные выезды — по записи.`,
+              icon: "/images/icons/hours.svg",
+              alt: "Иконка: режим работы",
             },
             {
               t: "Форматы",
               d: "С инструктором в группе. Техника под уровень и маршрут.",
+              icon: "/images/icons/formats.svg",
+              alt: "Иконка: форматы катания",
             },
             {
               t: "Для кого",
               d: "Пары, семьи, компании, туристы и гости усадьбы.",
+              icon: "/images/icons/audience.svg",
+              alt: "Иконка: для кого",
             },
-          ].map((card) => (
-            <article key={card.t} className="card-dark p-6">
-              <div className="h-8 w-8 mb-4 border border-[var(--accent-border)] grid place-items-center text-accent text-xs">
-                ◆
-              </div>
+          ].map((card, i) => (
+            <article key={card.t} className="card-dark p-5 sm:p-6 group">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={card.icon}
+                alt={card.alt}
+                width={40}
+                height={40}
+                className="sticker-icon mb-4 h-9 w-9 sm:h-10 sm:w-10 object-contain"
+                style={{ animationDelay: `${i * 0.12}s` }}
+              />
               <h2 className="font-display tracking-wide uppercase text-lg">{card.t}</h2>
               <p className="mt-3 text-sm text-mute leading-relaxed">{card.d}</p>
             </article>

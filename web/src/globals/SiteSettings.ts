@@ -56,5 +56,23 @@ export const SiteSettings: GlobalConfig = {
         },
       ],
     },
+    {
+      name: "notify",
+      type: "group",
+      label: "Уведомления о заявках",
+      fields: [
+        {
+          name: "channelHint",
+          type: "text",
+          label: "Канал (через env)",
+          admin: {
+            readOnly: true,
+            description:
+              "NOTIFY_CHANNEL=log|telegram|email · TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID или NOTIFY_EMAIL_TO",
+          },
+          defaultValue: "Смотрите переменные окружения Vercel / .env",
+        },
+      ],
+    },
   ],
 };

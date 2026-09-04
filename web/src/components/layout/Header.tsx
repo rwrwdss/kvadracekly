@@ -8,14 +8,16 @@ import { useBooking } from "@/components/booking/BookingContext";
 function Logo({ compact = false }: { compact?: boolean }) {
   return (
     <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={SITE.logo}
-        alt={SITE.logoAlt}
-        width={40}
-        height={40}
-        className="h-9 w-9 sm:h-10 sm:w-10 object-contain shrink-0"
-      />
+      <figure className="m-0 shrink-0">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={SITE.logo}
+          alt={SITE.logoAlt}
+          width={40}
+          height={40}
+          className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
+        />
+      </figure>
       <span className={compact ? "hidden sm:block min-w-0" : "block min-w-0"}>
         <span className="font-display block text-xs sm:text-sm tracking-[0.14em] sm:tracking-[0.18em] uppercase text-ink group-hover:text-accent transition-colors truncate">
           {SITE.name}
@@ -55,8 +57,8 @@ export function Header() {
           : "bg-transparent"
       }`}
     >
-      <div className="container-wide flex h-[72px] items-center justify-between gap-4">
-        <Logo />
+      <div className="container-wide flex h-[64px] sm:h-[72px] items-center justify-between gap-3 sm:gap-4 pt-[env(safe-area-inset-top,0px)]">
+        <Logo compact />
 
         <nav className="hidden lg:flex items-center gap-5 xl:gap-6">
           {NAV.map((item) => (
@@ -70,7 +72,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             className="btn btn-ghost hidden sm:inline-flex !py-2.5 !px-3.5"
@@ -82,8 +84,9 @@ export function Header() {
 
           <button
             type="button"
-            className="lg:hidden grid h-10 w-10 place-items-center border border-[var(--border-subtle)] text-ink"
-            aria-label="Меню"
+            className="lg:hidden grid h-11 w-11 place-items-center border border-[var(--border-subtle)] text-ink"
+            aria-label={menuOpen ? "Закрыть меню" : "Открыть меню"}
+            aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
             {menuOpen ? <CloseIcon /> : <MenuIcon />}
@@ -92,13 +95,13 @@ export function Header() {
       </div>
 
       {menuOpen && (
-        <div className="lg:hidden border-t border-[var(--border-subtle)] bg-[rgba(10,15,12,0.98)]">
-          <nav className="container-site flex flex-col py-4">
+        <div className="lg:hidden border-t border-[var(--border-subtle)] bg-[rgba(10,15,12,0.98)] max-h-[calc(100dvh-64px)] overflow-y-auto">
+          <nav className="container-site flex flex-col py-3 pb-[calc(1rem+var(--safe-bottom))]">
             {NAV.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="py-3 text-sm tracking-[0.12em] uppercase text-ink border-b border-[var(--border-subtle)]"
+                className="py-3.5 text-sm tracking-[0.12em] uppercase text-ink border-b border-[var(--border-subtle)]"
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -106,14 +109,14 @@ export function Header() {
             ))}
             <Link
               href="/lk"
-              className="py-3 text-sm tracking-[0.12em] uppercase text-mute"
+              className="py-3.5 text-sm tracking-[0.12em] uppercase text-mute"
               onClick={() => setMenuOpen(false)}
             >
               Личный кабинет
             </Link>
             <button
               type="button"
-              className="btn btn-primary mt-4"
+              className="btn btn-primary mt-4 w-full"
               onClick={() => {
                 setMenuOpen(false);
                 openBooking({ source: "mobile_menu" });

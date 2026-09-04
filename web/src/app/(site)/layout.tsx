@@ -25,6 +25,10 @@ export const metadata: Metadata = {
   },
   description:
     "Премиальный прокат квадроциклов при усадьбе «Берегиня». Авторские маршруты около 25 минут от Казани.",
+  icons: {
+    icon: [{ url: "/favicon.png", type: "image/png" }, { url: "/favicon.ico" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {

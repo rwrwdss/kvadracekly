@@ -71,7 +71,9 @@ export interface Config {
     media: Media;
     gallery: Gallery;
     products: Product;
+    customers: Customer;
     leads: Lead;
+    notifications: Notification;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -83,7 +85,9 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
+    notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -317,10 +321,25 @@ export interface Product {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  name: string;
+  phone: string;
+  email?: string | null;
+  notes?: string | null;
+  lastLeadAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
  */
 export interface Lead {
   id: number;
+  customer?: (number | null) | Customer;
   name: string;
   phone: string;
   date?: string | null;
@@ -328,6 +347,7 @@ export interface Lead {
   tariff?: string | null;
   message?: string | null;
   source?: string | null;
+  pageUrl?: string | null;
   utm?: {
     source?: string | null;
     medium?: string | null;
@@ -337,6 +357,23 @@ export interface Lead {
   };
   status?: ('new' | 'in_progress' | 'confirmed' | 'done' | 'cancelled' | 'spam') | null;
   product?: (number | null) | Product;
+  notifiedAt?: string | null;
+  notifyError?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications".
+ */
+export interface Notification {
+  id: number;
+  type: 'lead_created';
+  channel: 'telegram' | 'email' | 'log';
+  status: 'pending' | 'sent' | 'error';
+  payload?: string | null;
+  error?: string | null;
+  lead?: (number | null) | Lead;
   updatedAt: string;
   createdAt: string;
 }
@@ -381,8 +418,16 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
+        relationTo: 'customers';
+        value: number | Customer;
+      } | null)
+    | ({
         relationTo: 'leads';
         value: number | Lead;
+      } | null)
+    | ({
+        relationTo: 'notifications';
+        value: number | Notification;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -575,9 +620,23 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  name?: T;
+  phone?: T;
+  email?: T;
+  notes?: T;
+  lastLeadAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads_select".
  */
 export interface LeadsSelect<T extends boolean = true> {
+  customer?: T;
   name?: T;
   phone?: T;
   date?: T;
@@ -585,6 +644,7 @@ export interface LeadsSelect<T extends boolean = true> {
   tariff?: T;
   message?: T;
   source?: T;
+  pageUrl?: T;
   utm?:
     | T
     | {
@@ -596,6 +656,22 @@ export interface LeadsSelect<T extends boolean = true> {
       };
   status?: T;
   product?: T;
+  notifiedAt?: T;
+  notifyError?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications_select".
+ */
+export interface NotificationsSelect<T extends boolean = true> {
+  type?: T;
+  channel?: T;
+  status?: T;
+  payload?: T;
+  error?: T;
+  lead?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -658,6 +734,12 @@ export interface SiteSetting {
     subtitle?: string | null;
     description?: string | null;
   };
+  notify?: {
+    /**
+     * NOTIFY_CHANNEL=log|telegram|email · TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID или NOTIFY_EMAIL_TO
+     */
+    channelHint?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -682,6 +764,11 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         title?: T;
         subtitle?: T;
         description?: T;
+      };
+  notify?:
+    | T
+    | {
+        channelHint?: T;
       };
   updatedAt?: T;
   createdAt?: T;
