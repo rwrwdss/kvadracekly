@@ -23,7 +23,7 @@ export const Gallery: CollectionConfig = {
     description:
       "Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.",
     components: {
-      beforeListTable: ["./admin/components/HomeLayoutPanel#GalleryHomePanel"],
+      beforeListTable: ["./admin/components/GalleryPhotosBoard#GalleryPhotosBoard"],
     },
   },
   defaultPopulate: {

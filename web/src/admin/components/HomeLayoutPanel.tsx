@@ -314,7 +314,7 @@ export function HomeLayoutPanel() {
   );
 }
 
-/** Панель над списком фото галереи. */
+/** Панель над списком фото галереи — больше не используется (см. GalleryPhotosBoard). */
 export function GalleryHomePanel() {
-  return <HomeLayoutPanel />;
+  return null;
 }
