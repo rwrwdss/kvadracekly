@@ -15,7 +15,7 @@ export const Fleet: CollectionConfig = {
   labels: { singular: "Единица техники", plural: "Техника" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "role", "color", "count", "published", "sortOrder"],
+    defaultColumns: ["name", "role", "season", "color", "count", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tehnika. Порядок — по полю «Порядок».",
   },
@@ -105,6 +105,27 @@ export const Fleet: CollectionConfig = {
       type: "number",
       label: "Порядок",
       defaultValue: 0,
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "season",
+      type: "select",
+      label: "Сезон",
+      defaultValue: "atv",
+      options: [
+        { label: "Квадроциклы", value: "atv" },
+        { label: "Снегоходы", value: "snow" },
+        { label: "Всегда", value: "all" },
+        { label: "Будущий / заготовка", value: "future" },
+        { label: "Выкл (сапы/лошади…)", value: "off" },
+      ],
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "activeForBooking",
+      type: "checkbox",
+      label: "Доступен для онлайн-брони",
+      defaultValue: true,
       admin: { position: "sidebar" },
     },
     {

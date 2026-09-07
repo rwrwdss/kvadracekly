@@ -70,6 +70,8 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
               <div className="text-xs text-faint uppercase tracking-wide flex flex-wrap gap-x-3 gap-y-1">
                 <span>{route.duration}</span>
                 <span aria-hidden>·</span>
+                <span>~{route.durationMinutes} мин</span>
+                <span aria-hidden>·</span>
                 <span>{route.distance}</span>
               </div>
               <ul className="text-sm text-mute space-y-2 border-t border-[var(--border-subtle)] pt-3">
@@ -84,7 +86,7 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
               </ul>
               <div className="flex items-center justify-between gap-3 pt-2">
                 <p className="text-accent font-semibold text-lg">{formatPrice(route.price)}</p>
-                {unlocked ? (
+                {unlocked && route.activeForBooking ? (
                   <BookButton
                     className="!px-3"
                     prefill={{ route: route.title, tariff: badge, source: "tariff_select" }}
@@ -97,7 +99,7 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
                     className="btn btn-ghost !px-3 opacity-50 cursor-not-allowed"
                     disabled
                   >
-                    Закрыто
+                    {!route.activeForBooking ? "Скоро" : "Закрыто"}
                   </button>
                 )}
               </div>

@@ -15,7 +15,7 @@ export const Tariffs: CollectionConfig = {
   labels: { singular: "Тариф", plural: "Тарифы" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "price", "duration", "published", "sortOrder"],
+    defaultColumns: ["title", "price", "durationMinutes", "season", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tarify. Порядок — по полю «Порядок».",
   },
@@ -67,6 +67,18 @@ export const Tariffs: CollectionConfig = {
       type: "text",
       label: "Длительность",
       required: true,
+    },
+    {
+      name: "durationMinutes",
+      type: "number",
+      label: "Длительность, минуты",
+      required: true,
+      defaultValue: 60,
+      min: 30,
+      max: 480,
+      admin: {
+        description: "Для расчёта слотов: 60 / 90 / 120 / 180.",
+      },
     },
     {
       name: "distance",
@@ -139,6 +151,30 @@ export const Tariffs: CollectionConfig = {
       label: "Порядок",
       defaultValue: 0,
       admin: { position: "sidebar" },
+    },
+    {
+      name: "season",
+      type: "select",
+      label: "Сезон",
+      defaultValue: "atv",
+      options: [
+        { label: "Квадроциклы", value: "atv" },
+        { label: "Снегоходы", value: "snow" },
+        { label: "Всегда", value: "all" },
+        { label: "Будущий / заготовка", value: "future" },
+        { label: "Выкл (сапы/лошади…)", value: "off" },
+      ],
+      admin: { position: "sidebar" },
+    },
+    {
+      name: "activeForBooking",
+      type: "checkbox",
+      label: "Доступен для онлайн-брони",
+      defaultValue: true,
+      admin: {
+        position: "sidebar",
+        description: "Можно бронировать даже вне текущего сезона (будущий сезон).",
+      },
     },
     {
       name: "published",

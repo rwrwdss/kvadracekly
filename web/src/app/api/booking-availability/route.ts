@@ -14,6 +14,9 @@ export async function GET(req: NextRequest) {
     const now = new Date();
     const year = monthMatch ? Number(monthMatch[1]) : now.getFullYear();
     const monthIndex = monthMatch ? Number(monthMatch[2]) - 1 : now.getMonth();
+    const durationRaw = Number(req.nextUrl.searchParams.get("duration") || 60);
+    const durationMinutes =
+      Number.isFinite(durationRaw) && durationRaw >= 30 ? Math.min(480, Math.floor(durationRaw)) : 60;
 
     if (monthIndex < 0 || monthIndex > 11 || year < 2020 || year > 2100) {
       return NextResponse.json({ error: "Некорректный месяц" }, { status: 400 });
@@ -24,12 +27,14 @@ export async function GET(req: NextRequest) {
       payload,
       year,
       monthIndex,
+      durationMinutes,
     );
 
     return NextResponse.json({
       month: `${year}-${String(monthIndex + 1).padStart(2, "0")}`,
       enabled: settings.enabled,
       capacity: settings.slotCapacity,
+      durationMinutes,
       slots: [...BOOKING_SLOTS],
       days,
       range: { from: fromKey, to: toKey },

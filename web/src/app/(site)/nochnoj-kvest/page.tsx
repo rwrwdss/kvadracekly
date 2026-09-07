@@ -100,9 +100,13 @@ export default function NightQuestPage() {
               <p className="text-xs text-faint mt-1">{NIGHT_QUEST.priceNote}</p>
               <BookButton
                 className="mt-4 w-full sm:w-auto"
-                prefill={{ route: "Ночной квест", source: "night_quest" }}
+                prefill={{
+                  route: "Ночной квест",
+                  source: "night_quest",
+                  bookingKind: "night",
+                }}
               >
-                Забронировать квест
+                Оставить заявку
               </BookButton>
             </div>
           </div>

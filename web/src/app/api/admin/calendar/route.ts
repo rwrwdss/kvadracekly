@@ -59,7 +59,16 @@ export async function GET(req: NextRequest) {
 
   const byDay: Record<
     string,
-    { id: string | number; name: string; phone: string; timeSlot?: string | null; status: string; route?: string | null }[]
+    {
+      id: string | number;
+      name: string;
+      phone: string;
+      timeSlot?: string | null;
+      status: string;
+      route?: string | null;
+      durationMinutes?: number | null;
+      bookingKind?: string | null;
+    }[]
   > = {};
 
   for (const lead of leads.docs) {
@@ -77,6 +86,9 @@ export async function GET(req: NextRequest) {
       timeSlot: lead.timeSlot || null,
       status: String(lead.status || ""),
       route: lead.route || null,
+      durationMinutes:
+        typeof lead.durationMinutes === "number" ? lead.durationMinutes : null,
+      bookingKind: lead.bookingKind || "day",
     });
   }
 

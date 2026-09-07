@@ -4,11 +4,12 @@ import { assertSlotAvailable } from "@/lib/booking/availability";
 import {
   formatBookingDate,
   parseBookingDateValue,
+  resolveDurationMinutes,
   type BookingSlot,
   MAX_GUESTS,
   OCCUPYING_STATUSES,
 } from "@/lib/booking/slots";
-import { bookableError, clampCompletedThrough } from "@/lib/booking/progress";
+import { bookableError, clampCompletedThrough, NIGHT_QUEST_TITLE } from "@/lib/booking/progress";
 
 export type CreateLeadInput = {
   name?: string;
@@ -21,6 +22,9 @@ export type CreateLeadInput = {
   tariff?: string;
   productId?: string | number;
   pageUrl?: string;
+  bookingKind?: "day" | "night";
+  durationMinutes?: number | string;
+  contactPrefer?: string;
   utm?: {
     source?: string;
     medium?: string;
@@ -36,6 +40,14 @@ export type CreateLeadResult =
 
 const ANTISPAM_MS = 2 * 60 * 1000;
 
+function detectNight(input: CreateLeadInput): boolean {
+  if (input.bookingKind === "night") return true;
+  const source = String(input.source || "").toLowerCase();
+  if (source === "night_quest" || source.includes("night")) return true;
+  const route = String(input.route || "").trim();
+  return route === NIGHT_QUEST_TITLE || route.toLowerCase().includes("ночн");
+}
+
 export async function createLead(
   payload: Payload,
   input: CreateLeadInput,
@@ -49,6 +61,8 @@ export async function createLead(
     Number.isFinite(guestsRaw) && guestsRaw >= 1
       ? Math.min(MAX_GUESTS, Math.floor(guestsRaw))
       : 1;
+  const isNight = detectNight(input);
+  const contactPrefer = String(input.contactPrefer || "").trim();
 
   if (!name || name.length < 2) {
     return { ok: false, error: "Укажите имя (минимум 2 символа)", status: 400 };
@@ -61,47 +75,7 @@ export async function createLead(
     };
   }
 
-  const parsed = parseBookingDateValue(input.date?.trim() || "");
-  if (!parsed?.dateKey || !parsed.slot) {
-    return {
-      ok: false,
-      error: "Выберите дату и время в календаре",
-      status: 400,
-    };
-  }
-
-  const slotCheck = await assertSlotAvailable(payload, parsed.dateKey, parsed.slot);
-  if (!slotCheck.ok) {
-    return { ok: false, error: slotCheck.error, status: 409 };
-  }
-
-  const dateDisplay = formatBookingDate(parsed.dateKey, parsed.slot);
-  const timeSlot = parsed.slot as BookingSlot;
   const now = new Date();
-
-  // Один телефон — одна активная заявка на конкретный слот
-  const sameSlot = await payload.find({
-    collection: "leads",
-    where: {
-      and: [
-        { phone: { equals: phone } },
-        { dateKey: { equals: parsed.dateKey } },
-        { timeSlot: { equals: timeSlot } },
-        { status: { in: [...OCCUPYING_STATUSES] } },
-      ],
-    },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  });
-
-  if (sameSlot.docs[0]) {
-    return {
-      ok: false,
-      error: "Вы уже записаны на это время. Выберите другой слот или дождитесь ответа менеджера.",
-      status: 409,
-    };
-  }
 
   const recent = await payload.find({
     collection: "leads",
@@ -165,15 +139,110 @@ export async function createLead(
     customerId = customer.id;
   }
 
-  const locked = bookableError(routeTitle, completedThrough);
-  if (locked) {
-    return { ok: false, error: locked, status: 403 };
-  }
-
   const productId =
     input.productId !== undefined && input.productId !== ""
       ? Number(input.productId)
       : undefined;
+
+  const messageParts = [
+    input.message?.trim() || "",
+    contactPrefer ? `Связь: ${contactPrefer}` : "",
+  ].filter(Boolean);
+  const message = messageParts.join("\n");
+
+  if (isNight) {
+    const nightRoute = routeTitle || NIGHT_QUEST_TITLE;
+    const lead = await payload.create({
+      collection: "leads",
+      data: {
+        customer: customerId,
+        name,
+        phone,
+        date: "Согласуем в переписке",
+        route: nightRoute,
+        guests,
+        message,
+        source: input.source?.trim() || "night_quest",
+        tariff: input.tariff?.trim() || nightRoute,
+        pageUrl: input.pageUrl?.trim() || "",
+        status: "new",
+        bookingKind: "night",
+        contactPrefer: contactPrefer || undefined,
+        utm: input.utm || {},
+        ...(Number.isFinite(productId) ? { product: productId } : {}),
+      },
+      overrideAccess: true,
+    });
+
+    await notifyLeadCreated(payload, {
+      leadId: lead.id,
+      name,
+      phone,
+      date: "Согласуем в переписке",
+      route: nightRoute,
+      guests,
+      source: input.source?.trim() || "night_quest",
+      message,
+      bookingKind: "night",
+    });
+
+    return { ok: true, id: lead.id, customerId };
+  }
+
+  const parsed = parseBookingDateValue(input.date?.trim() || "");
+  if (!parsed?.dateKey || !parsed.slot) {
+    return {
+      ok: false,
+      error: "Выберите дату и время в календаре",
+      status: 400,
+    };
+  }
+
+  const durationMinutes = resolveDurationMinutes(
+    routeTitle,
+    input.durationMinutes !== undefined ? Number(input.durationMinutes) : null,
+  );
+
+  const slotCheck = await assertSlotAvailable(
+    payload,
+    parsed.dateKey,
+    parsed.slot,
+    durationMinutes,
+  );
+  if (!slotCheck.ok) {
+    return { ok: false, error: slotCheck.error, status: 409 };
+  }
+
+  const dateDisplay = formatBookingDate(parsed.dateKey, parsed.slot);
+  const timeSlot = parsed.slot as BookingSlot;
+
+  const sameSlot = await payload.find({
+    collection: "leads",
+    where: {
+      and: [
+        { phone: { equals: phone } },
+        { dateKey: { equals: parsed.dateKey } },
+        { timeSlot: { equals: timeSlot } },
+        { status: { in: [...OCCUPYING_STATUSES] } },
+      ],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  });
+
+  if (sameSlot.docs[0]) {
+    return {
+      ok: false,
+      error: "Вы уже записаны на это время. Выберите другой слот или дождитесь ответа менеджера.",
+      status: 409,
+    };
+  }
+
+  const locked = bookableError(routeTitle, completedThrough);
+  if (locked) {
+    return { ok: false, error: locked, status: 403 };
+  }
 
   const lead = await payload.create({
     collection: "leads",
@@ -186,11 +255,14 @@ export async function createLead(
       date: dateDisplay,
       route: routeTitle,
       guests,
-      message: input.message?.trim() || "",
+      message,
       source: input.source?.trim() || "booking_modal",
       tariff: input.tariff?.trim() || "",
       pageUrl: input.pageUrl?.trim() || "",
       status: "new",
+      bookingKind: "day",
+      durationMinutes,
+      contactPrefer: contactPrefer || undefined,
       utm: input.utm || {},
       ...(Number.isFinite(productId) ? { product: productId } : {}),
     },
@@ -205,7 +277,9 @@ export async function createLead(
     route: routeTitle,
     guests,
     source: input.source?.trim() || "booking_modal",
-    message: input.message?.trim() || "",
+    message,
+    bookingKind: "day",
+    durationMinutes,
   });
 
   return { ok: true, id: lead.id, customerId };
@@ -222,14 +296,17 @@ async function notifyLeadCreated(
     guests: number;
     source: string;
     message: string;
+    bookingKind?: string;
+    durationMinutes?: number;
   },
 ) {
   const text = [
-    "🆕 Новая заявка Вольница",
+    data.bookingKind === "night" ? "🆕 Ночная заявка Вольница" : "🆕 Новая заявка Вольница",
     `Имя: ${data.name}`,
     `Телефон: ${data.phone}`,
     data.route ? `Маршрут: ${data.route}` : null,
     data.date ? `Дата: ${data.date}` : null,
+    data.durationMinutes ? `Длительность: ~${data.durationMinutes} мин` : null,
     `Гостей: ${data.guests}`,
     `Источник: ${data.source}`,
     data.message ? `Комментарий: ${data.message}` : null,

@@ -46,9 +46,9 @@ export const Leads: CollectionConfig = {
   labels: { singular: "Заявка", plural: "Заявки" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "phone", "dateKey", "timeSlot", "assignee", "status", "createdAt"],
+    defaultColumns: ["name", "phone", "bookingKind", "dateKey", "timeSlot", "assignee", "status", "createdAt"],
     group: "CRM",
-    description: "Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут.",
+    description: "Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут. Ночные — без слота.",
     listSearchableFields: ["name", "phone", "route"],
     components: {
       beforeListTable: ["./admin/components/LeadsBoard#LeadsBoard"],
@@ -65,6 +65,11 @@ export const Leads: CollectionConfig = {
     beforeChange: [
       ({ data }) => {
         if (!data) return data;
+
+        if (data.bookingKind === "night") {
+          if (!data.date) data.date = "Согласуем в переписке";
+          return data;
+        }
 
         if (data.dateKey && data.timeSlot) {
           data.date = formatBookingDate(String(data.dateKey), String(data.timeSlot));
@@ -123,6 +128,21 @@ export const Leads: CollectionConfig = {
     { name: "name", type: "text", label: "Имя", required: true },
     { name: "phone", type: "text", label: "Телефон", required: true, index: true },
     {
+      name: "bookingKind",
+      type: "select",
+      label: "Тип записи",
+      defaultValue: "day",
+      index: true,
+      options: [
+        { label: "Дневная", value: "day" },
+        { label: "Ночная заявка", value: "night" },
+      ],
+      admin: {
+        position: "sidebar",
+        description: "Ночная — без календарного слота, дату согласуют в переписке.",
+      },
+    },
+    {
       type: "row",
       fields: [
         {
@@ -131,19 +151,39 @@ export const Leads: CollectionConfig = {
           label: "Дата",
           index: true,
           admin: {
-            width: "50%",
+            width: "33%",
             placeholder: "2026-09-15",
+            description: "Для ночных может быть пусто.",
           },
         },
         {
           name: "timeSlot",
           type: "select",
-          label: "Время",
+          label: "Время старта",
           index: true,
           options: SLOT_OPTIONS,
-          admin: { width: "50%" },
+          admin: { width: "33%" },
+        },
+        {
+          name: "durationMinutes",
+          type: "number",
+          label: "Длительность, мин",
+          min: 30,
+          max: 480,
+          admin: {
+            width: "34%",
+            description: "Для дневных: 60 / 90 / 120 / 180.",
+          },
         },
       ],
+    },
+    {
+      name: "contactPrefer",
+      type: "text",
+      label: "Как связаться",
+      admin: {
+        description: "WhatsApp / Telegram / звонок — для ночных заявок.",
+      },
     },
     {
       name: "date",

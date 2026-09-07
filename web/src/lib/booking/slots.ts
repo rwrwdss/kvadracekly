@@ -13,14 +13,62 @@ export const BOOKING_SLOTS = [
 
 export type BookingSlot = (typeof BOOKING_SLOTS)[number];
 
-/** Max active requests per time slot (3 = до трёх записей на одно окно). */
+/** Max active requests per overlapping interval (3 = до трёх пересекающихся броней). */
 export const SLOT_CAPACITY = 3;
 
 /** Макс. число гостей в одной заявке (не светим на фронте). */
 export const MAX_GUESTS = 20;
 
+/** Конец рабочего дня (МСК), минуты от полуночи. */
+export const DAY_END_MINUTES = 22 * 60;
+
+/** Длительность по умолчанию, если тариф не указан. */
+export const DEFAULT_DURATION_MINUTES = 60;
+
+/** Длительности дневных маршрутов (минуты) — docs/booking-rules.md */
+export const ROUTE_DURATION_MINUTES: Record<string, number> = {
+  "Зелёное озеро": 60,
+  Памятник: 90,
+  Родник: 120,
+  Экспедиция: 180,
+};
+
 /** Statuses that occupy a slot in the queue. */
 export const OCCUPYING_STATUSES = ["new", "in_progress", "confirmed"] as const;
+
+export function slotToMinutes(slot: string): number {
+  const [h, min] = slot.split(":").map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(min)) return NaN;
+  return h * 60 + min;
+}
+
+export function intervalsOverlap(
+  aStart: number,
+  aEnd: number,
+  bStart: number,
+  bEnd: number,
+): boolean {
+  return aStart < bEnd && bStart < aEnd;
+}
+
+/** Старт + длительность укладываются в режим 10:00–22:00. */
+export function intervalFitsInDay(startSlot: string, durationMinutes: number): boolean {
+  const start = slotToMinutes(startSlot);
+  if (!Number.isFinite(start) || durationMinutes < 1) return false;
+  return start + durationMinutes <= DAY_END_MINUTES;
+}
+
+export function resolveDurationMinutes(
+  routeTitle?: string | null,
+  explicit?: number | null,
+): number {
+  if (typeof explicit === "number" && Number.isFinite(explicit) && explicit >= 30) {
+    return Math.min(480, Math.floor(explicit));
+  }
+  const title = String(routeTitle || "").trim();
+  if (title && ROUTE_DURATION_MINUTES[title]) return ROUTE_DURATION_MINUTES[title];
+  return DEFAULT_DURATION_MINUTES;
+}
 
 export function pad2(n: number) {
   return String(n).padStart(2, "0");

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   BOOKING_SLOTS,
   SLOT_CAPACITY,
@@ -31,6 +31,8 @@ type Props = {
   onChange: (value: string) => void;
   name?: string;
   required?: boolean;
+  /** Длительность выбранного тарифа — свободные старты считаются по пересечению интервалов. */
+  durationMinutes?: number;
 };
 
 const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
@@ -61,7 +63,13 @@ function slotButtonClass(load: SlotLoad, selected: boolean, past: boolean) {
   return "border-[var(--border-subtle)] text-mute hover:border-accent hover:text-ink";
 }
 
-export function BookingCalendar({ value, onChange, name = "date", required }: Props) {
+export function BookingCalendar({
+  value,
+  onChange,
+  name = "date",
+  required,
+  durationMinutes = 60,
+}: Props) {
   const [nowTick, setNowTick] = useState(() => Date.now());
 
   useEffect(() => {
@@ -116,26 +124,39 @@ export function BookingCalendar({ value, onChange, name = "date", required }: Pr
 
   const monthKey = `${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`;
 
-  const fetchMonth = useCallback(async (key: string) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/booking-availability?month=${key}`);
-      const data = await res.json();
-      setDays((data.days as Record<string, DayAvail>) || {});
-      setEnabled(data.enabled !== false);
-      if (typeof data.capacity === "number" && data.capacity >= 1) {
-        setCapacity(data.capacity);
+  const fetchMonth = useCallback(
+    async (key: string, duration: number) => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `/api/booking-availability?month=${key}&duration=${encodeURIComponent(String(duration))}`,
+        );
+        const data = await res.json();
+        setDays((data.days as Record<string, DayAvail>) || {});
+        setEnabled(data.enabled !== false);
+        if (typeof data.capacity === "number" && data.capacity >= 1) {
+          setCapacity(data.capacity);
+        }
+      } catch {
+        setDays({});
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setDays({});
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
-    void fetchMonth(monthKey);
-  }, [monthKey, fetchMonth]);
+    void fetchMonth(monthKey, durationMinutes);
+  }, [monthKey, durationMinutes, fetchMonth]);
+
+  const prevDuration = useRef(durationMinutes);
+  useEffect(() => {
+    if (prevDuration.current === durationMinutes) return;
+    prevDuration.current = durationMinutes;
+    setSelectedSlot("");
+    if (value) onChange("");
+  }, [durationMinutes, value, onChange]);
 
   const cells = useMemo(() => {
     const first = startOfMonth(month);

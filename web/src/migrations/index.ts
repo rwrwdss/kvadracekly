@@ -1,6 +1,7 @@
 import * as migration_20260904_104126_initial from './20260904_104126_initial';
 import * as migration_20260907_063800_tariffs_fleet from './20260907_063800_tariffs_fleet';
 import * as migration_20260907_070102_calendar_stops from './20260907_070102_calendar_stops';
+import * as migration_20260907_111500_voice_booking from './20260907_111500_voice_booking';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260907_070102_calendar_stops.up,
     down: migration_20260907_070102_calendar_stops.down,
-    name: '20260907_070102_calendar_stops'
+    name: '20260907_070102_calendar_stops',
+  },
+  {
+    up: migration_20260907_111500_voice_booking.up,
+    down: migration_20260907_111500_voice_booking.down,
+    name: '20260907_111500_voice_booking',
   },
 ];

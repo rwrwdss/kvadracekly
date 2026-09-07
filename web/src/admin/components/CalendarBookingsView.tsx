@@ -27,6 +27,8 @@ type LeadBrief = {
   timeSlot?: string | null;
   status: string;
   route?: string | null;
+  durationMinutes?: number | null;
+  bookingKind?: string | null;
 };
 
 const WEEKDAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const;
@@ -179,10 +181,15 @@ export function CalendarBookingsView() {
                 {selectedLeads.map((lead) => (
                   <li key={lead.id}>
                     <Link href={`/admin/collections/leads/${lead.id}`}>
-                      {lead.timeSlot || "—"} · {lead.name} · {lead.phone}
+                      {lead.bookingKind === "night"
+                        ? "ночь"
+                        : lead.timeSlot || "—"}{" "}
+                      · {lead.name} · {lead.phone}
                     </Link>
                     <span className="admin-cal__mute">
-                      {lead.route || "без маршрута"} · {lead.status}
+                      {lead.route || "без маршрута"}
+                      {lead.durationMinutes ? ` · ~${lead.durationMinutes} мин` : ""} ·{" "}
+                      {lead.status}
                     </span>
                   </li>
                 ))}

@@ -349,6 +349,10 @@ export interface Tariff {
   price: number;
   priceNote?: string | null;
   duration: string;
+  /**
+   * Для расчёта слотов: 60 / 90 / 120 / 180.
+   */
+  durationMinutes: number;
   distance: string;
   difficulty: 'easy' | 'medium' | 'hard';
   /**
@@ -368,6 +372,11 @@ export interface Tariff {
   cover?: (number | null) | Media;
   imageAlt: string;
   sortOrder?: number | null;
+  season?: ('atv' | 'snow' | 'all' | 'future' | 'off') | null;
+  /**
+   * Можно бронировать даже вне текущего сезона (будущий сезон).
+   */
+  activeForBooking?: boolean | null;
   published?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -400,6 +409,8 @@ export interface Fleet {
   cover?: (number | null) | Media;
   imageAlt: string;
   sortOrder?: number | null;
+  season?: ('atv' | 'snow' | 'all' | 'future' | 'off') | null;
+  activeForBooking?: boolean | null;
   published?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -425,7 +436,7 @@ export interface Customer {
   createdAt: string;
 }
 /**
- * Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут.
+ * Очередь записей. Статус «Закрыта» открывает клиенту следующий маршрут. Ночные — без слота.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "leads".
@@ -439,8 +450,20 @@ export interface Lead {
   assignee?: (number | null) | User;
   name: string;
   phone: string;
+  /**
+   * Ночная — без календарного слота, дату согласуют в переписке.
+   */
+  bookingKind?: ('day' | 'night') | null;
   dateKey?: string | null;
   timeSlot?: ('10:00' | '12:00' | '14:00' | '16:00' | '18:00' | '20:00') | null;
+  /**
+   * Для дневных: 60 / 90 / 120 / 180.
+   */
+  durationMinutes?: number | null;
+  /**
+   * WhatsApp / Telegram / звонок — для ночных заявок.
+   */
+  contactPrefer?: string | null;
   date?: string | null;
   guests?: number | null;
   route?: string | null;
@@ -743,6 +766,7 @@ export interface TariffsSelect<T extends boolean = true> {
   price?: T;
   priceNote?: T;
   duration?: T;
+  durationMinutes?: T;
   distance?: T;
   difficulty?: T;
   difficultyLabel?: T;
@@ -753,6 +777,8 @@ export interface TariffsSelect<T extends boolean = true> {
   cover?: T;
   imageAlt?: T;
   sortOrder?: T;
+  season?: T;
+  activeForBooking?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -773,6 +799,8 @@ export interface FleetSelect<T extends boolean = true> {
   cover?: T;
   imageAlt?: T;
   sortOrder?: T;
+  season?: T;
+  activeForBooking?: T;
   published?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -800,8 +828,11 @@ export interface LeadsSelect<T extends boolean = true> {
   assignee?: T;
   name?: T;
   phone?: T;
+  bookingKind?: T;
   dateKey?: T;
   timeSlot?: T;
+  durationMinutes?: T;
+  contactPrefer?: T;
   date?: T;
   guests?: T;
   route?: T;
@@ -922,6 +953,20 @@ export interface SiteSetting {
         }[]
       | null;
   };
+  /**
+   * Квадро → пауза → снегоходы. В паузу сайт живёт: можно бронировать будущий сезон.
+   */
+  season?: {
+    current?: ('atv' | 'snow' | 'pause') | null;
+    /**
+     * Короткий ярлык, например «Сезон снегоходов».
+     */
+    label?: string | null;
+    /**
+     * Показывается под шапкой (не в герое). В паузу — про бронь на будущий сезон.
+     */
+    bannerText?: string | null;
+  };
   defaultSeo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
@@ -970,6 +1015,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               note?: T;
               id?: T;
             };
+      };
+  season?:
+    | T
+    | {
+        current?: T;
+        label?: T;
+        bannerText?: T;
       };
   defaultSeo?:
     | T

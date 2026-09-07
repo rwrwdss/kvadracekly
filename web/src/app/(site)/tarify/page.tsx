@@ -94,9 +94,13 @@ export default async function TariffsPage() {
               <p className="text-sm text-mute mt-1">ориентир за двоих</p>
               <BookButton
                 className="mt-5 w-full"
-                prefill={{ route: "Ночной квест", source: "tariff_night" }}
+                prefill={{
+                  route: "Ночной квест",
+                  source: "tariff_night",
+                  bookingKind: "night",
+                }}
               >
-                Забронировать квест
+                Оставить заявку
               </BookButton>
             </div>
             <div className="card-dark p-5 sm:p-6">

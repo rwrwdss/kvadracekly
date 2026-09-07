@@ -11,6 +11,7 @@ import {
   isRouteBookable,
   type ProgressInfo,
 } from "@/lib/booking/progress";
+import { resolveDurationMinutes } from "@/lib/booking/slots";
 
 function readUtmFromUrl() {
   if (typeof window === "undefined") return {};
@@ -24,16 +25,29 @@ function readUtmFromUrl() {
   };
 }
 
+function isNightMode(prefill: { source?: string; route?: string; bookingKind?: string }) {
+  if (prefill.bookingKind === "night") return true;
+  const source = String(prefill.source || "").toLowerCase();
+  if (source === "night_quest" || source.includes("night")) return true;
+  const route = String(prefill.route || "").trim();
+  return route === NIGHT_QUEST_TITLE || route.toLowerCase().includes("ночн");
+}
+
 export function BookingModal() {
   const { open, prefill, closeBooking } = useBooking();
   const { user } = useCustomerAuth();
   const titleId = useId();
+  const night = isNightMode(prefill);
+
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [route, setRoute] = useState("");
   const [dateValue, setDateValue] = useState("");
   const [errorText, setErrorText] = useState("");
   const [progress, setProgress] = useState<ProgressInfo>(() => buildProgress(0));
   const [guests, setGuests] = useState(1);
+  const [guestName, setGuestName] = useState("");
+  const [guestPhone, setGuestPhone] = useState("");
+  const [contactPrefer, setContactPrefer] = useState("WhatsApp");
 
   const applyRouteForProgress = useCallback(
     (pref: string, completedThrough: number) => {
@@ -52,14 +66,24 @@ export function BookingModal() {
   );
 
   useEffect(() => {
-    if (!open || !user) return;
+    if (!open) return;
     setStatus("idle");
     setErrorText("");
     setDateValue("");
     setGuests(1);
+    setContactPrefer("WhatsApp");
+
+    if (night) {
+      setRoute(prefill.route || NIGHT_QUEST_TITLE);
+      setGuestName(user?.name || "");
+      setGuestPhone(user?.phone || "");
+      return;
+    }
+
+    if (!user) return;
     setProgress(user.progress || buildProgress(0));
     applyRouteForProgress(prefill.route ?? "", user.progress?.completedThrough ?? 0);
-  }, [open, prefill, user, applyRouteForProgress]);
+  }, [open, prefill, user, night, applyRouteForProgress]);
 
   useEffect(() => {
     if (!open) return;
@@ -79,12 +103,17 @@ export function BookingModal() {
     [progress.unlockedOrder],
   );
 
-  if (!open || !user) return null;
+  const durationMinutes = useMemo(
+    () => resolveDurationMinutes(route || prefill.route),
+    [route, prefill.route],
+  );
 
-  const customer = user;
+  if (!open) return null;
+  if (!night && !user) return null;
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmitDay(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!user) return;
     if (!dateValue) {
       setStatus("error");
       setErrorText("Выберите дату и время в календаре");
@@ -94,8 +123,8 @@ export function BookingModal() {
     setErrorText("");
     const form = new FormData(e.currentTarget);
     const payload = {
-      name: customer.name,
-      phone: customer.phone,
+      name: user.name,
+      phone: user.phone,
       date: dateValue,
       route: String(form.get("route") || route),
       guests: Number(form.get("guests") || guests) || 1,
@@ -103,6 +132,43 @@ export function BookingModal() {
       source: prefill.source || "booking_modal",
       tariff: prefill.tariff || "",
       productId: prefill.productId,
+      bookingKind: "day" as const,
+      durationMinutes,
+      pageUrl: typeof window !== "undefined" ? window.location.href : "",
+      utm: readUtmFromUrl(),
+    };
+
+    try {
+      const res = await fetch("/api/booking", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "fail");
+      setStatus("ok");
+    } catch (err) {
+      setStatus("error");
+      setErrorText(err instanceof Error ? err.message : "Ошибка отправки");
+    }
+  }
+
+  async function onSubmitNight(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setStatus("loading");
+    setErrorText("");
+    const form = new FormData(e.currentTarget);
+    const payload = {
+      name: String(form.get("name") || guestName).trim(),
+      phone: String(form.get("phone") || guestPhone).trim(),
+      route: NIGHT_QUEST_TITLE,
+      guests: Number(form.get("guests") || guests) || 1,
+      message: String(form.get("message") || ""),
+      source: prefill.source || "night_quest",
+      tariff: prefill.tariff || NIGHT_QUEST_TITLE,
+      productId: prefill.productId,
+      bookingKind: "night" as const,
+      contactPrefer: String(form.get("contactPrefer") || contactPrefer),
       pageUrl: typeof window !== "undefined" ? window.location.href : "",
       utm: readUtmFromUrl(),
     };
@@ -144,16 +210,19 @@ export function BookingModal() {
         <div className="px-5 pb-[calc(1.25rem+var(--safe-bottom))] pt-2 sm:p-8">
           <div className="flex items-start justify-between gap-4 mb-5 sm:mb-6">
             <div className="min-w-0">
-              <p className="section-label">Бронирование</p>
+              <p className="section-label">{night ? "Ночной квест" : "Бронирование"}</p>
               <h2
                 id={titleId}
                 className="font-display text-[1.35rem] sm:text-2xl tracking-wide uppercase mt-1 leading-tight"
               >
-                Оставить заявку
+                {night ? "Оставить заявку" : "Оставить заявку"}
               </h2>
               <p className="text-sm text-mute mt-2 leading-relaxed">
-                {user.name} · {user.phone}. Открыт уровень до «
-                {unlockedRoutes[unlockedRoutes.length - 1]?.title || ROUTES[0].title}».
+                {night
+                  ? "Дата и время согласуем в WhatsApp или Telegram после заявки."
+                  : `${user?.name} · ${user?.phone}. Открыт уровень до «${
+                      unlockedRoutes[unlockedRoutes.length - 1]?.title || ROUTES[0].title
+                    }».`}
               </p>
             </div>
             <button
@@ -180,19 +249,66 @@ export function BookingModal() {
               </div>
               <p className="text-accent section-label">Готово</p>
               <p className="mt-3 text-lg sm:text-xl font-display tracking-wide uppercase">
-                Вы в очереди
+                {night ? "Заявка принята" : "Вы в очереди"}
               </p>
-              {dateValue && <p className="mt-2 text-sm text-accent">{dateValue}</p>}
+              {!night && dateValue && <p className="mt-2 text-sm text-accent">{dateValue}</p>}
               {route && <p className="mt-1 text-sm text-mute">{route}</p>}
               <p className="mt-1 text-sm text-mute">Гостей: {guests}</p>
-              <p className="mt-2 text-sm text-mute">Скоро свяжемся по указанному телефону.</p>
+              <p className="mt-2 text-sm text-mute">
+                {night
+                  ? "Напишем в выбранный мессенджер и согласуем дату выезда."
+                  : "Скоро свяжемся по указанному телефону."}
+              </p>
               <button type="button" className="btn btn-primary mt-8 w-full sm:w-auto" onClick={closeBooking}>
                 Закрыть
               </button>
             </div>
-          ) : (
-            <form onSubmit={onSubmit} className="grid gap-3.5 sm:gap-4">
-              <BookingCalendar value={dateValue} onChange={setDateValue} required />
+          ) : night ? (
+            <form onSubmit={onSubmitNight} className="grid gap-3.5 sm:gap-4">
+              <p className="text-sm text-mute leading-relaxed border border-[var(--border-subtle)] p-3 bg-card/50">
+                Календарный слот не нужен: менеджер свяжется и подберёт ночное окно под группу.
+              </p>
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Имя</span>
+                <input
+                  name="name"
+                  className="input"
+                  value={guestName}
+                  onChange={(e) => setGuestName(e.target.value)}
+                  required
+                  minLength={2}
+                  autoComplete="name"
+                />
+              </label>
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Телефон</span>
+                <input
+                  name="phone"
+                  className="input"
+                  value={guestPhone}
+                  onChange={(e) => setGuestPhone(e.target.value)}
+                  required
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="+7…"
+                />
+              </label>
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Как связаться</span>
+                <select
+                  name="contactPrefer"
+                  className="input"
+                  value={contactPrefer}
+                  onChange={(e) => setContactPrefer(e.target.value)}
+                >
+                  <option value="WhatsApp">WhatsApp</option>
+                  <option value="Telegram">Telegram</option>
+                  <option value="Звонок">Звонок</option>
+                </select>
+              </label>
 
               <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Количество человек</span>
@@ -212,25 +328,85 @@ export function BookingModal() {
               </label>
 
               <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Комментарий</span>
+                <textarea
+                  name="message"
+                  rows={3}
+                  className="input resize-none min-h-[5.5rem]"
+                  placeholder="Пожелания к ночному выезду, удобные дни…"
+                />
+              </label>
+
+              {status === "error" && (
+                <p className="text-sm text-[var(--diff-hard)] leading-relaxed" role="alert">
+                  {errorText || "Не удалось отправить. Попробуйте ещё раз или позвоните нам."}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary mt-1 w-full"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? "Отправка…" : "Отправить заявку"}
+              </button>
+              <p className="text-[11px] text-faint text-center leading-relaxed">
+                Или позвоните{" "}
+                <a href={`tel:${SITE.phone.replace(/[^\d+]/g, "")}`} className="text-accent">
+                  {SITE.phone}
+                </a>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={onSubmitDay} className="grid gap-3.5 sm:gap-4">
+              <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Маршрут (по прогрессу)</span>
                 <select
                   name="route"
                   className="input"
                   value={route}
-                  onChange={(e) => setRoute(e.target.value)}
+                  onChange={(e) => {
+                    setRoute(e.target.value);
+                    setDateValue("");
+                  }}
                 >
                   <option value="">Подберём вместе</option>
                   {unlockedRoutes.map((r) => (
                     <option key={r.id} value={r.title}>
-                      {r.title} — {r.price.toLocaleString("ru-RU")} ₽
+                      {r.title} — {r.price.toLocaleString("ru-RU")} ₽ · ~
+                      {resolveDurationMinutes(r.title)} мин
                     </option>
                   ))}
-                  <option value={NIGHT_QUEST_TITLE}>{NIGHT_QUEST_TITLE}</option>
                 </select>
                 <span className="text-[11px] text-faint leading-relaxed">
-                  Закрытые уровни скрыты. После заезда менеджер отметит прохождение в CRM.
+                  Длительность ~{durationMinutes} мин влияет на свободные старты (режим до 22:00).
                 </span>
               </label>
+
+              <BookingCalendar
+                value={dateValue}
+                onChange={setDateValue}
+                durationMinutes={durationMinutes}
+                required
+              />
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Количество человек</span>
+                <select
+                  name="guests"
+                  className="input"
+                  value={guests}
+                  onChange={(e) => setGuests(Number(e.target.value) || 1)}
+                  required
+                >
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Комментарий</span>
                 <textarea

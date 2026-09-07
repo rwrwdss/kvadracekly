@@ -6,7 +6,13 @@ type Props = {
   children: React.ReactNode;
   variant?: "primary" | "ghost";
   className?: string;
-  prefill?: { route?: string; tariff?: string; source?: string };
+  prefill?: {
+    route?: string;
+    tariff?: string;
+    source?: string;
+    productId?: string | number;
+    bookingKind?: "day" | "night";
+  };
   type?: "button" | "submit";
 };
 

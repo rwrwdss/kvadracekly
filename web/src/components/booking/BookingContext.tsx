@@ -11,12 +11,14 @@ import {
   type ReactNode,
 } from "react";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
+import { NIGHT_QUEST_TITLE } from "@/lib/booking/progress";
 
 type BookingPrefill = {
   route?: string;
   tariff?: string;
   source?: string;
   productId?: string | number;
+  bookingKind?: "day" | "night";
 };
 
 type BookingContextValue = {
@@ -27,6 +29,15 @@ type BookingContextValue = {
 };
 
 const BookingContext = createContext<BookingContextValue | null>(null);
+
+function isNightPrefill(next?: BookingPrefill): boolean {
+  if (!next) return false;
+  if (next.bookingKind === "night") return true;
+  const source = String(next.source || "").toLowerCase();
+  if (source === "night_quest" || source.includes("night")) return true;
+  const route = String(next.route || "").trim();
+  return route === NIGHT_QUEST_TITLE || route.toLowerCase().includes("ночн");
+}
 
 export function BookingProvider({ children }: { children: ReactNode }) {
   const { user, loading, openAuth, setPendingAction } = useCustomerAuth();
@@ -48,6 +59,12 @@ export function BookingProvider({ children }: { children: ReactNode }) {
         return;
       }
 
+      // Ночная заявка — без обязательной авторизации
+      if (isNightPrefill(next)) {
+        startBooking({ ...next, bookingKind: "night" });
+        return;
+      }
+
       if (!user) {
         setPendingAction(() => startBooking(next));
         openAuth({ intent: "booking" });
@@ -59,7 +76,6 @@ export function BookingProvider({ children }: { children: ReactNode }) {
     [loading, user, openAuth, setPendingAction, startBooking],
   );
 
-  // После загрузки сессии — продолжить отложенную запись
   useEffect(() => {
     if (loading || !hasDeferred.current) return;
     hasDeferred.current = false;

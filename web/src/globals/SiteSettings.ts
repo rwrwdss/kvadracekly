@@ -56,10 +56,11 @@ export const SiteSettings: GlobalConfig = {
           name: "slotHint",
           type: "text",
           label: "Слоты на сайте",
-          defaultValue: BOOKING_SLOTS.join(", "),
+          defaultValue: `${BOOKING_SLOTS.join(", ")} · занятость по длительности тарифа (до 22:00)`,
           admin: {
             readOnly: true,
-            description: "Фиксированные слоты: 10:00–20:00 каждые 2 часа.",
+            description:
+              "Старты 10:00–20:00. Занятость — интервал [старт, старт+durationMinutes), capacity пересечений.",
           },
         },
         {
@@ -115,6 +116,45 @@ export const SiteSettings: GlobalConfig = {
               label: "Причина (для себя)",
             },
           ],
+        },
+      ],
+    },
+    {
+      name: "season",
+      type: "group",
+      label: "Сезон проката",
+      admin: {
+        description:
+          "Квадро → пауза → снегоходы. В паузу сайт живёт: можно бронировать будущий сезон. Локальные стопы — в Календаре.",
+      },
+      fields: [
+        {
+          name: "current",
+          type: "select",
+          label: "Текущий сезон",
+          defaultValue: "atv",
+          options: [
+            { label: "Квадроциклы", value: "atv" },
+            { label: "Снегоходы", value: "snow" },
+            { label: "Пауза / пересменка", value: "pause" },
+          ],
+        },
+        {
+          name: "label",
+          type: "text",
+          label: "Подпись на сайте",
+          defaultValue: "Сезон квадроциклов",
+          admin: { description: "Короткий ярлык, например «Сезон снегоходов»." },
+        },
+        {
+          name: "bannerText",
+          type: "textarea",
+          label: "Текст баннера",
+          defaultValue:
+            "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
+          admin: {
+            description: "Показывается под шапкой (не в герое). В паузу — про бронь на будущий сезон.",
+          },
         },
       ],
     },
