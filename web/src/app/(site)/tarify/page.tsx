@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { IMAGES, formatPrice } from "@/data/site";
+import { formatPrice } from "@/data/site";
 import { PageHero } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
 import { TariffsCarousel } from "@/components/tariffs/TariffsCarousel";
 import { getTariffs } from "@/lib/cms/tariffs";
+import { getCatalogPageLayout } from "@/lib/cms/catalogPages";
 import {
   IconCamera,
   IconFuel,
@@ -17,12 +18,7 @@ import {
 export const metadata: Metadata = { title: "Тарифы" };
 export const dynamic = "force-dynamic";
 
-const HERO_CHIPS = [
-  { t: "Инструктор", Icon: IconUsers },
-  { t: "Экипировка", Icon: IconHelmet },
-  { t: "Топливо", Icon: IconFuel },
-  { t: "Маршрут", Icon: IconRoute },
-] as const;
+const CHIP_ICONS = [IconUsers, IconHelmet, IconFuel, IconRoute] as const;
 
 const EXTRAS = [
   { t: "Пассажир на двухместной технике", price: "от 2 000 ₽", Icon: IconUsers },
@@ -32,7 +28,7 @@ const EXTRAS = [
 ] as const;
 
 export default async function TariffsPage() {
-  const tariffs = await getTariffs();
+  const [tariffs, layout] = await Promise.all([getTariffs(), getCatalogPageLayout("tariffs")]);
 
   return (
     <>
@@ -41,28 +37,31 @@ export default async function TariffsPage() {
           { label: "Главная", href: "/" },
           { label: "Тарифы" },
         ]}
-        title="Тарифы и услуги"
-        subtitle="Выберите формат приключения"
-        description="Цена указана за клиентский квадроцикл. В группе резервируется машина инструктора."
-        image={IMAGES.heroTariffs.src}
-        imageAlt={IMAGES.heroTariffs.alt}
+        title={layout.title}
+        subtitle={layout.subtitle}
+        description={layout.description}
+        image={layout.imageUrl}
+        imageAlt={layout.imageAlt}
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl text-xs sm:text-sm">
-          {HERO_CHIPS.map(({ t, Icon }) => (
-            <div key={t} className="chip p-3 text-ink flex items-center gap-2">
-              <span className="text-accent shrink-0">
-                <Icon size={16} />
-              </span>
-              {t}
-            </div>
-          ))}
+          {layout.chips.map((t, i) => {
+            const Icon = CHIP_ICONS[i % CHIP_ICONS.length];
+            return (
+              <div key={`${t}-${i}`} className="chip p-3 text-ink flex items-center gap-2">
+                <span className="text-accent shrink-0">
+                  <Icon size={16} />
+                </span>
+                {t}
+              </div>
+            );
+          })}
         </div>
       </PageHero>
 
       <section className="py-14 sm:py-16 md:py-20">
         <div className="container-site grid gap-8 lg:grid-cols-[1.6fr_0.8fr] lg:items-start">
           <div>
-            <p className="section-label mb-4 md:hidden">Тарифы</p>
+            <p className="section-label mb-4 md:hidden">{layout.sectionLabel}</p>
             <TariffsCarousel routes={tariffs} />
           </div>
 
@@ -117,8 +116,8 @@ export default async function TariffsPage() {
       <section className="py-14 sm:py-16 bg-void">
         <div className="container-site flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h2 className="section-title text-[clamp(1.45rem,4vw,2.2rem)]">Не можете выбрать?</h2>
-            <p className="mt-3 text-sm text-mute">Подскажем тариф под опыт и состав группы.</p>
+            <h2 className="section-title text-[clamp(1.45rem,4vw,2.2rem)]">{layout.ctaTitle}</h2>
+            <p className="mt-3 text-sm text-mute">{layout.ctaText}</p>
           </div>
           <BookButton className="w-full md:w-auto" prefill={{ source: "tariff_help" }}>
             Подобрать тариф

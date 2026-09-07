@@ -10,6 +10,8 @@ import { RoleTheme as RoleTheme_28136a8e250682589881c9da47119b94 } from '../../.
 import { ManagerAccountView as ManagerAccountView_5a0a4e28a49349b41960f1d685bb8939 } from '../../../admin/components/ManagerAccountView'
 import { CalendarBookingsView as CalendarBookingsView_3e2927e5a044149504583d9c48d42db7 } from '../../../admin/components/CalendarBookingsView'
 import { CalendarStopsView as CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533 } from '../../../admin/components/CalendarStopsView'
+import { TariffsLayoutPanel as TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90 } from '../../../admin/components/CatalogLayoutPanel'
+import { FleetLayoutPanel as FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012 } from '../../../admin/components/CatalogLayoutPanel'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -26,5 +28,7 @@ export const importMap = {
   "./admin/components/ManagerAccountView#ManagerAccountView": ManagerAccountView_5a0a4e28a49349b41960f1d685bb8939,
   "./admin/components/CalendarBookingsView#CalendarBookingsView": CalendarBookingsView_3e2927e5a044149504583d9c48d42db7,
   "./admin/components/CalendarStopsView#CalendarStopsView": CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533,
+  "./admin/components/CatalogLayoutPanel#TariffsLayoutPanel": TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90,
+  "./admin/components/CatalogLayoutPanel#FleetLayoutPanel": FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

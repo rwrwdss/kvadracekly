@@ -492,7 +492,7 @@ export interface Lead {
   createdAt: string;
 }
 /**
- * История сообщений о новых заявках.
+ * История сообщений о новых заявках. Скрыто, пока Telegram/почта не подключены.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "notifications".
@@ -957,18 +957,78 @@ export interface SiteSetting {
       | null;
   };
   /**
-   * Квадро → пауза → снегоходы. В паузу сайт живёт: можно бронировать будущий сезон. Локальные стопы — в Календаре.
+   * Переключение квадро / пауза / снегоходы. При смене обновите подпись, баннер и вёрстку страниц Тарифы/Техника (зимние тексты и фото).
    */
   season?: {
     current?: ('atv' | 'snow' | 'pause') | null;
     /**
-     * Короткий ярлык, например «Сезон снегоходов».
+     * Короткий ярлык под шапкой. Для зимы: «Сезон снегоходов».
      */
     label?: string | null;
     /**
-     * Показывается под шапкой (не в герое). В паузу — про бронь на будущий сезон.
+     * Полоса под шапкой (не герой). В паузу — про бронь на будущий сезон.
      */
     bannerText?: string | null;
+  };
+  /**
+   * Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Тарифы.
+   */
+  pageTariffs?: {
+    title?: string | null;
+    subtitle?: string | null;
+    description?: string | null;
+    /**
+     * Например /images/hero/....jpg — можно заменить на зимнее фото.
+     */
+    imageUrl?: string | null;
+    /**
+     * Если загружена — приоритетнее пути выше.
+     */
+    cover?: (number | null) | Media;
+    imageAlt?: string | null;
+    /**
+     * Короткие подписи в герое (экипировка, ТО…).
+     */
+    chips?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    sectionLabel?: string | null;
+    sectionTitle?: string | null;
+    ctaTitle?: string | null;
+    ctaText?: string | null;
+  };
+  /**
+   * Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Техника.
+   */
+  pageFleet?: {
+    title?: string | null;
+    subtitle?: string | null;
+    description?: string | null;
+    /**
+     * Например /images/hero/....jpg — можно заменить на зимнее фото.
+     */
+    imageUrl?: string | null;
+    /**
+     * Если загружена — приоритетнее пути выше.
+     */
+    cover?: (number | null) | Media;
+    imageAlt?: string | null;
+    /**
+     * Короткие подписи в герое (экипировка, ТО…).
+     */
+    chips?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    sectionLabel?: string | null;
+    sectionTitle?: string | null;
+    ctaTitle?: string | null;
+    ctaText?: string | null;
   };
   defaultSeo?: {
     metaTitle?: string | null;
@@ -981,6 +1041,9 @@ export interface SiteSetting {
     subtitle?: string | null;
     description?: string | null;
   };
+  /**
+   * Скрыто, пока Telegram/почта не подключены.
+   */
   notify?: {
     /**
      * Настраивается администратором на сервере.
@@ -1025,6 +1088,46 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         current?: T;
         label?: T;
         bannerText?: T;
+      };
+  pageTariffs?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        description?: T;
+        imageUrl?: T;
+        cover?: T;
+        imageAlt?: T;
+        chips?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        sectionLabel?: T;
+        sectionTitle?: T;
+        ctaTitle?: T;
+        ctaText?: T;
+      };
+  pageFleet?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        description?: T;
+        imageUrl?: T;
+        cover?: T;
+        imageAlt?: T;
+        chips?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
+        sectionLabel?: T;
+        sectionTitle?: T;
+        ctaTitle?: T;
+        ctaText?: T;
       };
   defaultSeo?:
     | T

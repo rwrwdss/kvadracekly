@@ -18,6 +18,9 @@ export const Fleet: CollectionConfig = {
     defaultColumns: ["name", "role", "season", "color", "count", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tehnika. Порядок — по полю «Порядок».",
+    components: {
+      beforeListTable: ["./admin/components/CatalogLayoutPanel#FleetLayoutPanel"],
+    },
   },
   access: {
     read: () => true,

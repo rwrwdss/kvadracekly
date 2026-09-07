@@ -18,6 +18,9 @@ export const Tariffs: CollectionConfig = {
     defaultColumns: ["title", "price", "durationMinutes", "season", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tarify. Порядок — по полю «Порядок».",
+    components: {
+      beforeListTable: ["./admin/components/CatalogLayoutPanel#TariffsLayoutPanel"],
+    },
   },
   access: {
     read: () => true,

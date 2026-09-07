@@ -1,6 +1,22 @@
 import type { GlobalConfig } from "payload";
+import { revalidatePath } from "next/cache";
 import { hideFromManager, isAdmin } from "@/access/roles";
 import { BOOKING_SLOTS, SLOT_CAPACITY } from "@/lib/booking/slots";
+import {
+  catalogPageLayoutFields,
+  DEFAULT_PAGE_FLEET,
+  DEFAULT_PAGE_TARIFFS,
+} from "@/lib/cms/catalogPageDefaults";
+
+function revalidateSitePages() {
+  try {
+    revalidatePath("/");
+    revalidatePath("/tarify");
+    revalidatePath("/tehnika");
+  } catch {
+    /* outside Next request */
+  }
+}
 
 export const SiteSettings: GlobalConfig = {
   slug: "site-settings",
@@ -12,18 +28,23 @@ export const SiteSettings: GlobalConfig = {
     read: () => true,
     update: ({ req }) => isAdmin(req.user),
   },
+  hooks: {
+    afterChange: [() => revalidateSitePages()],
+  },
   fields: [
     {
       name: "siteName",
       type: "text",
       label: "Название сайта",
       defaultValue: "Вольница",
+      admin: { hidden: true },
     },
     {
       name: "tagline",
       type: "text",
       label: "Слоган",
       defaultValue: "Территория свободы",
+      admin: { hidden: true },
     },
     {
       name: "booking",
@@ -31,7 +52,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Календарь записи (очередь)",
       admin: {
         description:
-          "Управляет умным календарём на сайте (кнопка «Забронировать» в шапке). Заявки — в разделе CRM → Заявки.",
+          "Включение календаря и вместимость слота. Остановки дней — в разделе Календарь → Остановка.",
       },
       fields: [
         {
@@ -69,8 +90,8 @@ export const SiteSettings: GlobalConfig = {
           label: "Остановки календаря (периоды)",
           labels: { singular: "Период", plural: "Периоды" },
           admin: {
-            description:
-              "Удобнее править в разделе Календарь → Остановка. Период включительно: запись возможна до и после него.",
+            hidden: true,
+            description: "Правится в Календарь → Остановка.",
           },
           fields: [
             {
@@ -100,7 +121,8 @@ export const SiteSettings: GlobalConfig = {
           label: "Закрытые дни (по одному)",
           labels: { singular: "День", plural: "Закрытые дни" },
           admin: {
-            description: "Отдельные дни. Периоды — в «Остановки календаря» или в разделе Календарь.",
+            hidden: true,
+            description: "Правится в Календарь → Остановка.",
           },
           fields: [
             {
@@ -125,7 +147,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Сезон проката",
       admin: {
         description:
-          "Квадро → пауза → снегоходы. В паузу сайт живёт: можно бронировать будущий сезон. Локальные стопы — в Календаре.",
+          "Переключение квадро / пауза / снегоходы. При смене обновите подпись, баннер и вёрстку страниц Тарифы/Техника (зимние тексты и фото).",
       },
       fields: [
         {
@@ -142,26 +164,49 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "label",
           type: "text",
-          label: "Подпись на сайте",
+          label: "Подпись баннера на сайте",
           defaultValue: "Сезон квадроциклов",
-          admin: { description: "Короткий ярлык, например «Сезон снегоходов»." },
+          admin: {
+            description: "Короткий ярлык под шапкой. Для зимы: «Сезон снегоходов».",
+          },
         },
         {
           name: "bannerText",
           type: "textarea",
-          label: "Текст баннера",
+          label: "Текст баннера сезона",
           defaultValue:
             "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
           admin: {
-            description: "Показывается под шапкой (не в герое). В паузу — про бронь на будущий сезон.",
+            description: "Полоса под шапкой (не герой). В паузу — про бронь на будущий сезон.",
           },
         },
       ],
     },
     {
+      name: "pageTariffs",
+      type: "group",
+      label: "Страница «Тарифы» (/tarify)",
+      admin: {
+        description:
+          "Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Тарифы.",
+      },
+      fields: catalogPageLayoutFields(DEFAULT_PAGE_TARIFFS),
+    },
+    {
+      name: "pageFleet",
+      type: "group",
+      label: "Страница «Техника» (/tehnika)",
+      admin: {
+        description:
+          "Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Техника.",
+      },
+      fields: catalogPageLayoutFields(DEFAULT_PAGE_FLEET),
+    },
+    {
       name: "defaultSeo",
       type: "group",
       label: "SEO по умолчанию",
+      admin: { hidden: true },
       fields: [
         { name: "metaTitle", type: "text", label: "Meta Title" },
         { name: "metaDescription", type: "textarea", label: "Meta Description" },
@@ -178,6 +223,7 @@ export const SiteSettings: GlobalConfig = {
       name: "galleryIntro",
       type: "group",
       label: "Страница галереи",
+      admin: { hidden: true },
       fields: [
         { name: "title", type: "text", label: "H1", defaultValue: "Галерея" },
         {

@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { IMAGES } from "@/data/site";
 import { PageHero } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
 import { FleetCarousel } from "@/components/fleet/FleetCarousel";
 import { getFleet } from "@/lib/cms/fleet";
+import { getCatalogPageLayout } from "@/lib/cms/catalogPages";
 import { IconAtv, IconEngine, IconRoute, IconShield } from "@/components/ui/Icons";
 
 export const metadata: Metadata = { title: "Техника" };
@@ -17,7 +17,7 @@ const FEATURES = [
 ] as const;
 
 export default async function FleetPage() {
-  const fleet = await getFleet();
+  const [fleet, layout] = await Promise.all([getFleet(), getCatalogPageLayout("fleet")]);
 
   return (
     <>
@@ -26,15 +26,15 @@ export default async function FleetPage() {
           { label: "Главная", href: "/" },
           { label: "Техника" },
         ]}
-        title="Наша техника"
-        subtitle="Мощные. Надёжные. Готовые к приключениям"
-        description="На старте 8 квадроциклов: 4 грязевых и 4 прогулочных. Перед каждым выездом — подготовка, ТО и инструктаж."
-        image={IMAGES.heroFleet.src}
-        imageAlt={IMAGES.heroFleet.alt}
+        title={layout.title}
+        subtitle={layout.subtitle}
+        description={layout.description}
+        image={layout.imageUrl}
+        imageAlt={layout.imageAlt}
       >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl text-xs sm:text-sm">
-          {["Подготовка", "ТО и осмотр", "Экипировка", "Подбор под маршрут"].map((t) => (
-            <div key={t} className="chip p-3 text-ink">
+          {layout.chips.map((t, i) => (
+            <div key={`${t}-${i}`} className="chip p-3 text-ink">
               {t}
             </div>
           ))}
@@ -43,9 +43,9 @@ export default async function FleetPage() {
 
       <section className="py-14 sm:py-16 md:py-20">
         <div className="container-site">
-          <p className="section-label">Наш парк</p>
+          <p className="section-label">{layout.sectionLabel}</p>
           <h2 className="section-title mt-2 mb-8 sm:mb-10 text-[clamp(1.45rem,4vw,2.2rem)]">
-            8 единиц на старте
+            {layout.sectionTitle}
           </h2>
           <FleetCarousel items={fleet} />
 
@@ -68,10 +68,8 @@ export default async function FleetPage() {
       <section className="py-14 sm:py-16 bg-void">
         <div className="container-site flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h2 className="section-title text-[clamp(1.45rem,4vw,2.2rem)]">Не знаете, что выбрать?</h2>
-            <p className="mt-3 text-sm text-mute">
-              Подберём технику под опыт и маршрут. В группе — машина инструктора.
-            </p>
+            <h2 className="section-title text-[clamp(1.45rem,4vw,2.2rem)]">{layout.ctaTitle}</h2>
+            <p className="mt-3 text-sm text-mute">{layout.ctaText}</p>
           </div>
           <BookButton className="w-full md:w-auto" prefill={{ source: "fleet_help" }}>
             Подобрать технику

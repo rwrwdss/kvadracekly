@@ -1239,3 +1239,155 @@ textarea,
   }
 }
 
+/* Панель вёрстки на списках Тарифы / Техника */
+.catalog-layout-panel {
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.1rem 1.15rem;
+  border: 1px solid var(--crm-line, rgba(212, 164, 90, 0.28));
+  border-radius: 14px;
+  background: var(--crm-card, rgba(18, 24, 20, 0.92));
+  color: var(--crm-ink, #f3efe6);
+}
+
+.catalog-layout-panel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem 1rem;
+}
+
+.catalog-layout-panel__eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--crm-gold, #d4a45a);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.catalog-layout-panel__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.catalog-layout-panel__lead {
+  margin: 0;
+  max-width: 42rem;
+  color: var(--crm-mute, rgba(243, 239, 230, 0.72));
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.catalog-layout-panel__lead a {
+  color: var(--crm-gold, #d4a45a);
+}
+
+.catalog-layout-panel__toggle,
+.catalog-layout-panel__reload,
+.catalog-layout-panel__save {
+  border: 1px solid var(--crm-line, rgba(212, 164, 90, 0.35));
+  background: transparent;
+  color: var(--crm-ink, #f3efe6);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.catalog-layout-panel__save {
+  background: rgba(212, 164, 90, 0.18);
+  border-color: rgba(212, 164, 90, 0.55);
+  font-weight: 600;
+}
+
+.catalog-layout-panel__save:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.catalog-layout-panel__grid {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+@media (min-width: 960px) {
+  .catalog-layout-panel__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.catalog-layout-panel__box {
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid var(--crm-line, rgba(212, 164, 90, 0.22));
+  border-radius: 12px;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.catalog-layout-panel__box legend {
+  padding: 0 0.25rem;
+  color: var(--crm-gold, #d4a45a);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.catalog-layout-panel__hint {
+  margin: 0;
+  color: var(--crm-mute, rgba(243, 239, 230, 0.7));
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.catalog-layout-panel__box label {
+  display: grid;
+  gap: 0.28rem;
+  font-size: 0.82rem;
+  color: var(--crm-mute, rgba(243, 239, 230, 0.78));
+}
+
+.catalog-layout-panel__box input,
+.catalog-layout-panel__box textarea,
+.catalog-layout-panel__box select {
+  width: 100%;
+  border: 1px solid var(--crm-line, rgba(212, 164, 90, 0.28));
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--crm-ink, #f3efe6);
+  padding: 0.45rem 0.55rem;
+  font: inherit;
+}
+
+.catalog-layout-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem 0.85rem;
+  margin-top: 1rem;
+}
+
+.catalog-layout-panel__actions a {
+  color: var(--crm-gold, #d4a45a);
+  font-size: 0.9rem;
+}
+
+.catalog-layout-panel__mute,
+.catalog-layout-panel__ok,
+.catalog-layout-panel__error {
+  margin: 0.75rem 0 0;
+  font-size: 0.88rem;
+}
+
+.catalog-layout-panel__ok {
+  color: #8fce8a;
+}
+
+.catalog-layout-panel__error {
+  color: #e08a8a;
+}
+
