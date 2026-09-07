@@ -76,7 +76,10 @@ export default buildConfig({
     components: {
       providers: ["./admin/components/RoleTheme#RoleTheme"],
       beforeDashboard: ["./admin/components/CrmHome#CrmHome"],
-      afterNavLinks: ["./admin/components/CalendarNav#CalendarNav"],
+      afterNavLinks: [
+        "./admin/components/HomeNav#HomeNav",
+        "./admin/components/CalendarNav#CalendarNav",
+      ],
       logout: {
         Button: "./admin/components/ManagerLogout#ManagerLogout",
       },
@@ -87,6 +90,12 @@ export default buildConfig({
       views: {
         account: {
           Component: "./admin/components/ManagerAccountView#ManagerAccountView",
+        },
+        homeLayout: {
+          Component: "./admin/components/HomeLayoutView#HomeLayoutView",
+          path: "/home",
+          exact: true,
+          meta: { title: "Главная · Герой" },
         },
         calendarBookings: {
           Component: "./admin/components/CalendarBookingsView#CalendarBookingsView",

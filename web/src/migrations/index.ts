@@ -3,6 +3,7 @@ import * as migration_20260907_063800_tariffs_fleet from './20260907_063800_tari
 import * as migration_20260907_070102_calendar_stops from './20260907_070102_calendar_stops';
 import * as migration_20260907_111500_voice_booking from './20260907_111500_voice_booking';
 import * as migration_20260907_131500_catalog_layout from './20260907_131500_catalog_layout';
+import * as migration_20260907_140000_home_layout from './20260907_140000_home_layout';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260907_131500_catalog_layout.up,
     down: migration_20260907_131500_catalog_layout.down,
     name: '20260907_131500_catalog_layout',
+  },
+  {
+    up: migration_20260907_140000_home_layout.up,
+    down: migration_20260907_140000_home_layout.down,
+    name: '20260907_140000_home_layout',
   },
 ];

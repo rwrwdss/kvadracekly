@@ -213,7 +213,7 @@ export interface Media {
   };
 }
 /**
- * На сайте показываются только опубликованные живые фото из этой коллекции.
+ * Карусель и страница /galereya. Создайте запись → загрузите фото (импорт файла) → «Опубликовано».
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
@@ -221,9 +221,15 @@ export interface Media {
 export interface Gallery {
   id: number;
   title: string;
+  /**
+   * Загрузите файл с компьютера (Create New) или выберите из медиатеки.
+   */
   image: number | Media;
   category: 'atv' | 'routes' | 'nature' | 'night' | 'manor';
   published?: boolean | null;
+  /**
+   * Меньше число — раньше в карусели и на /galereya.
+   */
   sortOrder?: number | null;
   /**
    * Мета-теги для поисковиков и соцсетей
@@ -922,7 +928,7 @@ export interface SiteSetting {
   siteName?: string | null;
   tagline?: string | null;
   /**
-   * Управляет умным календарём на сайте (кнопка «Забронировать» в шапке). Заявки — в разделе CRM → Заявки.
+   * Включение календаря и вместимость слота. Остановки дней — в разделе Календарь → Остановка.
    */
   booking?: {
     enabled?: boolean | null;
@@ -935,7 +941,7 @@ export interface SiteSetting {
      */
     slotHint?: string | null;
     /**
-     * Удобнее править в разделе Календарь → Остановка. Период включительно: запись возможна до и после него.
+     * Правится в Календарь → Остановка.
      */
     closedRanges?:
       | {
@@ -946,7 +952,7 @@ export interface SiteSetting {
         }[]
       | null;
     /**
-     * Отдельные дни. Периоды — в «Остановки календаря» или в разделе Календарь.
+     * Правится в Календарь → Остановка.
      */
     closedDates?:
       | {
@@ -969,6 +975,29 @@ export interface SiteSetting {
      * Полоса под шапкой (не герой). В паузу — про бронь на будущий сезон.
      */
     bannerText?: string | null;
+  };
+  /**
+   * Тексты и фон первого экрана. Удобнее править панелью «Главная» в меню слева.
+   */
+  pageHome?: {
+    eyebrow?: string | null;
+    /**
+     * Например: Прокат / Снегоходы
+     */
+    titleLine1?: string | null;
+    titleLine2?: string | null;
+    tagline?: string | null;
+    imageUrl?: string | null;
+    cover?: (number | null) | Media;
+    imageAlt?: string | null;
+    primaryCtaLabel?: string | null;
+    secondaryCtaLabel?: string | null;
+    facts?:
+      | {
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
   };
   /**
    * Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Тарифы.
@@ -1036,6 +1065,9 @@ export interface SiteSetting {
     metaKeywords?: string | null;
     ogImage?: (number | null) | Media;
   };
+  /**
+   * H1 и описание /galereya. Фото — в разделе Главная → Галерея (коллекция).
+   */
   galleryIntro?: {
     title?: string | null;
     subtitle?: string | null;
@@ -1088,6 +1120,25 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         current?: T;
         label?: T;
         bannerText?: T;
+      };
+  pageHome?:
+    | T
+    | {
+        eyebrow?: T;
+        titleLine1?: T;
+        titleLine2?: T;
+        tagline?: T;
+        imageUrl?: T;
+        cover?: T;
+        imageAlt?: T;
+        primaryCtaLabel?: T;
+        secondaryCtaLabel?: T;
+        facts?:
+          | T
+          | {
+              label?: T;
+              id?: T;
+            };
       };
   pageTariffs?:
     | T

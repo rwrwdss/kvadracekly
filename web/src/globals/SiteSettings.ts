@@ -7,12 +7,14 @@ import {
   DEFAULT_PAGE_FLEET,
   DEFAULT_PAGE_TARIFFS,
 } from "@/lib/cms/catalogPageDefaults";
+import { DEFAULT_GALLERY_INTRO, DEFAULT_PAGE_HOME } from "@/lib/cms/homeDefaults";
 
 function revalidateSitePages() {
   try {
     revalidatePath("/");
     revalidatePath("/tarify");
     revalidatePath("/tehnika");
+    revalidatePath("/galereya");
   } catch {
     /* outside Next request */
   }
@@ -183,6 +185,80 @@ export const SiteSettings: GlobalConfig = {
       ],
     },
     {
+      name: "pageHome",
+      type: "group",
+      label: "Главная · герой",
+      admin: {
+        description:
+          "Тексты и фон первого экрана. Удобнее править панелью «Главная» в меню слева.",
+      },
+      fields: [
+        {
+          name: "eyebrow",
+          type: "text",
+          label: "Надзаголовок",
+          defaultValue: DEFAULT_PAGE_HOME.eyebrow,
+        },
+        {
+          name: "titleLine1",
+          type: "text",
+          label: "Заголовок · строка 1",
+          defaultValue: DEFAULT_PAGE_HOME.titleLine1,
+          admin: { description: "Например: Прокат / Снегоходы" },
+        },
+        {
+          name: "titleLine2",
+          type: "text",
+          label: "Заголовок · строка 2",
+          defaultValue: DEFAULT_PAGE_HOME.titleLine2,
+        },
+        {
+          name: "tagline",
+          type: "text",
+          label: "Слоган под заголовком",
+          defaultValue: DEFAULT_PAGE_HOME.tagline,
+        },
+        {
+          name: "imageUrl",
+          type: "text",
+          label: "Фон героя (путь)",
+          defaultValue: DEFAULT_PAGE_HOME.imageUrl,
+        },
+        {
+          name: "cover",
+          type: "upload",
+          relationTo: "media",
+          label: "Фон героя (файл)",
+        },
+        {
+          name: "imageAlt",
+          type: "text",
+          label: "Alt фона",
+          defaultValue: DEFAULT_PAGE_HOME.imageAlt,
+        },
+        {
+          name: "primaryCtaLabel",
+          type: "text",
+          label: "Кнопка 1",
+          defaultValue: DEFAULT_PAGE_HOME.primaryCtaLabel,
+        },
+        {
+          name: "secondaryCtaLabel",
+          type: "text",
+          label: "Кнопка 2",
+          defaultValue: DEFAULT_PAGE_HOME.secondaryCtaLabel,
+        },
+        {
+          name: "facts",
+          type: "array",
+          label: "Факты под героем",
+          labels: { singular: "Факт", plural: "Факты" },
+          defaultValue: DEFAULT_PAGE_HOME.facts.map((label) => ({ label })),
+          fields: [{ name: "label", type: "text", label: "Текст", required: true }],
+        },
+      ],
+    },
+    {
       name: "pageTariffs",
       type: "group",
       label: "Страница «Тарифы» (/tarify)",
@@ -222,22 +298,28 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "galleryIntro",
       type: "group",
-      label: "Страница галереи",
-      admin: { hidden: true },
+      label: "Галерея · тексты страницы",
+      admin: {
+        description: "H1 и описание /galereya. Фото — в разделе Главная → Галерея (коллекция).",
+      },
       fields: [
-        { name: "title", type: "text", label: "H1", defaultValue: "Галерея" },
+        {
+          name: "title",
+          type: "text",
+          label: "H1",
+          defaultValue: DEFAULT_GALLERY_INTRO.title,
+        },
         {
           name: "subtitle",
           type: "text",
           label: "Подзаголовок",
-          defaultValue: "Атмосфера свободы и приключений",
+          defaultValue: DEFAULT_GALLERY_INTRO.subtitle,
         },
         {
           name: "description",
           type: "textarea",
           label: "Описание",
-          defaultValue:
-            "Живые кадры с маршрутов Вольницы. Фото загружаются администратором в CMS.",
+          defaultValue: DEFAULT_GALLERY_INTRO.description,
         },
       ],
     },

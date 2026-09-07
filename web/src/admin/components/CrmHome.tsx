@@ -52,6 +52,12 @@ export function CrmHome() {
             <span className="crm-home__tile-hint">{tile.hint}</span>
           </Link>
         ))}
+        {!isManager ? (
+          <Link className="crm-home__tile" href="/admin/home">
+            <span className="crm-home__tile-title">Главная</span>
+            <span className="crm-home__tile-hint">Герой, тексты и галерея</span>
+          </Link>
+        ) : null}
       </div>
     </section>
   );

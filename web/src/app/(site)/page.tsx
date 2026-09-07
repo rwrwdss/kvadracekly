@@ -2,6 +2,8 @@ import Link from "next/link";
 import { IMAGES, ROUTES, SITE } from "@/data/site";
 import { BookButton } from "@/components/ui/BookButton";
 import { RouteCard } from "@/components/routes/RouteCard";
+import { HomeGalleryCarousel } from "@/components/home/HomeGalleryCarousel";
+import { getHomeCarousel, getHomePageLayout } from "@/lib/cms/home";
 import {
   IconAtv,
   IconClock,
@@ -17,12 +19,7 @@ import {
   IconHelmet,
 } from "@/components/ui/Icons";
 
-const HERO_FACTS = [
-  { text: "25–30 мин от Казани", Icon: IconPin },
-  { text: "8 мощных квадроциклов", Icon: IconAtv },
-  { text: "Авторские маршруты", Icon: IconRoute },
-  { text: "Ночные выезды", Icon: IconMoon },
-] as const;
+const HERO_FACT_ICONS = [IconPin, IconAtv, IconRoute, IconMoon] as const;
 
 const INFO_CARDS = [
   {
@@ -89,53 +86,58 @@ const STATS = [
   { n: "1→4", l: "прогресс трасс", Icon: IconStar },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [hero, carousel] = await Promise.all([getHomePageLayout(), getHomeCarousel(12)]);
+
   return (
     <>
       <section className="relative min-h-[100svh] flex items-end grain">
         <div
           className="absolute inset-0 bg-cover bg-center"
           role="img"
-          aria-label={IMAGES.heroHome.alt}
-          style={{ backgroundImage: `url(${IMAGES.heroHome.src})` }}
+          aria-label={hero.imageAlt}
+          style={{ backgroundImage: `url(${hero.imageUrl})` }}
         />
         <div className="absolute inset-0 hero-overlay" />
 
         <div className="relative container-site w-full pb-20 pt-28 sm:pb-16 md:pb-24 md:pt-32">
-          <p className="section-label animate-fade-up">Премиальный отдых на природе</p>
+          <p className="section-label animate-fade-up">{hero.eyebrow}</p>
           <h1 className="font-display mt-3 text-[clamp(2.1rem,8vw,4.6rem)] leading-[0.95] tracking-[0.04em] uppercase animate-fade-up-delay">
-            Прокат
+            {hero.titleLine1}
             <br />
-            квадроциклов
+            {hero.titleLine2}
           </h1>
           <p className="mt-4 text-accent font-display text-[1rem] sm:text-lg md:text-xl tracking-[0.14em] sm:tracking-[0.2em] uppercase animate-fade-up-delay">
-            {SITE.tagline}
+            {hero.tagline}
           </p>
 
           <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3 animate-fade-up-delay-2">
             <Link href="/marshruty" className="btn btn-primary w-full sm:w-auto">
-              Выбрать маршрут →
+              {hero.primaryCtaLabel}
             </Link>
             <BookButton
               className="w-full sm:w-auto"
               variant="ghost"
               prefill={{ source: "home_hero" }}
             >
-              Забронировать
+              {hero.secondaryCtaLabel}
             </BookButton>
           </div>
 
           <div className="mt-10 sm:mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6 border-t border-[var(--border-subtle)] pt-6 sm:pt-8">
-            {HERO_FACTS.map(({ text, Icon }) => (
-              <div key={text} className="flex items-start gap-2.5 sm:gap-3">
-                <span className="text-accent shrink-0 mt-0.5">
-                  <Icon size={22} />
-                </span>
-                <span className="text-xs sm:text-sm text-mute leading-snug uppercase tracking-wide">
-                  {text}
-                </span>
-              </div>
-            ))}
+            {hero.facts.map((text, i) => {
+              const Icon = HERO_FACT_ICONS[i % HERO_FACT_ICONS.length];
+              return (
+                <div key={`${text}-${i}`} className="flex items-start gap-2.5 sm:gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">
+                    <Icon size={22} />
+                  </span>
+                  <span className="text-xs sm:text-sm text-mute leading-snug uppercase tracking-wide">
+                    {text}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -156,6 +158,8 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <HomeGalleryCarousel items={carousel} />
 
       <section className="py-16 md:py-24">
         <div className="container-site">
