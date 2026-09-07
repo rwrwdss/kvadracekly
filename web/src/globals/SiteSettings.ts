@@ -32,6 +32,41 @@ export const SiteSettings: GlobalConfig = {
   },
   hooks: {
     afterChange: [() => revalidateSitePages()],
+    afterRead: [
+      ({ doc }) => {
+        if (!doc || typeof doc !== "object") return doc;
+        const home = (doc as { pageHome?: Record<string, unknown> }).pageHome || {};
+        const intro = (doc as { galleryIntro?: Record<string, unknown> }).galleryIntro || {};
+        const facts = home.facts as { label?: string }[] | undefined;
+
+        (doc as { pageHome: Record<string, unknown> }).pageHome = {
+          ...home,
+          eyebrow: String(home.eyebrow || "").trim() || DEFAULT_PAGE_HOME.eyebrow,
+          titleLine1: String(home.titleLine1 || "").trim() || DEFAULT_PAGE_HOME.titleLine1,
+          titleLine2: String(home.titleLine2 || "").trim() || DEFAULT_PAGE_HOME.titleLine2,
+          tagline: String(home.tagline || "").trim() || DEFAULT_PAGE_HOME.tagline,
+          imageUrl: String(home.imageUrl || "").trim() || DEFAULT_PAGE_HOME.imageUrl,
+          imageAlt: String(home.imageAlt || "").trim() || DEFAULT_PAGE_HOME.imageAlt,
+          primaryCtaLabel:
+            String(home.primaryCtaLabel || "").trim() || DEFAULT_PAGE_HOME.primaryCtaLabel,
+          secondaryCtaLabel:
+            String(home.secondaryCtaLabel || "").trim() || DEFAULT_PAGE_HOME.secondaryCtaLabel,
+          facts:
+            facts?.length && facts.some((f) => String(f?.label || "").trim())
+              ? facts
+              : DEFAULT_PAGE_HOME.facts.map((label) => ({ label })),
+        };
+
+        (doc as { galleryIntro: Record<string, unknown> }).galleryIntro = {
+          ...intro,
+          title: String(intro.title || "").trim() || DEFAULT_GALLERY_INTRO.title,
+          subtitle: String(intro.subtitle || "").trim() || DEFAULT_GALLERY_INTRO.subtitle,
+          description: String(intro.description || "").trim() || DEFAULT_GALLERY_INTRO.description,
+        };
+
+        return doc;
+      },
+    ],
   },
   fields: [
     {
@@ -187,74 +222,107 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "pageHome",
       type: "group",
-      label: "Главная · герой",
+      label: "Главная — первый экран",
       admin: {
         description:
-          "Тексты и фон первого экрана. Удобнее править панелью «Главная» в меню слева.",
+          "Тексты большого заголовка на главной. Удобнее править: меню слева → «Тексты первого экрана».",
       },
       fields: [
         {
           name: "eyebrow",
           type: "text",
-          label: "Надзаголовок",
+          label: "Мелкий текст над заголовком",
           defaultValue: DEFAULT_PAGE_HOME.eyebrow,
+          admin: {
+            description: `Сейчас на сайте: «${DEFAULT_PAGE_HOME.eyebrow}»`,
+          },
         },
         {
           name: "titleLine1",
           type: "text",
-          label: "Заголовок · строка 1",
+          label: "Большой заголовок — первая строка",
           defaultValue: DEFAULT_PAGE_HOME.titleLine1,
-          admin: { description: "Например: Прокат / Снегоходы" },
+          admin: {
+            description: `Сейчас на сайте: «${DEFAULT_PAGE_HOME.titleLine1}» (например: Прокат)`,
+          },
         },
         {
           name: "titleLine2",
           type: "text",
-          label: "Заголовок · строка 2",
+          label: "Большой заголовок — вторая строка",
           defaultValue: DEFAULT_PAGE_HOME.titleLine2,
+          admin: {
+            description: `Сейчас на сайте: «${DEFAULT_PAGE_HOME.titleLine2}»`,
+          },
         },
         {
           name: "tagline",
           type: "text",
-          label: "Слоган под заголовком",
+          label: "Фраза под заголовком (золотым)",
           defaultValue: DEFAULT_PAGE_HOME.tagline,
+          admin: {
+            description: `Сейчас на сайте: «${DEFAULT_PAGE_HOME.tagline}»`,
+          },
         },
         {
           name: "imageUrl",
           type: "text",
-          label: "Фон героя (путь)",
+          label: "Картинка фона (путь к файлу)",
           defaultValue: DEFAULT_PAGE_HOME.imageUrl,
+          admin: {
+            description: `Сейчас: ${DEFAULT_PAGE_HOME.imageUrl}`,
+          },
         },
         {
           name: "cover",
           type: "upload",
           relationTo: "media",
-          label: "Фон героя (файл)",
+          label: "Или загрузить свою картинку фона",
+          admin: {
+            description: "Если загрузите файл — он заменит путь выше.",
+          },
         },
         {
           name: "imageAlt",
           type: "text",
-          label: "Alt фона",
+          label: "Описание картинки (для слабовидящих)",
           defaultValue: DEFAULT_PAGE_HOME.imageAlt,
         },
         {
           name: "primaryCtaLabel",
           type: "text",
-          label: "Кнопка 1",
+          label: "Текст первой кнопки",
           defaultValue: DEFAULT_PAGE_HOME.primaryCtaLabel,
+          admin: {
+            description: `Сейчас: «${DEFAULT_PAGE_HOME.primaryCtaLabel}»`,
+          },
         },
         {
           name: "secondaryCtaLabel",
           type: "text",
-          label: "Кнопка 2",
+          label: "Текст второй кнопки",
           defaultValue: DEFAULT_PAGE_HOME.secondaryCtaLabel,
+          admin: {
+            description: `Сейчас: «${DEFAULT_PAGE_HOME.secondaryCtaLabel}»`,
+          },
         },
         {
           name: "facts",
           type: "array",
-          label: "Факты под героем",
+          label: "Короткие факты под кнопками",
           labels: { singular: "Факт", plural: "Факты" },
           defaultValue: DEFAULT_PAGE_HOME.facts.map((label) => ({ label })),
-          fields: [{ name: "label", type: "text", label: "Текст", required: true }],
+          admin: {
+            description: `Сейчас: ${DEFAULT_PAGE_HOME.facts.join(" · ")}`,
+          },
+          fields: [
+            {
+              name: "label",
+              type: "text",
+              label: "Текст факта",
+              required: true,
+            },
+          ],
         },
       ],
     },
@@ -298,28 +366,32 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "galleryIntro",
       type: "group",
-      label: "Галерея · тексты страницы",
+      label: "Галерея — тексты страницы",
       admin: {
-        description: "H1 и описание /galereya. Фото — в разделе Главная → Галерея (коллекция).",
+        description:
+          "Заголовки на /galereya. Фото: меню слева → «Фото для карусели».",
       },
       fields: [
         {
           name: "title",
           type: "text",
-          label: "H1",
+          label: "Главный заголовок страницы",
           defaultValue: DEFAULT_GALLERY_INTRO.title,
+          admin: { description: `Сейчас: «${DEFAULT_GALLERY_INTRO.title}»` },
         },
         {
           name: "subtitle",
           type: "text",
           label: "Подзаголовок",
           defaultValue: DEFAULT_GALLERY_INTRO.subtitle,
+          admin: { description: `Сейчас: «${DEFAULT_GALLERY_INTRO.subtitle}»` },
         },
         {
           name: "description",
           type: "textarea",
-          label: "Описание",
+          label: "Текст-описание",
           defaultValue: DEFAULT_GALLERY_INTRO.description,
+          admin: { description: `Сейчас: «${DEFAULT_GALLERY_INTRO.description}»` },
         },
       ],
     },

@@ -79,7 +79,7 @@ async function requireAdmin() {
   return { payload, user };
 }
 
-/** GET — тексты героя главной и intro галереи. */
+/** GET — тексты героя главной и intro галереи. Пустые поля заполняем дефолтами и пишем в БД. */
 export async function GET() {
   const { payload, user } = await requireAdmin();
   if (!user) return NextResponse.json({ error: "Нужна авторизация админа" }, { status: 401 });
@@ -90,15 +90,51 @@ export async function GET() {
     overrideAccess: true,
   });
 
-  const pageHome = (settings as { pageHome?: HomeBody }).pageHome;
-  const galleryIntro = (settings as { galleryIntro?: IntroBody }).galleryIntro;
+  const pageHomeRaw = (settings as { pageHome?: HomeBody }).pageHome;
+  const galleryIntroRaw = (settings as { galleryIntro?: IntroBody }).galleryIntro;
+
+  const home = normalizeHome(pageHomeRaw);
+  const galleryIntro = normalizeIntro(galleryIntroRaw);
+
+  const homeEmpty =
+    !String(pageHomeRaw?.titleLine1 || "").trim() ||
+    !String(pageHomeRaw?.titleLine2 || "").trim() ||
+    !String(pageHomeRaw?.eyebrow || "").trim();
+  const introEmpty =
+    !String(galleryIntroRaw?.title || "").trim() ||
+    !String(galleryIntroRaw?.description || "").trim();
+
+  if (homeEmpty || introEmpty) {
+    await payload.updateGlobal({
+      slug: "site-settings",
+      data: {
+        ...(homeEmpty
+          ? {
+              pageHome: {
+                eyebrow: home.eyebrow,
+                titleLine1: home.titleLine1,
+                titleLine2: home.titleLine2,
+                tagline: home.tagline,
+                imageUrl: home.imageUrl,
+                imageAlt: home.imageAlt,
+                primaryCtaLabel: home.primaryCtaLabel,
+                secondaryCtaLabel: home.secondaryCtaLabel,
+                facts: home.facts.map((label) => ({ label })),
+              },
+            }
+          : {}),
+        ...(introEmpty ? { galleryIntro } : {}),
+      },
+      overrideAccess: true,
+    });
+  }
 
   return NextResponse.json({
     pageHome: {
-      ...normalizeHome(pageHome),
-      facts: normalizeHome(pageHome).facts.map((label) => ({ label })),
+      ...home,
+      facts: home.facts.map((label) => ({ label })),
     },
-    galleryIntro: normalizeIntro(galleryIntro),
+    galleryIntro,
   });
 }
 

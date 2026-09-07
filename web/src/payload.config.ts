@@ -95,7 +95,7 @@ export default buildConfig({
           Component: "./admin/components/HomeLayoutView#HomeLayoutView",
           path: "/home",
           exact: true,
-          meta: { title: "Главная · Герой" },
+          meta: { title: "Тексты первого экрана" },
         },
         calendarBookings: {
           Component: "./admin/components/CalendarBookingsView#CalendarBookingsView",

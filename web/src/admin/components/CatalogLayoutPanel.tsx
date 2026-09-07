@@ -191,16 +191,16 @@ export function CatalogLayoutPanel({ page }: Props) {
     <section className="catalog-layout-panel">
       <div className="catalog-layout-panel__head">
         <div>
-          <p className="catalog-layout-panel__eyebrow">Вёрстка и сезон</p>
+          <p className="catalog-layout-panel__eyebrow">Тексты страницы на сайте</p>
           <h2 className="catalog-layout-panel__title">
-            Баннер сезона и страница «{pageLabel}»
+            Что написано на странице «{pageLabel}»
           </h2>
           <p className="catalog-layout-panel__lead">
-            Здесь можно сменить сезон, текст полосы под шапкой и герой / CTA страницы{" "}
+            В полях уже стоят текущие тексты. Меняйте и сохраните — так обновится страница{" "}
             <Link href={pagePath} prefetch={false}>
               {pagePath}
             </Link>
-            . Карточки ниже — отдельные единицы каталога.
+            . Список карточек ниже — отдельные позиции каталога.
           </p>
         </div>
         <button
@@ -208,22 +208,22 @@ export function CatalogLayoutPanel({ page }: Props) {
           className="catalog-layout-panel__toggle"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Свернуть" : "Развернуть"}
+          {open ? "Скрыть форму" : "Показать форму"}
         </button>
       </div>
 
       {open ? (
         <>
-          {loading ? <p className="catalog-layout-panel__mute">Загрузка…</p> : null}
+          {loading ? <p className="catalog-layout-panel__mute">Загружаем текущие тексты…</p> : null}
           {error ? <p className="catalog-layout-panel__error">{error}</p> : null}
           {message ? <p className="catalog-layout-panel__ok">{message}</p> : null}
 
           <div className="catalog-layout-panel__grid">
             <fieldset className="catalog-layout-panel__box">
-              <legend>Баннер сезона (весь сайт)</legend>
+              <legend>Полоска сезона под шапкой (весь сайт)</legend>
               <p className="catalog-layout-panel__hint">{seasonHint}</p>
               <label>
-                <span>Текущий сезон</span>
+                <span>Какой сейчас сезон</span>
                 <select
                   value={season.current}
                   onChange={(e) =>
@@ -236,7 +236,7 @@ export function CatalogLayoutPanel({ page }: Props) {
                 </select>
               </label>
               <label>
-                <span>Подпись</span>
+                <span>Короткая подпись сезона</span>
                 <input
                   value={season.label}
                   onChange={(e) => setSeason((s) => ({ ...s, label: e.target.value }))}
@@ -244,7 +244,7 @@ export function CatalogLayoutPanel({ page }: Props) {
                 />
               </label>
               <label>
-                <span>Текст баннера</span>
+                <span>Текст полоски под шапкой</span>
                 <textarea
                   rows={3}
                   value={season.bannerText}
@@ -255,9 +255,9 @@ export function CatalogLayoutPanel({ page }: Props) {
             </fieldset>
 
             <fieldset className="catalog-layout-panel__box">
-              <legend>Герой страницы «{pageLabel}»</legend>
+              <legend>Большой заголовок страницы «{pageLabel}»</legend>
               <label>
-                <span>Заголовок</span>
+                <span>Главный заголовок</span>
                 <input
                   value={layout.title}
                   onChange={(e) => setLayout((p) => ({ ...p, title: e.target.value }))}
@@ -271,7 +271,7 @@ export function CatalogLayoutPanel({ page }: Props) {
                 />
               </label>
               <label>
-                <span>Описание</span>
+                <span>Текст под заголовком</span>
                 <textarea
                   rows={3}
                   value={layout.description}
@@ -279,7 +279,7 @@ export function CatalogLayoutPanel({ page }: Props) {
                 />
               </label>
               <label>
-                <span>Картинка героя (путь)</span>
+                <span>Картинка фона (путь к файлу)</span>
                 <input
                   value={layout.imageUrl}
                   onChange={(e) => setLayout((p) => ({ ...p, imageUrl: e.target.value }))}
@@ -287,14 +287,14 @@ export function CatalogLayoutPanel({ page }: Props) {
                 />
               </label>
               <label>
-                <span>Alt картинки</span>
+                <span>Описание картинки</span>
                 <input
                   value={layout.imageAlt}
                   onChange={(e) => setLayout((p) => ({ ...p, imageAlt: e.target.value }))}
                 />
               </label>
               <label>
-                <span>Чипы в герое (по одному в строке)</span>
+                <span>Короткие подписи в герое (каждая с новой строки)</span>
                 <textarea
                   rows={4}
                   value={layout.chipsText}
@@ -304,30 +304,30 @@ export function CatalogLayoutPanel({ page }: Props) {
             </fieldset>
 
             <fieldset className="catalog-layout-panel__box">
-              <legend>Секция и CTA</legend>
+              <legend>Секция списка и нижний призыв</legend>
               <label>
-                <span>Лейбл секции</span>
+                <span>Мелкий лейбл над списком</span>
                 <input
                   value={layout.sectionLabel}
                   onChange={(e) => setLayout((p) => ({ ...p, sectionLabel: e.target.value }))}
                 />
               </label>
               <label>
-                <span>Заголовок секции</span>
+                <span>Заголовок над списком</span>
                 <input
                   value={layout.sectionTitle}
                   onChange={(e) => setLayout((p) => ({ ...p, sectionTitle: e.target.value }))}
                 />
               </label>
               <label>
-                <span>CTA: заголовок</span>
+                <span>Заголовок нижнего блока «записаться»</span>
                 <input
                   value={layout.ctaTitle}
                   onChange={(e) => setLayout((p) => ({ ...p, ctaTitle: e.target.value }))}
                 />
               </label>
               <label>
-                <span>CTA: текст</span>
+                <span>Текст нижнего блока</span>
                 <textarea
                   rows={2}
                   value={layout.ctaText}
@@ -344,10 +344,10 @@ export function CatalogLayoutPanel({ page }: Props) {
               disabled={saving || loading}
               onClick={() => void save()}
             >
-              {saving ? "Сохранение…" : "Сохранить вёрстку и баннер"}
+              {saving ? "Сохраняем…" : "Сохранить изменения"}
             </button>
             <button type="button" className="catalog-layout-panel__reload" onClick={() => void load()}>
-              Обновить
+              Вернуть с сервера
             </button>
             <Link href="/admin/globals/site-settings" prefetch={false}>
               Все настройки сайта →

@@ -15,13 +15,13 @@ function revalidateGallery() {
 /** Живые фото галереи — загружаются через CMS (импорт файла в поле «Фото»). */
 export const Gallery: CollectionConfig = {
   slug: "gallery",
-  labels: { singular: "Фото галереи", plural: "Галерея" },
+  labels: { singular: "Фото", plural: "Фото для карусели" },
   admin: {
     useAsTitle: "title",
     defaultColumns: ["title", "category", "published", "sortOrder", "updatedAt"],
-    group: "Главная",
+    group: "Главная страница",
     description:
-      "Карусель и страница /galereya. Создайте запись → загрузите фото (импорт файла) → «Опубликовано».",
+      "Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.",
     components: {
       beforeListTable: ["./admin/components/HomeLayoutPanel#GalleryHomePanel"],
     },
@@ -40,48 +40,55 @@ export const Gallery: CollectionConfig = {
     {
       name: "title",
       type: "text",
-      label: "Заголовок",
+      label: "Название фото (подпись)",
       required: true,
+      admin: {
+        description: "Короткая подпись под кадром, например: «У пруда на закате».",
+      },
     },
     {
       name: "image",
       type: "upload",
       relationTo: "media",
-      label: "Фото",
+      label: "Загрузить фото с компьютера",
       required: true,
       admin: {
-        description: "Загрузите файл с компьютера (Create New) или выберите из медиатеки.",
+        description:
+          "Нажмите «Choose from existing» или создайте новый файл (Create New) и выберите картинку.",
       },
     },
     {
       name: "category",
       type: "select",
-      label: "Категория",
+      label: "Раздел / тема",
       required: true,
       defaultValue: "atv",
       options: [
         { label: "Квадроциклы", value: "atv" },
         { label: "Маршруты", value: "routes" },
         { label: "Природа", value: "nature" },
-        { label: "Ночные", value: "night" },
+        { label: "Ночные выезды", value: "night" },
         { label: "Усадьба", value: "manor" },
       ],
     },
     {
       name: "published",
       type: "checkbox",
-      label: "Опубликовано на сайте",
+      label: "Показывать на сайте",
       defaultValue: true,
-      admin: { position: "sidebar" },
+      admin: {
+        position: "sidebar",
+        description: "Снимите галочку, чтобы спрятать фото без удаления.",
+      },
     },
     {
       name: "sortOrder",
       type: "number",
-      label: "Порядок в карусели",
+      label: "Порядок показа",
       defaultValue: 0,
       admin: {
         position: "sidebar",
-        description: "Меньше число — раньше в карусели и на /galereya.",
+        description: "Меньше число — фото раньше в карусели. Например: 1, 2, 3…",
       },
     },
     seoFields,

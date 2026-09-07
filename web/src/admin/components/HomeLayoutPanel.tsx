@@ -56,7 +56,11 @@ function homeFromApi(group: Record<string, unknown> | null | undefined): HomeFor
   };
 }
 
-/** Панель текстов героя главной + intro галереи. */
+function FieldHint({ children }: { children: React.ReactNode }) {
+  return <p className="catalog-layout-panel__hint">{children}</p>;
+}
+
+/** Панель текстов первого экрана главной + тексты страницы галереи. */
 export function HomeLayoutPanel() {
   const { user } = useAuth();
   const role =
@@ -79,7 +83,7 @@ export function HomeLayoutPanel() {
     try {
       const res = await fetch("/api/admin/home-layout", { credentials: "include" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Ошибка загрузки");
+      if (!res.ok) throw new Error(data.error || "Не удалось загрузить тексты");
       setHome(homeFromApi(data.pageHome));
       const g = data.galleryIntro || {};
       setIntro({
@@ -88,7 +92,7 @@ export function HomeLayoutPanel() {
         description: String(g.description || DEFAULT_GALLERY_INTRO.description),
       });
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка");
+      setError(e instanceof Error ? e.message : "Ошибка загрузки");
     } finally {
       setLoading(false);
     }
@@ -125,7 +129,7 @@ export function HomeLayoutPanel() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Не удалось сохранить");
-      setMessage("Сохранено. Обновите главную на сайте, чтобы увидеть изменения.");
+      setMessage("Сохранено. Откройте главную страницу сайта и обновите её (F5).");
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ошибка сохранения");
@@ -140,14 +144,15 @@ export function HomeLayoutPanel() {
     <section className="catalog-layout-panel">
       <div className="catalog-layout-panel__head">
         <div>
-          <p className="catalog-layout-panel__eyebrow">Главная страница</p>
-          <h2 className="catalog-layout-panel__title">Герой и тексты галереи</h2>
+          <p className="catalog-layout-panel__eyebrow">Что видит гость на сайте</p>
+          <h2 className="catalog-layout-panel__title">Тексты первого экрана главной</h2>
           <p className="catalog-layout-panel__lead">
-            Правьте «Прокат / квадроциклов», слоган и факты. Фото карусели — в{" "}
+            В полях уже стоят текущие тексты с сайта — меняйте их и нажмите «Сохранить». Фото
+            карусели меняются отдельно:{" "}
             <Link href="/admin/collections/gallery" prefetch={false}>
-              Галерее
+              Фото для карусели
             </Link>
-            : создайте запись и загрузите файл.
+            .
           </p>
         </div>
         <button
@@ -155,59 +160,86 @@ export function HomeLayoutPanel() {
           className="catalog-layout-panel__toggle"
           onClick={() => setOpen((v) => !v)}
         >
-          {open ? "Свернуть" : "Развернуть"}
+          {open ? "Скрыть форму" : "Показать форму"}
         </button>
       </div>
 
       {open ? (
         <>
-          {loading ? <p className="catalog-layout-panel__mute">Загрузка…</p> : null}
+          {loading ? <p className="catalog-layout-panel__mute">Загружаем текущие тексты…</p> : null}
           {error ? <p className="catalog-layout-panel__error">{error}</p> : null}
           {message ? <p className="catalog-layout-panel__ok">{message}</p> : null}
 
           <div className="catalog-layout-panel__grid">
             <fieldset className="catalog-layout-panel__box">
-              <legend>Герой главной</legend>
+              <legend>Большой заголовок на первом экране</legend>
+              <FieldHint>
+                Это то, что гость видит сразу при открытии сайта (тёмный экран с фото).
+              </FieldHint>
               <label>
-                <span>Надзаголовок</span>
+                <span>Мелкий текст над заголовком</span>
                 <input
                   value={home.eyebrow}
                   onChange={(e) => setHome((p) => ({ ...p, eyebrow: e.target.value }))}
                 />
               </label>
               <label>
-                <span>Заголовок · строка 1</span>
+                <span>Большой заголовок — первая строка</span>
                 <input
                   value={home.titleLine1}
                   onChange={(e) => setHome((p) => ({ ...p, titleLine1: e.target.value }))}
-                  placeholder="Прокат"
                 />
               </label>
               <label>
-                <span>Заголовок · строка 2</span>
+                <span>Большой заголовок — вторая строка</span>
                 <input
                   value={home.titleLine2}
                   onChange={(e) => setHome((p) => ({ ...p, titleLine2: e.target.value }))}
-                  placeholder="квадроциклов"
                 />
               </label>
               <label>
-                <span>Слоган</span>
+                <span>Фраза под заголовком (золотым цветом)</span>
                 <input
                   value={home.tagline}
                   onChange={(e) => setHome((p) => ({ ...p, tagline: e.target.value }))}
                 />
               </label>
+            </fieldset>
+
+            <fieldset className="catalog-layout-panel__box">
+              <legend>Кнопки и строчки под заголовком</legend>
               <label>
-                <span>Фон (путь к картинке)</span>
+                <span>Текст первой кнопки (ведёт к маршрутам)</span>
                 <input
-                  value={home.imageUrl}
-                  onChange={(e) => setHome((p) => ({ ...p, imageUrl: e.target.value }))}
-                  placeholder="/images/hero/...."
+                  value={home.primaryCtaLabel}
+                  onChange={(e) => setHome((p) => ({ ...p, primaryCtaLabel: e.target.value }))}
                 />
               </label>
               <label>
-                <span>Alt фона</span>
+                <span>Текст второй кнопки (открывает запись)</span>
+                <input
+                  value={home.secondaryCtaLabel}
+                  onChange={(e) => setHome((p) => ({ ...p, secondaryCtaLabel: e.target.value }))}
+                />
+              </label>
+              <label>
+                <span>Короткие факты под кнопками</span>
+                <textarea
+                  rows={5}
+                  value={home.factsText}
+                  onChange={(e) => setHome((p) => ({ ...p, factsText: e.target.value }))}
+                />
+              </label>
+              <FieldHint>Каждый факт — с новой строки. Обычно 4 штуки.</FieldHint>
+              <label>
+                <span>Картинка фона первого экрана (путь к файлу)</span>
+                <input
+                  value={home.imageUrl}
+                  onChange={(e) => setHome((p) => ({ ...p, imageUrl: e.target.value }))}
+                />
+              </label>
+              <label>
+                <span>Описание картинки для слабовидящих</span>
                 <input
                   value={home.imageAlt}
                   onChange={(e) => setHome((p) => ({ ...p, imageAlt: e.target.value }))}
@@ -216,38 +248,13 @@ export function HomeLayoutPanel() {
             </fieldset>
 
             <fieldset className="catalog-layout-panel__box">
-              <legend>Кнопки и факты</legend>
+              <legend>Тексты страницы «Галерея»</legend>
+              <FieldHint>
+                Это заголовки на странице /galereya. Сами фото добавляйте в разделе «Фото для
+                карусели».
+              </FieldHint>
               <label>
-                <span>Кнопка 1</span>
-                <input
-                  value={home.primaryCtaLabel}
-                  onChange={(e) => setHome((p) => ({ ...p, primaryCtaLabel: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Кнопка 2</span>
-                <input
-                  value={home.secondaryCtaLabel}
-                  onChange={(e) => setHome((p) => ({ ...p, secondaryCtaLabel: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Факты под героем (по одному в строке)</span>
-                <textarea
-                  rows={5}
-                  value={home.factsText}
-                  onChange={(e) => setHome((p) => ({ ...p, factsText: e.target.value }))}
-                />
-              </label>
-            </fieldset>
-
-            <fieldset className="catalog-layout-panel__box">
-              <legend>Страница /galereya · тексты</legend>
-              <p className="catalog-layout-panel__hint">
-                Сами фото карусели и сетки — коллекция «Галерея» (импорт файла в поле Фото).
-              </p>
-              <label>
-                <span>H1</span>
+                <span>Главный заголовок страницы</span>
                 <input
                   value={intro.title}
                   onChange={(e) => setIntro((p) => ({ ...p, title: e.target.value }))}
@@ -261,7 +268,7 @@ export function HomeLayoutPanel() {
                 />
               </label>
               <label>
-                <span>Описание</span>
+                <span>Текст-описание под заголовками</span>
                 <textarea
                   rows={3}
                   value={intro.description}
@@ -278,13 +285,13 @@ export function HomeLayoutPanel() {
               disabled={saving || loading}
               onClick={() => void save()}
             >
-              {saving ? "Сохранение…" : "Сохранить тексты главной"}
+              {saving ? "Сохраняем…" : "Сохранить изменения"}
             </button>
             <button type="button" className="catalog-layout-panel__reload" onClick={() => void load()}>
-              Обновить
+              Вернуть с сервера
             </button>
             <Link href="/admin/collections/gallery" prefetch={false}>
-              Фото галереи →
+              Перейти к фото →
             </Link>
             <Link href="/" prefetch={false}>
               Открыть сайт →
@@ -296,7 +303,7 @@ export function HomeLayoutPanel() {
   );
 }
 
-/** Панель над списком «Галерея». */
+/** Панель над списком фото галереи. */
 export function GalleryHomePanel() {
   return <HomeLayoutPanel />;
 }
