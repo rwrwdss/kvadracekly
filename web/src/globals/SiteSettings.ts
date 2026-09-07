@@ -80,6 +80,8 @@ export const SiteSettings: GlobalConfig = {
             facts?.length && facts.some((f) => String(f?.label || "").trim())
               ? facts
               : DEFAULT_PAGE_HOME.facts.map((label) => ({ label })),
+          experienceHint:
+            String(home.experienceHint || "").trim() || DEFAULT_PAGE_HOME.experienceHint,
         };
 
         (doc as { galleryIntro: Record<string, unknown> }).galleryIntro = {
@@ -341,6 +343,15 @@ export const SiteSettings: GlobalConfig = {
           defaultValue: DEFAULT_PAGE_HOME.secondaryCtaLabel,
           admin: {
             description: `Сейчас: «${DEFAULT_PAGE_HOME.secondaryCtaLabel}»`,
+          },
+        },
+        {
+          name: "experienceHint",
+          type: "textarea",
+          label: "Подсказка под кнопками (про опыт)",
+          defaultValue: DEFAULT_PAGE_HOME.experienceHint,
+          admin: {
+            description: "Для гостей, которые уже катались — видно сразу под кнопками.",
           },
         },
         {

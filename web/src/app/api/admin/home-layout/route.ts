@@ -24,6 +24,7 @@ type HomeBody = Partial<{
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   facts: { label?: string }[];
+  experienceHint: string;
 }>;
 
 type IntroBody = Partial<{
@@ -56,6 +57,9 @@ function normalizeHome(input: HomeBody | undefined): HomePageDefaults {
       String(input?.secondaryCtaLabel || DEFAULT_PAGE_HOME.secondaryCtaLabel).trim() ||
       DEFAULT_PAGE_HOME.secondaryCtaLabel,
     facts: facts.length ? facts : [...DEFAULT_PAGE_HOME.facts],
+    experienceHint:
+      String(input?.experienceHint || DEFAULT_PAGE_HOME.experienceHint).trim() ||
+      DEFAULT_PAGE_HOME.experienceHint,
   };
 }
 
@@ -119,6 +123,7 @@ export async function GET() {
                 imageAlt: home.imageAlt,
                 primaryCtaLabel: home.primaryCtaLabel,
                 secondaryCtaLabel: home.secondaryCtaLabel,
+                experienceHint: home.experienceHint,
                 facts: home.facts.map((label) => ({ label })),
               },
             }
@@ -161,6 +166,7 @@ export async function POST(req: NextRequest) {
       imageAlt: home.imageAlt,
       primaryCtaLabel: home.primaryCtaLabel,
       secondaryCtaLabel: home.secondaryCtaLabel,
+      experienceHint: home.experienceHint,
       facts: home.facts.map((label) => ({ label })),
     };
   }

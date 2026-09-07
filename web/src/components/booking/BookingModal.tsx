@@ -48,6 +48,9 @@ export function BookingModal() {
   const [guestName, setGuestName] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [contactPrefer, setContactPrefer] = useState("WhatsApp");
+  const [riderExperience, setRiderExperience] = useState<"novice" | "experienced" | "regular">(
+    "novice",
+  );
 
   const applyRouteForProgress = useCallback(
     (pref: string, completedThrough: number) => {
@@ -72,6 +75,11 @@ export function BookingModal() {
     setDateValue("");
     setGuests(1);
     setContactPrefer("WhatsApp");
+    setRiderExperience(
+      user?.progress?.completedThrough && user.progress.completedThrough > 0
+        ? "regular"
+        : "novice",
+    );
 
     if (night) {
       setRoute(prefill.route || NIGHT_QUEST_TITLE);
@@ -129,6 +137,7 @@ export function BookingModal() {
       route: String(form.get("route") || route),
       guests: Number(form.get("guests") || guests) || 1,
       message: String(form.get("message") || ""),
+      riderExperience: String(form.get("riderExperience") || riderExperience),
       source: prefill.source || "booking_modal",
       tariff: prefill.tariff || "",
       productId: prefill.productId,
@@ -164,6 +173,7 @@ export function BookingModal() {
       route: NIGHT_QUEST_TITLE,
       guests: Number(form.get("guests") || guests) || 1,
       message: String(form.get("message") || ""),
+      riderExperience: String(form.get("riderExperience") || riderExperience),
       source: prefill.source || "night_quest",
       tariff: prefill.tariff || NIGHT_QUEST_TITLE,
       productId: prefill.productId,
@@ -311,6 +321,26 @@ export function BookingModal() {
               </label>
 
               <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Опыт за рулём</span>
+                <select
+                  name="riderExperience"
+                  className="input"
+                  value={riderExperience}
+                  onChange={(e) =>
+                    setRiderExperience(e.target.value as "novice" | "experienced" | "regular")
+                  }
+                  required
+                >
+                  <option value="novice">Новичок — старт с «Зелёного озера»</option>
+                  <option value="experienced">Уже катался — подберите уровень</option>
+                  <option value="regular">Постоянный гость Вольницы</option>
+                </select>
+                <span className="text-[11px] text-faint leading-relaxed">
+                  Нужно, чтобы опытный гость не начинал с маршрута для новичков.
+                </span>
+              </label>
+
+              <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Количество человек</span>
                 <select
                   name="guests"
@@ -389,6 +419,26 @@ export function BookingModal() {
                 durationMinutes={durationMinutes}
                 required
               />
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Опыт за рулём</span>
+                <select
+                  name="riderExperience"
+                  className="input"
+                  value={riderExperience}
+                  onChange={(e) =>
+                    setRiderExperience(e.target.value as "novice" | "experienced" | "regular")
+                  }
+                  required
+                >
+                  <option value="novice">Новичок — старт с «Зелёного озера»</option>
+                  <option value="experienced">Уже катался — подберите уровень</option>
+                  <option value="regular">Постоянный гость Вольницы</option>
+                </select>
+                <span className="text-[11px] text-faint leading-relaxed">
+                  Нужно, чтобы опытный гость не начинал с маршрута для новичков.
+                </span>
+              </label>
 
               <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Количество человек</span>

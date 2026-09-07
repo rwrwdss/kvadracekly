@@ -17,6 +17,7 @@ type HomeForm = {
   imageAlt: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
+  experienceHint: string;
   factsText: string;
 };
 
@@ -53,6 +54,7 @@ function homeFromApi(group: Record<string, unknown> | null | undefined): HomeFor
     imageAlt: String(group?.imageAlt || DEFAULT_PAGE_HOME.imageAlt),
     primaryCtaLabel: String(group?.primaryCtaLabel || DEFAULT_PAGE_HOME.primaryCtaLabel),
     secondaryCtaLabel: String(group?.secondaryCtaLabel || DEFAULT_PAGE_HOME.secondaryCtaLabel),
+    experienceHint: String(group?.experienceHint || DEFAULT_PAGE_HOME.experienceHint),
     factsText: factsToText(facts?.length ? facts : DEFAULT_PAGE_HOME.facts),
   };
 }
@@ -123,6 +125,7 @@ export function HomeLayoutPanel() {
             imageAlt: home.imageAlt,
             primaryCtaLabel: home.primaryCtaLabel,
             secondaryCtaLabel: home.secondaryCtaLabel,
+            experienceHint: home.experienceHint,
             facts: textToFacts(home.factsText),
           },
           galleryIntro: intro,
@@ -221,6 +224,14 @@ export function HomeLayoutPanel() {
                 <input
                   value={home.secondaryCtaLabel}
                   onChange={(e) => setHome((p) => ({ ...p, secondaryCtaLabel: e.target.value }))}
+                />
+              </label>
+              <label>
+                <span>Подсказка под кнопками (про опыт)</span>
+                <textarea
+                  rows={3}
+                  value={home.experienceHint}
+                  onChange={(e) => setHome((p) => ({ ...p, experienceHint: e.target.value }))}
                 />
               </label>
               <label>

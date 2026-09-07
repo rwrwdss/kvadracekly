@@ -213,22 +213,28 @@ export interface Media {
   };
 }
 /**
- * Карусель и страница /galereya. Создайте запись → загрузите фото (импорт файла) → «Опубликовано».
+ * Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
   id: number;
+  /**
+   * Короткая подпись под кадром, например: «У пруда на закате».
+   */
   title: string;
   /**
-   * Загрузите файл с компьютера (Create New) или выберите из медиатеки.
+   * Нажмите «Choose from existing» или создайте новый файл (Create New) и выберите картинку.
    */
   image: number | Media;
   category: 'atv' | 'routes' | 'nature' | 'night' | 'manor';
+  /**
+   * Снимите галочку, чтобы спрятать фото без удаления.
+   */
   published?: boolean | null;
   /**
-   * Меньше число — раньше в карусели и на /galereya.
+   * Меньше число — фото раньше в карусели. Например: 1, 2, 3…
    */
   sortOrder?: number | null;
   /**
@@ -477,6 +483,10 @@ export interface Lead {
   guests?: number | null;
   route?: string | null;
   tariff?: string | null;
+  /**
+   * Гость указывает при записи — чтобы не ставить опытного на «Зелёное озеро».
+   */
+  riderExperience?: ('novice' | 'experienced' | 'regular') | null;
   message?: string | null;
   source?: string | null;
   pageUrl?: string | null;
@@ -846,6 +856,7 @@ export interface LeadsSelect<T extends boolean = true> {
   guests?: T;
   route?: T;
   tariff?: T;
+  riderExperience?: T;
   message?: T;
   source?: T;
   pageUrl?: T;
@@ -977,21 +988,49 @@ export interface SiteSetting {
     bannerText?: string | null;
   };
   /**
-   * Тексты и фон первого экрана. Удобнее править панелью «Главная» в меню слева.
+   * Тексты большого заголовка на главной. Удобнее править: меню слева → «Тексты первого экрана».
    */
   pageHome?: {
+    /**
+     * Сейчас на сайте: «Не почасовка — уровни маршрутов»
+     */
     eyebrow?: string | null;
     /**
-     * Например: Прокат / Снегоходы
+     * Сейчас на сайте: «Прокат» (например: Прокат)
      */
     titleLine1?: string | null;
+    /**
+     * Сейчас на сайте: «квадроциклов»
+     */
     titleLine2?: string | null;
+    /**
+     * Сейчас на сайте: «Каждый маршрут открывает следующий уровень сложности»
+     */
     tagline?: string | null;
+    /**
+     * Справа — превью текущей картинки. Можно заменить путём или файлом ниже.
+     */
     imageUrl?: string | null;
+    /**
+     * Если загрузите файл — он заменит путь выше.
+     */
     cover?: (number | null) | Media;
     imageAlt?: string | null;
+    /**
+     * Сейчас: «Смотреть уровни →»
+     */
     primaryCtaLabel?: string | null;
+    /**
+     * Сейчас: «Записаться»
+     */
     secondaryCtaLabel?: string | null;
+    /**
+     * Для гостей, которые уже катались — видно сразу под кнопками.
+     */
+    experienceHint?: string | null;
+    /**
+     * Сейчас: Не часы — уровни 1→4 · Новичок → Зелёное озеро · Опыт — доступ к сложным · 25–30 мин от Казани
+     */
     facts?:
       | {
           label: string;
@@ -1000,23 +1039,35 @@ export interface SiteSetting {
       | null;
   };
   /**
-   * Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Тарифы.
+   * Тексты и фото страницы /tarify. Удобнее править панелью над списком Тарифы — там уже заполнены текущие значения.
    */
   pageTariffs?: {
+    /**
+     * Сейчас на сайте: «Тарифы и услуги»
+     */
     title?: string | null;
+    /**
+     * Сейчас на сайте: «Выберите формат приключения»
+     */
     subtitle?: string | null;
+    /**
+     * Сейчас на сайте: «Цена указана за клиентский квадроцикл. В группе резервируется машина инструктора.»
+     */
     description?: string | null;
     /**
-     * Например /images/hero/....jpg — можно заменить на зимнее фото.
+     * Справа — превью. Можно указать путь или загрузить файл ниже.
      */
     imageUrl?: string | null;
     /**
-     * Если загружена — приоритетнее пути выше.
+     * Если загрузите файл — он заменит путь выше.
      */
     cover?: (number | null) | Media;
+    /**
+     * Сейчас: «Вид с квадроцикла на лесную тропу к каменному обелиску на закате»
+     */
     imageAlt?: string | null;
     /**
-     * Короткие подписи в герое (экипировка, ТО…).
+     * Сейчас: Инструктор · Экипировка · Топливо · Маршрут
      */
     chips?:
       | {
@@ -1024,29 +1075,53 @@ export interface SiteSetting {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Сейчас: «Тарифы»
+     */
     sectionLabel?: string | null;
+    /**
+     * Сейчас: «Тарифы»
+     */
     sectionTitle?: string | null;
+    /**
+     * Сейчас: «Не можете выбрать?»
+     */
     ctaTitle?: string | null;
+    /**
+     * Сейчас: «Подскажем тариф под опыт и состав группы.»
+     */
     ctaText?: string | null;
   };
   /**
-   * Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Техника.
+   * Тексты и фото страницы /tehnika. Удобнее править панелью над списком Техника — там уже заполнены текущие значения.
    */
   pageFleet?: {
+    /**
+     * Сейчас на сайте: «Наша техника»
+     */
     title?: string | null;
+    /**
+     * Сейчас на сайте: «Мощные. Надёжные. Готовые к приключениям»
+     */
     subtitle?: string | null;
+    /**
+     * Сейчас на сайте: «На старте 8 квадроциклов: 4 грязевых и 4 прогулочных. Перед каждым выездом — подготовка, ТО и инструктаж.»
+     */
     description?: string | null;
     /**
-     * Например /images/hero/....jpg — можно заменить на зимнее фото.
+     * Справа — превью. Можно указать путь или загрузить файл ниже.
      */
     imageUrl?: string | null;
     /**
-     * Если загружена — приоритетнее пути выше.
+     * Если загрузите файл — он заменит путь выше.
      */
     cover?: (number | null) | Media;
+    /**
+     * Сейчас: «Ряд грязных квадроциклов на каменистой тропе перед освещённой деревянной усадьбой»
+     */
     imageAlt?: string | null;
     /**
-     * Короткие подписи в герое (экипировка, ТО…).
+     * Сейчас: Подготовка · ТО и осмотр · Экипировка · Подбор под маршрут
      */
     chips?:
       | {
@@ -1054,9 +1129,21 @@ export interface SiteSetting {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Сейчас: «Наш парк»
+     */
     sectionLabel?: string | null;
+    /**
+     * Сейчас: «8 единиц на старте»
+     */
     sectionTitle?: string | null;
+    /**
+     * Сейчас: «Не знаете, что выбрать?»
+     */
     ctaTitle?: string | null;
+    /**
+     * Сейчас: «Подберём технику под опыт и маршрут. В группе — машина инструктора.»
+     */
     ctaText?: string | null;
   };
   defaultSeo?: {
@@ -1066,11 +1153,20 @@ export interface SiteSetting {
     ogImage?: (number | null) | Media;
   };
   /**
-   * H1 и описание /galereya. Фото — в разделе Главная → Галерея (коллекция).
+   * Заголовки на /galereya. Фото: меню слева → «Фото для карусели».
    */
   galleryIntro?: {
+    /**
+     * Сейчас: «Галерея»
+     */
     title?: string | null;
+    /**
+     * Сейчас: «Атмосфера свободы и приключений»
+     */
     subtitle?: string | null;
+    /**
+     * Сейчас: «Живые кадры с маршрутов и базы Вольницы. Новые фото можно добавлять через CMS.»
+     */
     description?: string | null;
   };
   /**
@@ -1133,6 +1229,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         imageAlt?: T;
         primaryCtaLabel?: T;
         secondaryCtaLabel?: T;
+        experienceHint?: T;
         facts?:
           | T
           | {

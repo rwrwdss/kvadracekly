@@ -25,6 +25,7 @@ export type CreateLeadInput = {
   bookingKind?: "day" | "night";
   durationMinutes?: number | string;
   contactPrefer?: string;
+  riderExperience?: "novice" | "experienced" | "regular" | string;
   utm?: {
     source?: string;
     medium?: string;
@@ -63,6 +64,18 @@ export async function createLead(
       : 1;
   const isNight = detectNight(input);
   const contactPrefer = String(input.contactPrefer || "").trim();
+  const riderExperienceRaw = String(input.riderExperience || "").trim();
+  const riderExperience = (["novice", "experienced", "regular"].includes(riderExperienceRaw)
+    ? riderExperienceRaw
+    : "") as "" | "novice" | "experienced" | "regular";
+  const riderExperienceLabel =
+    riderExperience === "novice"
+      ? "Новичок"
+      : riderExperience === "experienced"
+        ? "Уже катался"
+        : riderExperience === "regular"
+          ? "Постоянный гость Вольницы"
+          : "";
 
   if (!name || name.length < 2) {
     return { ok: false, error: "Укажите имя (минимум 2 символа)", status: 400 };
@@ -147,6 +160,7 @@ export async function createLead(
   const messageParts = [
     input.message?.trim() || "",
     contactPrefer ? `Связь: ${contactPrefer}` : "",
+    riderExperienceLabel ? `Опыт за рулём: ${riderExperienceLabel}` : "",
   ].filter(Boolean);
   const message = messageParts.join("\n");
 
@@ -168,6 +182,7 @@ export async function createLead(
         status: "new",
         bookingKind: "night",
         contactPrefer: contactPrefer || undefined,
+        ...(riderExperience ? { riderExperience } : {}),
         utm: input.utm || {},
         ...(Number.isFinite(productId) ? { product: productId } : {}),
       },
@@ -263,6 +278,7 @@ export async function createLead(
       bookingKind: "day",
       durationMinutes,
       contactPrefer: contactPrefer || undefined,
+      ...(riderExperience ? { riderExperience } : {}),
       utm: input.utm || {},
       ...(Number.isFinite(productId) ? { product: productId } : {}),
     },

@@ -204,6 +204,19 @@ export const Leads: CollectionConfig = {
     },
     { name: "route", type: "text", label: "Маршрут" },
     { name: "tariff", type: "text", label: "Тариф" },
+    {
+      name: "riderExperience",
+      type: "select",
+      label: "Опыт за рулём",
+      options: [
+        { label: "Новичок", value: "novice" },
+        { label: "Уже катался", value: "experienced" },
+        { label: "Постоянный гость Вольницы", value: "regular" },
+      ],
+      admin: {
+        description: "Гость указывает при записи — чтобы не ставить опытного на «Зелёное озеро».",
+      },
+    },
     { name: "message", type: "textarea", label: "Комментарий" },
     {
       name: "source",

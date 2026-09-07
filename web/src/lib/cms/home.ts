@@ -53,6 +53,7 @@ export async function getHomePageLayout(): Promise<HomePageLayout> {
         home?.facts as { label?: string | null }[] | undefined,
         DEFAULT_PAGE_HOME.facts,
       ),
+      experienceHint: pickString(home?.experienceHint, DEFAULT_PAGE_HOME.experienceHint),
     };
   } catch (err) {
     console.error("[getHomePageLayout]", err);

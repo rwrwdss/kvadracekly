@@ -1,4 +1,4 @@
-import { IMAGES, SITE } from "@/data/site";
+import { IMAGES } from "@/data/site";
 
 export type HomePageDefaults = {
   eyebrow: string;
@@ -10,23 +10,27 @@ export type HomePageDefaults = {
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   facts: string[];
+  /** Короткая подсказка под кнопками героя. */
+  experienceHint: string;
 };
 
 export const DEFAULT_PAGE_HOME: HomePageDefaults = {
-  eyebrow: "Премиальный отдых на природе",
+  eyebrow: "Не почасовка — уровни маршрутов",
   titleLine1: "Прокат",
   titleLine2: "квадроциклов",
-  tagline: SITE.tagline,
+  tagline: "Каждый маршрут открывает следующий уровень сложности",
   imageUrl: IMAGES.heroHome.src,
   imageAlt: IMAGES.heroHome.alt,
-  primaryCtaLabel: "Выбрать маршрут →",
-  secondaryCtaLabel: "Забронировать",
+  primaryCtaLabel: "Смотреть уровни →",
+  secondaryCtaLabel: "Записаться",
   facts: [
+    "Не часы — уровни 1→4",
+    "Новичок → Зелёное озеро",
+    "Опыт — доступ к сложным",
     "25–30 мин от Казани",
-    "8 мощных квадроциклов",
-    "Авторские маршруты",
-    "Ночные выезды",
   ],
+  experienceHint:
+    "Уже катался? При записи укажите опыт — подберём доступный уровень, а не старт с «Зелёного озера».",
 };
 
 export type GalleryIntroDefaults = {

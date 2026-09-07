@@ -124,6 +124,10 @@ export default async function HomePage() {
             </BookButton>
           </div>
 
+          <p className="mt-4 max-w-xl text-sm text-mute leading-relaxed animate-fade-up-delay-2">
+            {hero.experienceHint}
+          </p>
+
           <div className="mt-10 sm:mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6 border-t border-[var(--border-subtle)] pt-6 sm:pt-8">
             {hero.facts.map((text, i) => {
               const Icon = HERO_FACT_ICONS[i % HERO_FACT_ICONS.length];

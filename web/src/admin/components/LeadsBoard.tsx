@@ -17,10 +17,18 @@ type LeadDoc = {
   timeSlot?: string | null;
   date?: string | null;
   route?: string | null;
+  riderExperience?: string | null;
   status?: string | null;
   guests?: number | null;
   assignee?: number | string | UserRef;
 };
+
+function riderExperienceLabel(value?: string | null): string | null {
+  if (value === "novice") return "Новичок";
+  if (value === "experienced") return "Уже катался";
+  if (value === "regular") return "Постоянный гость";
+  return null;
+}
 
 function assigneeLabel(assignee: LeadDoc["assignee"]): string | null {
   if (!assignee) return null;
@@ -174,6 +182,7 @@ export function LeadsBoard() {
           const id = String(doc.id);
           const route = doc.route?.trim() || "Маршрут не указан";
           const when = formatWhen(doc);
+          const experience = riderExperienceLabel(doc.riderExperience);
 
           return (
             <article
@@ -193,6 +202,14 @@ export function LeadsBoard() {
 
               <p className="crm-card__summary">
                 <span className="crm-card__summary-route">{route}</span>
+                {experience ? (
+                  <>
+                    <span className="crm-card__dot" aria-hidden>
+                      ·
+                    </span>
+                    <span>{experience}</span>
+                  </>
+                ) : null}
                 <span className="crm-card__dot" aria-hidden>
                   ·
                 </span>
