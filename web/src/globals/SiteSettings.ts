@@ -199,6 +199,10 @@ export const SiteSettings: GlobalConfig = {
       name: "notify",
       type: "group",
       label: "Уведомления о заявках",
+      admin: {
+        hidden: true,
+        description: "Скрыто, пока Telegram/почта не подключены.",
+      },
       fields: [
         {
           name: "channelHint",

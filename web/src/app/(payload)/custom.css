@@ -919,6 +919,31 @@ textarea,
   max-width: 1100px;
 }
 
+.admin-cal__back {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.admin-cal__back a {
+  color: var(--crm-gold);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.admin-cal__back a:hover,
+.admin-cal__back a:focus-visible {
+  text-decoration: underline;
+}
+
+.admin-cal__back-sep {
+  color: var(--crm-mute);
+  opacity: 0.7;
+}
+
 .admin-cal__header {
   display: flex;
   flex-wrap: wrap;

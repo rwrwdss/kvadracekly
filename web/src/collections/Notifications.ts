@@ -5,10 +5,11 @@ export const Notifications: CollectionConfig = {
   slug: "notifications",
   labels: { singular: "Уведомление", plural: "Уведомления" },
   admin: {
+    hidden: true,
     useAsTitle: "type",
     defaultColumns: ["type", "channel", "status", "createdAt"],
     group: "CRM",
-    description: "История сообщений о новых заявках.",
+    description: "История сообщений о новых заявках. Скрыто, пока Telegram/почта не подключены.",
   },
   access: {
     create: ({ req }) => isStaff(req.user),

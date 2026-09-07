@@ -162,14 +162,24 @@ export function CalendarStopsView() {
 
   return (
     <div className="admin-cal">
+      <div className="admin-cal__back">
+        <Link href="/admin/calendar" prefetch={false}>
+          ← Назад к записям
+        </Link>
+        <span className="admin-cal__back-sep" aria-hidden>
+          ·
+        </span>
+        <Link href="/admin" prefetch={false}>
+          В CRM
+        </Link>
+      </div>
       <header className="admin-cal__header">
         <div>
           <p className="admin-cal__eyebrow">Календарь</p>
           <h1 className="admin-cal__title">Остановка записей</h1>
           <p className="admin-cal__lead">
             Выберите период на копии умного календаря. Записаться можно <strong>до</strong> или{" "}
-            <strong>после</strong> остановки, но не в эти дни.{" "}
-            <Link href="/admin/calendar">← К записям</Link>
+            <strong>после</strong> остановки, но не в эти дни.
           </p>
         </div>
         <div className="admin-cal__nav-months">

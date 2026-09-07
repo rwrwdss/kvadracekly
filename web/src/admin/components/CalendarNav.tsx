@@ -7,6 +7,9 @@ export function CalendarNav() {
   return (
     <div className="admin-cal-nav">
       <p className="admin-cal-nav__label">Календарь</p>
+      <Link className="nav__link" href="/admin" prefetch={false}>
+        ← В CRM
+      </Link>
       <Link className="nav__link" href="/admin/calendar" prefetch={false}>
         Записи
       </Link>

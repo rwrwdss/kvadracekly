@@ -92,6 +92,11 @@ export function CalendarBookingsView() {
 
   return (
     <div className="admin-cal">
+      <div className="admin-cal__back">
+        <Link href="/admin" prefetch={false}>
+          ← Назад в CRM
+        </Link>
+      </div>
       <header className="admin-cal__header">
         <div>
           <p className="admin-cal__eyebrow">Календарь</p>

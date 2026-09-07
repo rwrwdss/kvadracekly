@@ -19,11 +19,6 @@ const TILES = [
     title: "Клиенты",
     hint: "Телефоны и прогресс маршрутов",
   },
-  {
-    href: "/admin/collections/notifications",
-    title: "Уведомления",
-    hint: "Что ушло в Telegram / почту",
-  },
 ] as const;
 
 export function CrmHome() {
@@ -45,7 +40,7 @@ export function CrmHome() {
         <h1 className="crm-home__title">Здравствуйте, {name}</h1>
         <p className="crm-home__lead">
           {isManager
-            ? "Только заявки, клиенты и уведомления — без лишнего."
+            ? "Только заявки, календарь и клиенты — без лишнего."
             : "Быстрый вход в CRM. Полный CMS — в меню слева."}
         </p>
       </div>
