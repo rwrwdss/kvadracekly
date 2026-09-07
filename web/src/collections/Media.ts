@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { hideFromManager, isAdmin } from "@/access/roles";
+import { isAdmin } from "@/access/roles";
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -12,7 +12,7 @@ export const Media: CollectionConfig = {
   },
   admin: {
     group: "Контент",
-    hidden: ({ user }) => hideFromManager(user),
+    hidden: true,
   },
   upload: {
     staticDir: "media",

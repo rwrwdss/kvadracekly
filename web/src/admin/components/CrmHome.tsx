@@ -10,6 +10,11 @@ const TILES = [
     hint: "Очередь записей и статусы",
   },
   {
+    href: "/admin/calendar",
+    title: "Календарь",
+    hint: "Занятость слотов и остановки",
+  },
+  {
     href: "/admin/collections/customers",
     title: "Клиенты",
     hint: "Телефоны и прогресс маршрутов",

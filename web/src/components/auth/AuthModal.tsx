@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useId, useState } from "react";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
+import { formatPhoneInput } from "@/lib/phone";
 
 export function AuthModal() {
   const { authOpen, closeAuth, login, consumePendingAction } = useCustomerAuth();
@@ -56,36 +57,35 @@ export function AuthModal() {
         onClick={closeAuth}
       />
 
-      <div className="relative w-full sm:max-w-md bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
-        <div className="px-5 pb-[calc(1.25rem+var(--safe-bottom))] pt-5 sm:p-8">
-          <div className="flex items-start justify-between gap-4 mb-5">
-            <div>
-              <p className="section-label">Вход</p>
-              <h2
-                id={titleId}
-                className="font-display text-[1.35rem] sm:text-2xl tracking-wide uppercase mt-1"
-              >
-                Войти или зарегистрироваться
-              </h2>
-              <p className="text-sm text-mute mt-2 leading-relaxed">
-                Нужен телефон с заявок — так видно, какие маршруты уже открыты по прогрессу.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={closeAuth}
-              className="shrink-0 flex h-10 w-10 items-center justify-center border border-[var(--border-subtle)] text-mute hover:text-ink"
-              aria-label="Закрыть"
+      <div className="relative w-full sm:max-w-md overflow-hidden bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
+        <button
+          type="button"
+          onClick={closeAuth}
+          className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center border border-[var(--border-subtle)] bg-elevated text-mute hover:text-ink hover:border-accent transition-colors"
+          aria-label="Закрыть"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path
+              d="M1 1l12 12M13 1L1 13"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="square"
+            />
+          </svg>
+        </button>
+
+        <div className="px-5 pb-[calc(1.25rem+var(--safe-bottom))] pt-5 pr-14 sm:p-8 sm:pr-16">
+          <div className="mb-5 min-w-0">
+            <p className="section-label">Вход</p>
+            <h2
+              id={titleId}
+              className="font-display text-[1.35rem] sm:text-2xl tracking-wide uppercase mt-1 leading-tight"
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
-                <path
-                  d="M1 1l12 12M13 1L1 13"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="square"
-                />
-              </svg>
-            </button>
+              Войти или зарегистрироваться
+            </h2>
+            <p className="text-sm text-mute mt-2 leading-relaxed">
+              Нужен телефон с заявок — так видно, какие маршруты уже открыты по прогрессу.
+            </p>
           </div>
 
           <form onSubmit={onSubmit} className="grid gap-3.5">
@@ -110,7 +110,10 @@ export function AuthModal() {
                 autoComplete="tel"
                 placeholder="+7 (___) ___-__-__"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => setPhone(formatPhoneInput(e.target.value))}
+                onFocus={() => {
+                  if (!phone) setPhone("+7");
+                }}
               />
             </label>
 

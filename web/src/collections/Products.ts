@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { hideFromManager, isAdmin } from "@/access/roles";
+import { isAdmin } from "@/access/roles";
 import { seoFields, utmFields } from "@/cms/fields/seoUtm";
 
 /**
@@ -14,7 +14,7 @@ export const Products: CollectionConfig = {
     defaultColumns: ["title", "type", "price", "published", "updatedAt"],
     group: "Контент",
     description: "Карточки услуг с фото, описанием, SEO и UTM-метками.",
-    hidden: ({ user }) => hideFromManager(user),
+    hidden: true,
   },
   access: {
     read: () => true,

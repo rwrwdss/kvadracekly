@@ -17,6 +17,25 @@ export function normalizePhone(raw: string): string | null {
   return `+${normalized}`;
 }
 
+/**
+ * Маска ввода для модалки: если начинают с 7 или 8 — сразу подставляем +7.
+ * Дальше держим формат +7XXXXXXXXXX (до 11 цифр).
+ */
+export function formatPhoneInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) {
+    return raw.includes("+") ? "+" : "";
+  }
+
+  let national = digits;
+  if (national.startsWith("7") || national.startsWith("8")) {
+    national = national.slice(1);
+  }
+
+  const full = `7${national}`.slice(0, 11);
+  return `+${full}`;
+}
+
 export function formatPhoneDisplay(phone: string): string {
   const d = phone.replace(/\D/g, "");
   if (d.length !== 11) return phone;

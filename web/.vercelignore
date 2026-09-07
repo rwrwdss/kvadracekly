@@ -1,0 +1,4 @@
+# Не заливать локальные секреты в деплой — только Vercel Environment Variables
+.env
+.env.*
+!.env.example

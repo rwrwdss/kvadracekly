@@ -26,9 +26,17 @@ URL: [http://localhost:3000/admin](http://localhost:3000/admin)
 - **SEO** — meta title/description/keywords, OG image, canonical, noindex
 - **UTM** — utm_source/medium/campaign/content/term + source заявки в CRM
 
-## Локально
+## Локально / production
 
-SQLite: `data/volnitsa.db`  
-Медиа: `media/`
+**БД:** PostgreSQL через Neon (`DATABASE_URL` в `.env` / Vercel).  
+SQLite больше не используется.
 
-На Vercel позже: Postgres (Neon) + Blob/S3.
+**Медиа:** локально папка `media/` (на Vercel для файлов позже — Blob/S3).
+
+Миграции Payload: `src/migrations/`  
+```bash
+npx payload migrate:create
+npx payload migrate
+```
+
+Первый вход в `/admin` — создать пользователя-админа (на новой пустой Neon БД).

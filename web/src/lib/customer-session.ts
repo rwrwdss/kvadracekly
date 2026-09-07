@@ -12,7 +12,11 @@ export type CustomerSession = {
 };
 
 function secret() {
-  return process.env.PAYLOAD_SECRET || process.env.CUSTOMER_SESSION_SECRET || "volnitsa-dev-secret";
+  const value = process.env.CUSTOMER_SESSION_SECRET || process.env.PAYLOAD_SECRET;
+  if (!value) {
+    throw new Error("PAYLOAD_SECRET or CUSTOMER_SESSION_SECRET is required for customer sessions.");
+  }
+  return value;
 }
 
 function sign(payloadB64: string): string {

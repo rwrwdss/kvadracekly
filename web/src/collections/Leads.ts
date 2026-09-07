@@ -55,7 +55,8 @@ export const Leads: CollectionConfig = {
     },
   },
   access: {
-    create: ({ req }) => !req.user || isAdmin(req.user),
+    // Публичные заявки только через /api/booking → createLead (overrideAccess).
+    create: ({ req }) => isAdmin(req.user),
     read: ({ req }) => isStaff(req.user),
     update: ({ req }) => isAdmin(req.user),
     delete: ({ req }) => isAdmin(req.user),
@@ -207,6 +208,9 @@ export const Leads: CollectionConfig = {
       admin: {
         position: "sidebar",
         description: "«Закрыта» — заезд состоялся, клиенту открывается следующий маршрут.",
+        components: {
+          Cell: "./admin/components/LeadStatusCell#LeadStatusCell",
+        },
       },
     },
     {

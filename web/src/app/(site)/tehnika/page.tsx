@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
-import { FLEET, IMAGES } from "@/data/site";
+import { IMAGES } from "@/data/site";
 import { PageHero } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
 import { FleetCarousel } from "@/components/fleet/FleetCarousel";
+import { getFleet } from "@/lib/cms/fleet";
 import { IconAtv, IconEngine, IconRoute, IconShield } from "@/components/ui/Icons";
 
 export const metadata: Metadata = { title: "Техника" };
+export const dynamic = "force-dynamic";
 
 const FEATURES = [
   { t: "Техника под задачу", Icon: IconAtv },
@@ -14,7 +16,9 @@ const FEATURES = [
   { t: "Дальние маршруты", Icon: IconRoute },
 ] as const;
 
-export default function FleetPage() {
+export default async function FleetPage() {
+  const fleet = await getFleet();
+
   return (
     <>
       <PageHero
@@ -43,7 +47,7 @@ export default function FleetPage() {
           <h2 className="section-title mt-2 mb-8 sm:mb-10 text-[clamp(1.45rem,4vw,2.2rem)]">
             8 единиц на старте
           </h2>
-          <FleetCarousel items={FLEET} />
+          <FleetCarousel items={fleet} />
 
           <div className="mt-10 sm:mt-12 grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURES.map(({ t, Icon }) => (

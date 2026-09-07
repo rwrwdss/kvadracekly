@@ -104,6 +104,25 @@ export function parseDateKey(key: string): Date | null {
   return d;
 }
 
+/** Inclusive YYYY-MM-DD range → day keys (safe for client + server). */
+export function expandDateRange(from: string, to: string): string[] {
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+  const a = from <= to ? from : to;
+  const b = from <= to ? to : from;
+  if (!DATE_RE.test(a) || !DATE_RE.test(b)) return [];
+  const start = parseDateKey(a);
+  const end = parseDateKey(b);
+  if (!start || !end) return [];
+  const out: string[] = [];
+  const cur = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const last = new Date(end.getFullYear(), end.getMonth(), end.getDate());
+  while (cur <= last) {
+    out.push(toDateKey(cur));
+    cur.setDate(cur.getDate() + 1);
+  }
+  return out;
+}
+
 export function formatBookingDate(dateKey: string, slot: string): string {
   return `${dateKey} · ${slot}`;
 }

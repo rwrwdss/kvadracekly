@@ -1,7 +1,13 @@
 import type { Payload } from "payload";
 import { normalizePhone } from "@/lib/phone";
 import { assertSlotAvailable } from "@/lib/booking/availability";
-import { formatBookingDate, parseBookingDateValue, type BookingSlot, MAX_GUESTS } from "@/lib/booking/slots";
+import {
+  formatBookingDate,
+  parseBookingDateValue,
+  type BookingSlot,
+  MAX_GUESTS,
+  OCCUPYING_STATUSES,
+} from "@/lib/booking/slots";
 import { bookableError, clampCompletedThrough } from "@/lib/booking/progress";
 
 export type CreateLeadInput = {
@@ -73,27 +79,52 @@ export async function createLead(
   const timeSlot = parsed.slot as BookingSlot;
   const now = new Date();
 
+  // Один телефон — одна активная заявка на конкретный слот
+  const sameSlot = await payload.find({
+    collection: "leads",
+    where: {
+      and: [
+        { phone: { equals: phone } },
+        { dateKey: { equals: parsed.dateKey } },
+        { timeSlot: { equals: timeSlot } },
+        { status: { in: [...OCCUPYING_STATUSES] } },
+      ],
+    },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  });
+
+  if (sameSlot.docs[0]) {
+    return {
+      ok: false,
+      error: "Вы уже записаны на это время. Выберите другой слот или дождитесь ответа менеджера.",
+      status: 409,
+    };
+  }
+
   const recent = await payload.find({
     collection: "leads",
     where: {
       and: [
         { phone: { equals: phone } },
-        { createdAt: { greater_than_equal: new Date(now.getTime() - ANTISPAM_MS).toISOString() } },
+        {
+          createdAt: {
+            greater_than_equal: new Date(now.getTime() - ANTISPAM_MS).toISOString(),
+          },
+        },
       ],
     },
     limit: 1,
     depth: 0,
+    overrideAccess: true,
   });
 
   if (recent.docs[0]) {
     return {
-      ok: true,
-      id: recent.docs[0].id,
-      customerId:
-        typeof recent.docs[0].customer === "object" && recent.docs[0].customer
-          ? recent.docs[0].customer.id
-          : (recent.docs[0].customer as number | string) || 0,
-      duplicate: true,
+      ok: false,
+      error: "Заявка уже отправлена. Подождите пару минут перед следующей.",
+      status: 429,
     };
   }
 
@@ -102,6 +133,7 @@ export async function createLead(
     where: { phone: { equals: phone } },
     limit: 1,
     depth: 0,
+    overrideAccess: true,
   });
 
   let customerId: number | string;

@@ -78,7 +78,8 @@ export function CustomerAuthProvider({ children }: { children: ReactNode }) {
     fn?.();
   }, []);
 
-  const openAuth = useCallback((_opts?: { intent?: string }) => {
+  const openAuth = useCallback((_intent?: { intent?: string }) => {
+    void _intent;
     setAuthOpen(true);
   }, []);
 

@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { IMAGES, ROUTES, formatPrice } from "@/data/site";
+import { IMAGES, formatPrice } from "@/data/site";
 import { PageHero } from "@/components/ui/PageHero";
 import { BookButton } from "@/components/ui/BookButton";
 import { TariffsCarousel } from "@/components/tariffs/TariffsCarousel";
+import { getTariffs } from "@/lib/cms/tariffs";
 import {
   IconCamera,
   IconFuel,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/Icons";
 
 export const metadata: Metadata = { title: "Тарифы" };
+export const dynamic = "force-dynamic";
 
 const HERO_CHIPS = [
   { t: "Инструктор", Icon: IconUsers },
@@ -29,7 +31,9 @@ const EXTRAS = [
   { t: "Пакеты с усадьбой «Берегиня»", price: "по запросу", Icon: IconHouse },
 ] as const;
 
-export default function TariffsPage() {
+export default async function TariffsPage() {
+  const tariffs = await getTariffs();
+
   return (
     <>
       <PageHero
@@ -59,7 +63,7 @@ export default function TariffsPage() {
         <div className="container-site grid gap-8 lg:grid-cols-[1.6fr_0.8fr] lg:items-start">
           <div>
             <p className="section-label mb-4 md:hidden">Тарифы</p>
-            <TariffsCarousel routes={ROUTES} />
+            <TariffsCarousel routes={tariffs} />
           </div>
 
           <aside className="space-y-5">

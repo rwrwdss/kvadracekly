@@ -71,6 +71,8 @@ export interface Config {
     media: Media;
     gallery: Gallery;
     products: Product;
+    tariffs: Tariff;
+    fleet: Fleet;
     customers: Customer;
     leads: Lead;
     notifications: Notification;
@@ -85,6 +87,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     gallery: GallerySelect<false> | GallerySelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    tariffs: TariffsSelect<false> | TariffsSelect<true>;
+    fleet: FleetSelect<false> | FleetSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
@@ -326,6 +330,81 @@ export interface Product {
   createdAt: string;
 }
 /**
+ * Карточки на странице /tarify. Порядок — по полю «Порядок».
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tariffs".
+ */
+export interface Tariff {
+  id: number;
+  title: string;
+  /**
+   * Например: zelenoe-ozero
+   */
+  slug: string;
+  /**
+   * Стандарт / Премиум / Премиум+ / Легенда
+   */
+  badge?: string | null;
+  price: number;
+  priceNote?: string | null;
+  duration: string;
+  distance: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  /**
+   * Как на сайте: Лёгкий, Средний, Средний+, Сложный
+   */
+  difficultyLabel: string;
+  audience?: string | null;
+  description: string;
+  /**
+   * Для доступа по прогрессу клиента (как у маршрутов).
+   */
+  progressOrder?: number | null;
+  /**
+   * Например /images/routes/....jpg — если нет загруженной обложки
+   */
+  imageUrl?: string | null;
+  cover?: (number | null) | Media;
+  imageAlt: string;
+  sortOrder?: number | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Карточки на странице /tehnika. Порядок — по полю «Порядок».
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fleet".
+ */
+export interface Fleet {
+  id: number;
+  name: string;
+  /**
+   * Уникальный ключ, например kapitan
+   */
+  slug: string;
+  /**
+   * Грязь / прогулочный / …
+   */
+  role: string;
+  color: string;
+  count: number;
+  seats: number;
+  drive: string;
+  /**
+   * Например /images/fleet/....jpg — если нет загруженной обложки
+   */
+  imageUrl?: string | null;
+  cover?: (number | null) | Media;
+  imageAlt: string;
+  sortOrder?: number | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Карточка гостя и прогресс маршрутов для записи.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -442,6 +521,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products';
         value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'tariffs';
+        value: number | Tariff;
+      } | null)
+    | ({
+        relationTo: 'fleet';
+        value: number | Fleet;
       } | null)
     | ({
         relationTo: 'customers';
@@ -647,6 +734,51 @@ export interface ProductsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tariffs_select".
+ */
+export interface TariffsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  badge?: T;
+  price?: T;
+  priceNote?: T;
+  duration?: T;
+  distance?: T;
+  difficulty?: T;
+  difficultyLabel?: T;
+  audience?: T;
+  description?: T;
+  progressOrder?: T;
+  imageUrl?: T;
+  cover?: T;
+  imageAlt?: T;
+  sortOrder?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "fleet_select".
+ */
+export interface FleetSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  role?: T;
+  color?: T;
+  count?: T;
+  seats?: T;
+  drive?: T;
+  imageUrl?: T;
+  cover?: T;
+  imageAlt?: T;
+  sortOrder?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers_select".
  */
 export interface CustomersSelect<T extends boolean = true> {
@@ -769,7 +901,18 @@ export interface SiteSetting {
      */
     slotHint?: string | null;
     /**
-     * Эти даты нельзя выбрать в календаре на сайте.
+     * Удобнее править в разделе Календарь → Остановка. Период включительно: запись возможна до и после него.
+     */
+    closedRanges?:
+      | {
+          from: string;
+          to: string;
+          note?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Отдельные дни. Периоды — в «Остановки календаря» или в разделе Календарь.
      */
     closedDates?:
       | {
@@ -812,6 +955,14 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         enabled?: T;
         slotCapacity?: T;
         slotHint?: T;
+        closedRanges?:
+          | T
+          | {
+              from?: T;
+              to?: T;
+              note?: T;
+              id?: T;
+            };
         closedDates?:
           | T
           | {

@@ -63,12 +63,43 @@ export const SiteSettings: GlobalConfig = {
           },
         },
         {
+          name: "closedRanges",
+          type: "array",
+          label: "Остановки календаря (периоды)",
+          labels: { singular: "Период", plural: "Периоды" },
+          admin: {
+            description:
+              "Удобнее править в разделе Календарь → Остановка. Период включительно: запись возможна до и после него.",
+          },
+          fields: [
+            {
+              name: "from",
+              type: "text",
+              label: "С (ГГГГ-ММ-ДД)",
+              required: true,
+              admin: { placeholder: "2026-09-15" },
+            },
+            {
+              name: "to",
+              type: "text",
+              label: "По (ГГГГ-ММ-ДД)",
+              required: true,
+              admin: { placeholder: "2026-09-20" },
+            },
+            {
+              name: "note",
+              type: "text",
+              label: "Причина",
+            },
+          ],
+        },
+        {
           name: "closedDates",
           type: "array",
-          label: "Закрытые дни",
+          label: "Закрытые дни (по одному)",
           labels: { singular: "День", plural: "Закрытые дни" },
           admin: {
-            description: "Эти даты нельзя выбрать в календаре на сайте.",
+            description: "Отдельные дни. Периоды — в «Остановки календаря» или в разделе Календарь.",
           },
           fields: [
             {

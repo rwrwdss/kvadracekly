@@ -6,6 +6,8 @@ import { importMap } from "./admin/importMap.js";
 import "@payloadcms/next/css";
 import "./custom.css";
 
+export const maxDuration = 60;
+
 type Args = {
   children: React.ReactNode;
 };

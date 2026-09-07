@@ -767,3 +767,450 @@ html[data-crm-role="manager"] .settings-menu-button {
     transition: none;
   }
 }
+
+/* —— Admin shell: desktop + mobile usability (all roles) —— */
+html[data-theme="light"] .template-default,
+html[data-theme="light"] .template-default__wrap,
+html[data-crm-role="manager"] .template-default,
+html[data-crm-role="manager"] .template-default__wrap {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.template-default .gutter,
+.collection-list,
+.doc-header,
+.list-header {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Tables: horizontal scroll inside wrapper, never blow page width */
+.table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table table {
+  min-width: 36rem;
+  width: 100%;
+}
+
+.table th,
+.table td {
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+/* Status pills in list cells */
+.crm-status {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.crm-status--new {
+  background: color-mix(in srgb, #3d6b45 18%, transparent);
+  color: #2f5436;
+}
+
+.crm-status--in_progress {
+  background: color-mix(in srgb, var(--crm-gold) 22%, transparent);
+  color: #6b5320;
+}
+
+.crm-status--confirmed {
+  background: color-mix(in srgb, #2f5d8c 18%, transparent);
+  color: #1f3f61;
+}
+
+.crm-status--done {
+  background: rgba(28, 25, 20, 0.1);
+  color: var(--crm-mute);
+}
+
+.crm-status--cancelled,
+.crm-status--spam {
+  background: color-mix(in srgb, #9b3b2e 16%, transparent);
+  color: #7a2e24;
+}
+
+/* Forms: readable fields on narrow screens */
+.field-type,
+.render-fields,
+.form-field {
+  max-width: 100%;
+  min-width: 0;
+}
+
+input:not([type="checkbox"]):not([type="radio"]),
+textarea,
+.select,
+.react-select__control {
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .template-default__wrap {
+    padding-inline: 0 !important;
+  }
+
+  .gutter {
+    padding-inline: 0.85rem !important;
+  }
+
+  .nav__link,
+  .btn,
+  button.btn {
+    min-height: 2.75rem;
+  }
+
+  .list-header,
+  .doc-header {
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+
+  .table table {
+    min-width: 28rem;
+  }
+
+  .field-type.text input,
+  .field-type.textarea textarea,
+  .field-type.number input {
+    font-size: 16px; /* iOS zoom prevention */
+  }
+
+  html[data-crm-role="manager"] .nav__scroll {
+    max-width: 100%;
+  }
+}
+
+/* —— Admin calendar —— */
+.admin-cal-nav {
+  margin: 0.75rem 0 0.35rem;
+  padding: 0.5rem 0 0;
+  border-top: 1px solid var(--crm-line);
+}
+
+.admin-cal-nav__label {
+  margin: 0 0 0.35rem;
+  padding: 0 0.85rem;
+  color: var(--crm-gold);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-cal {
+  display: grid;
+  gap: 1.25rem;
+  padding: 0.25rem 0 2rem;
+  max-width: 1100px;
+}
+
+.admin-cal__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.admin-cal__eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--crm-gold);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-cal__title {
+  margin: 0 0 0.35rem;
+  color: var(--crm-ink);
+  font-size: clamp(1.4rem, 3vw, 1.75rem);
+  font-weight: 700;
+}
+
+.admin-cal__lead {
+  margin: 0;
+  color: var(--crm-mute);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.admin-cal__nav-months {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-cal__month {
+  min-width: 9rem;
+  text-align: center;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: var(--crm-ink);
+}
+
+.admin-cal__btn {
+  border: 1px solid var(--crm-line);
+  background: var(--crm-card);
+  color: var(--crm-ink);
+  border-radius: 10px;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+  font: inherit;
+}
+
+.admin-cal__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-cal__btn--primary {
+  background: var(--crm-gold);
+  border-color: var(--crm-gold);
+  color: #1c1914;
+  font-weight: 600;
+}
+
+.admin-cal__grid-wrap {
+  background: var(--crm-card);
+  border: 1px solid var(--crm-line);
+  border-radius: var(--crm-radius);
+  padding: 0.85rem;
+}
+
+.admin-cal__weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 0.35rem;
+  color: var(--crm-mute);
+  font-size: 0.72rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.admin-cal-day {
+  min-height: 3.4rem;
+  border: 1px solid var(--crm-line);
+  border-radius: 10px;
+  background: #fffdf8;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.35rem 0.4rem;
+  cursor: pointer;
+  font: inherit;
+  color: var(--crm-ink);
+}
+
+.admin-cal-day--empty {
+  border: none;
+  background: transparent;
+  cursor: default;
+  min-height: 3.4rem;
+}
+
+.admin-cal-day__n {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.admin-cal-day__tag {
+  font-size: 0.65rem;
+  color: var(--crm-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.admin-cal-day--today {
+  outline: 2px solid rgba(184, 146, 58, 0.55);
+}
+
+.admin-cal-day--selected {
+  border-color: var(--crm-gold);
+  box-shadow: inset 0 0 0 1px var(--crm-gold);
+}
+
+.admin-cal-day--closed {
+  background: rgba(155, 59, 46, 0.1);
+  border-color: rgba(155, 59, 46, 0.35);
+}
+
+.admin-cal-day--closed .admin-cal-day__tag {
+  color: #9b3b2e;
+}
+
+.admin-cal-day--preview {
+  background: rgba(184, 146, 58, 0.18);
+  border-color: var(--crm-gold);
+}
+
+.admin-cal-day--light {
+  background: rgba(184, 146, 58, 0.08);
+}
+
+.admin-cal-day--busy {
+  background: rgba(184, 146, 58, 0.16);
+}
+
+.admin-cal-day--full {
+  background: rgba(155, 59, 46, 0.12);
+}
+
+.admin-cal__aside,
+.admin-cal__list {
+  background: var(--crm-card);
+  border: 1px solid var(--crm-line);
+  border-radius: var(--crm-radius);
+  padding: 1rem 1.1rem;
+}
+
+.admin-cal__aside-title {
+  margin: 0 0 0.65rem;
+  font-size: 1.05rem;
+}
+
+.admin-cal__aside-sub {
+  margin: 1rem 0 0.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--crm-mute);
+}
+
+.admin-cal__slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6.5rem, 1fr));
+  gap: 0.4rem;
+}
+
+.admin-cal__slot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.35rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--crm-line);
+  border-radius: 8px;
+  font-size: 0.82rem;
+}
+
+.admin-cal__slot--full {
+  opacity: 0.55;
+}
+
+.admin-cal__leads,
+.admin-cal__ranges {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.admin-cal__leads li,
+.admin-cal__ranges li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--crm-line);
+}
+
+.admin-cal__ranges li {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-cal__mute {
+  color: var(--crm-mute);
+  font-size: 0.85rem;
+}
+
+.admin-cal__error {
+  color: #9b3b2e;
+  margin: 0;
+}
+
+.admin-cal__ok {
+  color: #3d6b45;
+  margin: 0;
+}
+
+.admin-cal__warn {
+  color: #9b3b2e;
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+}
+
+.admin-cal__stop-bar {
+  display: grid;
+  gap: 0.65rem;
+  background: var(--crm-card);
+  border: 1px solid var(--crm-line);
+  border-radius: var(--crm-radius);
+  padding: 0.9rem 1rem;
+}
+
+.admin-cal__stop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-cal__input {
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid var(--crm-line);
+  border-radius: 10px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  background: #fff;
+}
+
+@media (min-width: 900px) {
+  .admin-cal {
+    grid-template-columns: 1.4fr 0.9fr;
+  }
+
+  .admin-cal__header,
+  .admin-cal__stop-bar,
+  .admin-cal__list {
+    grid-column: 1 / -1;
+  }
+
+  .admin-cal__grid-wrap {
+    grid-column: 1;
+  }
+
+  .admin-cal__aside {
+    grid-column: 2;
+    align-self: start;
+  }
+}
+

@@ -3,6 +3,7 @@ import {
   BOOKING_SLOTS,
   OCCUPYING_STATUSES,
   SLOT_CAPACITY,
+  expandDateRange,
   formatBookingDate,
   isSlotInPast,
   moscowTodayKey,
@@ -17,6 +18,13 @@ export type BookingSettings = {
   closedDates: Set<string>;
 };
 
+export type ClosedRange = {
+  id?: string | null;
+  from: string;
+  to: string;
+  note?: string | null;
+};
+
 export type DayAvailability = {
   date: string;
   closed: boolean;
@@ -24,22 +32,34 @@ export type DayAvailability = {
   total: number;
 };
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+export { expandDateRange };
+
 export async function getBookingSettings(payload: Payload): Promise<BookingSettings> {
   try {
     const settings = await payload.findGlobal({
       slug: "site-settings",
       depth: 0,
     });
-    const booking = (settings as { booking?: {
-      enabled?: boolean | null;
-      slotCapacity?: number | null;
-      closedDates?: { date?: string | null }[] | null;
-    } }).booking;
+    const booking = (settings as {
+      booking?: {
+        enabled?: boolean | null;
+        slotCapacity?: number | null;
+        closedDates?: { date?: string | null }[] | null;
+        closedRanges?: { from?: string | null; to?: string | null }[] | null;
+      };
+    }).booking;
 
     const closed = new Set<string>();
     for (const row of booking?.closedDates || []) {
       const key = String(row?.date || "").trim();
-      if (/^\d{4}-\d{2}-\d{2}$/.test(key)) closed.add(key);
+      if (DATE_RE.test(key)) closed.add(key);
+    }
+    for (const row of booking?.closedRanges || []) {
+      const from = String(row?.from || "").trim();
+      const to = String(row?.to || "").trim();
+      for (const key of expandDateRange(from, to)) closed.add(key);
     }
 
     const capacity = Number(booking?.slotCapacity);

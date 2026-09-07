@@ -5,9 +5,8 @@ import { BookButton } from "@/components/ui/BookButton";
 import { IconCheck } from "@/components/ui/Icons";
 import { difficultyClass } from "@/components/ui/PageHero";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
-import { formatPrice, type Route } from "@/data/site";
-
-const BADGES = ["Стандарт", "Премиум", "Премиум+", "Легенда"] as const;
+import { formatPrice } from "@/data/site";
+import type { TariffCard } from "@/lib/cms/tariffs";
 
 const INCLUDED = [
   "Маршрут с инструктором",
@@ -15,18 +14,18 @@ const INCLUDED = [
   "Техника и топливо в программе",
 ] as const;
 
-export function TariffsCarousel({ routes }: { routes: Route[] }) {
+export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
   const { user } = useCustomerAuth();
   const progress = user?.progress;
 
   return (
     <CardCarousel gridClassName="md:grid-cols-2">
-      {routes.map((route, i) => {
-        // Гость видит все тарифы; доступность маршрута — после входа
+      {routes.map((route) => {
         const unlocked = user
           ? route.progressOrder <= (progress?.unlockedOrder ?? 1)
           : true;
         const done = Boolean(user && progress && route.progressOrder <= progress.completedThrough);
+        const badge = route.badge || "Тариф";
 
         return (
           <article
@@ -39,7 +38,7 @@ export function TariffsCarousel({ routes }: { routes: Route[] }) {
               aria-label={route.imageAlt}
               style={{ backgroundImage: `url(${route.image})` }}
             >
-              <span className="absolute top-3 left-3 badge badge-medium">{BADGES[i]}</span>
+              <span className="absolute top-3 left-3 badge badge-medium">{badge}</span>
               {user && (
                 <span
                   className={`absolute top-3 right-3 badge ${
@@ -88,7 +87,7 @@ export function TariffsCarousel({ routes }: { routes: Route[] }) {
                 {unlocked ? (
                   <BookButton
                     className="!px-3"
-                    prefill={{ route: route.title, tariff: BADGES[i], source: "tariff_select" }}
+                    prefill={{ route: route.title, tariff: badge, source: "tariff_select" }}
                   >
                     Выбрать
                   </BookButton>
