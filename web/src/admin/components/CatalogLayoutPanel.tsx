@@ -7,6 +7,7 @@ import {
   DEFAULT_PAGE_TARIFFS,
   type CatalogPageDefaults,
 } from "@/lib/cms/catalogPageDefaults";
+import { AdminImagePathInput } from "./AdminImageThumb";
 
 type SeasonCurrent = "atv" | "snow" | "pause";
 
@@ -278,16 +279,14 @@ export function CatalogLayoutPanel({ page }: Props) {
                   onChange={(e) => setLayout((p) => ({ ...p, description: e.target.value }))}
                 />
               </label>
+              <AdminImagePathInput
+                label="Картинка фона первого экрана"
+                value={layout.imageUrl}
+                onChange={(imageUrl) => setLayout((p) => ({ ...p, imageUrl }))}
+                hint="Справа — превью. Путь вида /images/hero/….jpg"
+              />
               <label>
-                <span>Картинка фона (путь к файлу)</span>
-                <input
-                  value={layout.imageUrl}
-                  onChange={(e) => setLayout((p) => ({ ...p, imageUrl: e.target.value }))}
-                  placeholder="/images/hero/...."
-                />
-              </label>
-              <label>
-                <span>Описание картинки</span>
+                <span>Описание картинки (для слабовидящих)</span>
                 <input
                   value={layout.imageAlt}
                   onChange={(e) => setLayout((p) => ({ ...p, imageAlt: e.target.value }))}

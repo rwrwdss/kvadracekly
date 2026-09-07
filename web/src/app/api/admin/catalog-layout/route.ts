@@ -55,7 +55,7 @@ async function requireAdmin() {
   return { payload, user };
 }
 
-/** GET — сезон + вёрстка тарифов/техники для админ-панели. */
+/** GET — сезон + вёрстка тарифов/техники. Пустые тексты заполняем и пишем в БД. */
 export async function GET() {
   const { payload, user } = await requireAdmin();
   if (!user) return NextResponse.json({ error: "Нужна авторизация админа" }, { status: 401 });
@@ -67,8 +67,25 @@ export async function GET() {
   });
 
   const season = (settings as { season?: Record<string, unknown> }).season || {};
-  const pageTariffs = (settings as { pageTariffs?: PageBody }).pageTariffs;
-  const pageFleet = (settings as { pageFleet?: PageBody }).pageFleet;
+  const pageTariffsRaw = (settings as { pageTariffs?: PageBody }).pageTariffs;
+  const pageFleetRaw = (settings as { pageFleet?: PageBody }).pageFleet;
+
+  const pageTariffs = normalizePage(pageTariffsRaw, DEFAULT_PAGE_TARIFFS);
+  const pageFleet = normalizePage(pageFleetRaw, DEFAULT_PAGE_FLEET);
+
+  const tariffsEmpty = !String(pageTariffsRaw?.title || "").trim();
+  const fleetEmpty = !String(pageFleetRaw?.title || "").trim();
+
+  if (tariffsEmpty || fleetEmpty) {
+    await payload.updateGlobal({
+      slug: "site-settings",
+      data: {
+        ...(tariffsEmpty ? { pageTariffs } : {}),
+        ...(fleetEmpty ? { pageFleet } : {}),
+      },
+      overrideAccess: true,
+    });
+  }
 
   return NextResponse.json({
     season: {
@@ -81,8 +98,8 @@ export async function GET() {
           "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
       ),
     },
-    pageTariffs: normalizePage(pageTariffs, DEFAULT_PAGE_TARIFFS),
-    pageFleet: normalizePage(pageFleet, DEFAULT_PAGE_FLEET),
+    pageTariffs,
+    pageFleet,
   });
 }
 

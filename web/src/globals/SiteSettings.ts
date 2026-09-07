@@ -35,6 +35,31 @@ export const SiteSettings: GlobalConfig = {
     afterRead: [
       ({ doc }) => {
         if (!doc || typeof doc !== "object") return doc;
+
+        const fillPage = (
+          raw: Record<string, unknown> | undefined,
+          defaults: typeof DEFAULT_PAGE_TARIFFS,
+        ) => {
+          const page = raw || {};
+          const chips = page.chips as { label?: string }[] | undefined;
+          return {
+            ...page,
+            title: String(page.title || "").trim() || defaults.title,
+            subtitle: String(page.subtitle || "").trim() || defaults.subtitle,
+            description: String(page.description || "").trim() || defaults.description,
+            imageUrl: String(page.imageUrl || "").trim() || defaults.imageUrl,
+            imageAlt: String(page.imageAlt || "").trim() || defaults.imageAlt,
+            sectionLabel: String(page.sectionLabel || "").trim() || defaults.sectionLabel,
+            sectionTitle: String(page.sectionTitle || "").trim() || defaults.sectionTitle,
+            ctaTitle: String(page.ctaTitle || "").trim() || defaults.ctaTitle,
+            ctaText: String(page.ctaText || "").trim() || defaults.ctaText,
+            chips:
+              chips?.length && chips.some((c) => String(c?.label || "").trim())
+                ? chips
+                : defaults.chips.map((label) => ({ label })),
+          };
+        };
+
         const home = (doc as { pageHome?: Record<string, unknown> }).pageHome || {};
         const intro = (doc as { galleryIntro?: Record<string, unknown> }).galleryIntro || {};
         const facts = home.facts as { label?: string }[] | undefined;
@@ -63,6 +88,15 @@ export const SiteSettings: GlobalConfig = {
           subtitle: String(intro.subtitle || "").trim() || DEFAULT_GALLERY_INTRO.subtitle,
           description: String(intro.description || "").trim() || DEFAULT_GALLERY_INTRO.description,
         };
+
+        (doc as { pageTariffs: Record<string, unknown> }).pageTariffs = fillPage(
+          (doc as { pageTariffs?: Record<string, unknown> }).pageTariffs,
+          DEFAULT_PAGE_TARIFFS,
+        );
+        (doc as { pageFleet: Record<string, unknown> }).pageFleet = fillPage(
+          (doc as { pageFleet?: Record<string, unknown> }).pageFleet,
+          DEFAULT_PAGE_FLEET,
+        );
 
         return doc;
       },
@@ -267,10 +301,13 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "imageUrl",
           type: "text",
-          label: "Картинка фона (путь к файлу)",
+          label: "Картинка фона первого экрана (путь к файлу)",
           defaultValue: DEFAULT_PAGE_HOME.imageUrl,
           admin: {
-            description: `Сейчас: ${DEFAULT_PAGE_HOME.imageUrl}`,
+            description: "Справа — превью текущей картинки. Можно заменить путём или файлом ниже.",
+            components: {
+              Field: "./admin/components/ImagePathField#ImagePathField",
+            },
           },
         },
         {
@@ -329,20 +366,20 @@ export const SiteSettings: GlobalConfig = {
     {
       name: "pageTariffs",
       type: "group",
-      label: "Страница «Тарифы» (/tarify)",
+      label: "Страница «Тарифы» — тексты первого экрана",
       admin: {
         description:
-          "Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Тарифы.",
+          "Тексты и фото страницы /tarify. Удобнее править панелью над списком Тарифы — там уже заполнены текущие значения.",
       },
       fields: catalogPageLayoutFields(DEFAULT_PAGE_TARIFFS),
     },
     {
       name: "pageFleet",
       type: "group",
-      label: "Страница «Техника» (/tehnika)",
+      label: "Страница «Техника» — тексты первого экрана",
       admin: {
         description:
-          "Вёрстка героя и нижнего CTA. Удобнее править также панелью над списком Техника.",
+          "Тексты и фото страницы /tehnika. Удобнее править панелью над списком Техника — там уже заполнены текущие значения.",
       },
       fields: catalogPageLayoutFields(DEFAULT_PAGE_FLEET),
     },

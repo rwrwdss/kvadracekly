@@ -20,75 +20,106 @@ export function catalogPageLayoutFields(defaults: CatalogPageDefaults): Field[] 
     {
       name: "title",
       type: "text",
-      label: "Заголовок (H1)",
+      label: "Главный заголовок страницы",
       defaultValue: defaults.title,
+      admin: {
+        description: `Сейчас на сайте: «${defaults.title}»`,
+      },
     },
     {
       name: "subtitle",
       type: "text",
       label: "Подзаголовок",
       defaultValue: defaults.subtitle,
+      admin: {
+        description: `Сейчас на сайте: «${defaults.subtitle}»`,
+      },
     },
     {
       name: "description",
       type: "textarea",
-      label: "Описание под заголовком",
+      label: "Текст под заголовком",
       defaultValue: defaults.description,
+      admin: {
+        description: `Сейчас на сайте: «${defaults.description}»`,
+      },
     },
     {
       name: "imageUrl",
       type: "text",
-      label: "Картинка героя (путь)",
+      label: "Картинка фона первого экрана (путь к файлу)",
       defaultValue: defaults.imageUrl,
       admin: {
-        description: "Например /images/hero/....jpg — можно заменить на зимнее фото.",
+        description: "Справа — превью. Можно указать путь или загрузить файл ниже.",
+        components: {
+          Field: "./admin/components/ImagePathField#ImagePathField",
+        },
       },
     },
     {
       name: "cover",
       type: "upload",
       relationTo: "media",
-      label: "Обложка героя (файл)",
-      admin: { description: "Если загружена — приоритетнее пути выше." },
+      label: "Или загрузить свою картинку фона",
+      admin: {
+        description: "Если загрузите файл — он заменит путь выше.",
+      },
     },
     {
       name: "imageAlt",
       type: "text",
-      label: "Alt картинки",
+      label: "Описание картинки (для слабовидящих)",
       defaultValue: defaults.imageAlt,
+      admin: {
+        description: `Сейчас: «${defaults.imageAlt}»`,
+      },
     },
     {
       name: "chips",
       type: "array",
-      label: "Чипы в герое",
-      labels: { singular: "Чип", plural: "Чипы" },
+      label: "Короткие подписи на первом экране",
+      labels: { singular: "Подпись", plural: "Подписи" },
       defaultValue: defaults.chips.map((label) => ({ label })),
-      fields: [{ name: "label", type: "text", label: "Текст", required: true }],
-      admin: { description: "Короткие подписи в герое (экипировка, ТО…)." },
+      fields: [{ name: "label", type: "text", label: "Текст подписи", required: true }],
+      admin: {
+        description: `Сейчас: ${defaults.chips.join(" · ")}`,
+      },
     },
     {
       name: "sectionLabel",
       type: "text",
-      label: "Лейбл секции",
+      label: "Мелкий лейбл над списком",
       defaultValue: defaults.sectionLabel,
+      admin: {
+        description: `Сейчас: «${defaults.sectionLabel}»`,
+      },
     },
     {
       name: "sectionTitle",
       type: "text",
-      label: "Заголовок секции",
+      label: "Заголовок над списком",
       defaultValue: defaults.sectionTitle,
+      admin: {
+        description: `Сейчас: «${defaults.sectionTitle}»`,
+      },
     },
     {
       name: "ctaTitle",
       type: "text",
-      label: "CTA: заголовок",
+      label: "Заголовок нижнего блока «записаться»",
       defaultValue: defaults.ctaTitle,
+      admin: {
+        description: `Сейчас: «${defaults.ctaTitle}»`,
+      },
     },
     {
       name: "ctaText",
       type: "textarea",
-      label: "CTA: текст",
+      label: "Текст нижнего блока",
       defaultValue: defaults.ctaText,
+      admin: {
+        description: `Сейчас: «${defaults.ctaText}»`,
+      },
     },
   ];
 }

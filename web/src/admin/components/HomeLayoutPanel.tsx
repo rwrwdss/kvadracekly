@@ -6,6 +6,7 @@ import {
   DEFAULT_GALLERY_INTRO,
   DEFAULT_PAGE_HOME,
 } from "@/lib/cms/homeDefaults";
+import { AdminImagePathInput } from "./AdminImageThumb";
 
 type HomeForm = {
   eyebrow: string;
@@ -231,13 +232,12 @@ export function HomeLayoutPanel() {
                 />
               </label>
               <FieldHint>Каждый факт — с новой строки. Обычно 4 штуки.</FieldHint>
-              <label>
-                <span>Картинка фона первого экрана (путь к файлу)</span>
-                <input
-                  value={home.imageUrl}
-                  onChange={(e) => setHome((p) => ({ ...p, imageUrl: e.target.value }))}
-                />
-              </label>
+              <AdminImagePathInput
+                label="Картинка фона первого экрана"
+                value={home.imageUrl}
+                onChange={(imageUrl) => setHome((p) => ({ ...p, imageUrl }))}
+                hint="Справа — превью. Путь вида /images/hero/….jpg"
+              />
               <label>
                 <span>Описание картинки для слабовидящих</span>
                 <input

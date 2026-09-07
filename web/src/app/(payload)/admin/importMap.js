@@ -15,6 +15,7 @@ import { CalendarStopsView as CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533
 import { TariffsLayoutPanel as TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90 } from '../../../admin/components/CatalogLayoutPanel'
 import { FleetLayoutPanel as FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012 } from '../../../admin/components/CatalogLayoutPanel'
 import { GalleryHomePanel as GalleryHomePanel_e3f4a5b60718293a4b5c6d7e8f901234 } from '../../../admin/components/HomeLayoutPanel'
+import { ImagePathField as ImagePathField_f4a5b60718293a4b5c6d7e8f90123456 } from '../../../admin/components/ImagePathField'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -36,5 +37,6 @@ export const importMap = {
   "./admin/components/CatalogLayoutPanel#TariffsLayoutPanel": TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90,
   "./admin/components/CatalogLayoutPanel#FleetLayoutPanel": FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012,
   "./admin/components/HomeLayoutPanel#GalleryHomePanel": GalleryHomePanel_e3f4a5b60718293a4b5c6d7e8f901234,
+  "./admin/components/ImagePathField#ImagePathField": ImagePathField_f4a5b60718293a4b5c6d7e8f90123456,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }
