@@ -7,6 +7,7 @@ import {
   DEFAULT_PAGE_HOME,
 } from "@/lib/cms/homeDefaults";
 import { AdminImagePathInput } from "./AdminImageThumb";
+import { GalleryThumbsStrip } from "./GalleryPhotosBoard";
 
 type HomeForm = {
   eyebrow: string;
@@ -261,8 +262,7 @@ export function HomeLayoutPanel() {
             <fieldset className="catalog-layout-panel__box">
               <legend>Тексты страницы «Галерея»</legend>
               <FieldHint>
-                Это заголовки на странице /galereya. Сами фото добавляйте в разделе «Фото для
-                карусели».
+                Заголовки на /galereya. Ниже — превью каждого загруженного фото карусели.
               </FieldHint>
               <label>
                 <span>Главный заголовок страницы</span>
@@ -286,6 +286,7 @@ export function HomeLayoutPanel() {
                   onChange={(e) => setIntro((p) => ({ ...p, description: e.target.value }))}
                 />
               </label>
+              <GalleryThumbsStrip />
             </fieldset>
           </div>
 

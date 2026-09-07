@@ -15,7 +15,7 @@ export const Tariffs: CollectionConfig = {
   labels: { singular: "Тариф", plural: "Тарифы" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "price", "durationMinutes", "season", "published", "sortOrder"],
+    defaultColumns: ["imageUrl", "title", "price", "durationMinutes", "season", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tarify. Порядок — по полю «Порядок».",
     components: {
@@ -134,6 +134,9 @@ export const Tariffs: CollectionConfig = {
       label: "Картинка (путь)",
       admin: {
         description: "Например /images/routes/....jpg — если нет загруженной обложки",
+        components: {
+          Cell: "./admin/components/PathImageCell#PathImageCell",
+        },
       },
     },
     {

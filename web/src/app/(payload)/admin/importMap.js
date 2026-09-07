@@ -16,6 +16,7 @@ import { TariffsLayoutPanel as TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f
 import { FleetLayoutPanel as FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012 } from '../../../admin/components/CatalogLayoutPanel'
 import { GalleryPhotosBoard as GalleryPhotosBoard_c6d7e8f90123456789abcdef01234567 } from '../../../admin/components/GalleryPhotosBoard'
 import { GalleryImageCell as GalleryImageCell_a5b60718293a4b5c6d7e8f9012345678 } from '../../../admin/components/GalleryImageCell'
+import { PathImageCell as PathImageCell_d7e8f90123456789abcdef0123456789 } from '../../../admin/components/PathImageCell'
 import { ImagePathField as ImagePathField_f4a5b60718293a4b5c6d7e8f90123456 } from '../../../admin/components/ImagePathField'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
@@ -39,6 +40,7 @@ export const importMap = {
   "./admin/components/CatalogLayoutPanel#FleetLayoutPanel": FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012,
   "./admin/components/GalleryPhotosBoard#GalleryPhotosBoard": GalleryPhotosBoard_c6d7e8f90123456789abcdef01234567,
   "./admin/components/GalleryImageCell#GalleryImageCell": GalleryImageCell_a5b60718293a4b5c6d7e8f9012345678,
+  "./admin/components/PathImageCell#PathImageCell": PathImageCell_d7e8f90123456789abcdef0123456789,
   "./admin/components/ImagePathField#ImagePathField": ImagePathField_f4a5b60718293a4b5c6d7e8f90123456,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

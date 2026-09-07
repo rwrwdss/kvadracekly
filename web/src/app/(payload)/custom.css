@@ -1616,4 +1616,36 @@ textarea,
   color: rgba(40, 36, 30, 0.55);
 }
 
+.gallery-thumbs-strip {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(154, 107, 47, 0.22);
+  display: grid;
+  gap: 0.55rem;
+}
+
+.gallery-thumbs-strip__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gallery-thumbs-strip__title {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.gallery-thumbs-strip__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.gallery-thumbs-strip .gallery-photos-board__grid {
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+}
+
 

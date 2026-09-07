@@ -15,7 +15,7 @@ export const Fleet: CollectionConfig = {
   labels: { singular: "Единица техники", plural: "Техника" },
   admin: {
     useAsTitle: "name",
-    defaultColumns: ["name", "role", "season", "color", "count", "published", "sortOrder"],
+    defaultColumns: ["imageUrl", "name", "role", "season", "color", "count", "published", "sortOrder"],
     group: "Сайт",
     description: "Карточки на странице /tehnika. Порядок — по полю «Порядок».",
     components: {
@@ -89,6 +89,9 @@ export const Fleet: CollectionConfig = {
       label: "Картинка (путь)",
       admin: {
         description: "Например /images/fleet/....jpg — если нет загруженной обложки",
+        components: {
+          Cell: "./admin/components/PathImageCell#PathImageCell",
+        },
       },
     },
     {

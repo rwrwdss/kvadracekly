@@ -3,11 +3,14 @@
 import React from "react";
 import { Link } from "@payloadcms/ui";
 
-/** Ссылки раздела «Главная» в боковом меню админки. */
+/**
+ * Единый вход в раздел «Главная» — без дубля с группой коллекций Payload.
+ * Коллекция gallery скрыта из авто-меню (admin.hidden) и открывается отсюда.
+ */
 export function HomeNav() {
   return (
     <div className="admin-cal-nav">
-      <p className="admin-cal-nav__label">Главная страница</p>
+      <p className="admin-cal-nav__label">Главная</p>
       <Link className="nav__link" href="/admin/home" prefetch={false}>
         Тексты первого экрана
       </Link>

@@ -260,8 +260,8 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Главная — первый экран",
       admin: {
-        description:
-          "Тексты большого заголовка на главной. Удобнее править: меню слева → «Тексты первого экрана».",
+        hidden: true,
+        description: "Править только: меню «Главная» → «Тексты первого экрана».",
       },
       fields: [
         {
@@ -379,8 +379,8 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Страница «Тарифы» — тексты первого экрана",
       admin: {
-        description:
-          "Тексты и фото страницы /tarify. Удобнее править панелью над списком Тарифы — там уже заполнены текущие значения.",
+        hidden: true,
+        description: "Править панелью над списком Тарифы.",
       },
       fields: catalogPageLayoutFields(DEFAULT_PAGE_TARIFFS),
     },
@@ -389,8 +389,8 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Страница «Техника» — тексты первого экрана",
       admin: {
-        description:
-          "Тексты и фото страницы /tehnika. Удобнее править панелью над списком Техника — там уже заполнены текущие значения.",
+        hidden: true,
+        description: "Править панелью над списком Техника.",
       },
       fields: catalogPageLayoutFields(DEFAULT_PAGE_FLEET),
     },
@@ -416,8 +416,8 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Галерея — тексты страницы",
       admin: {
-        description:
-          "Заголовки на /galereya. Фото: меню слева → «Фото для карусели».",
+        hidden: true,
+        description: "Править только: меню «Главная» → «Тексты первого экрана».",
       },
       fields: [
         {

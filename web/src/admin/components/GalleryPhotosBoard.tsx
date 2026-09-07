@@ -13,7 +13,7 @@ type MediaLike = {
   } | null;
 };
 
-type GalleryDoc = {
+export type GalleryDoc = {
   id: number | string;
   title?: string | null;
   published?: boolean | null;
@@ -22,7 +22,7 @@ type GalleryDoc = {
   image?: MediaLike | number | string | null;
 };
 
-function mediaSrc(value: unknown): string | null {
+export function mediaSrc(value: unknown): string | null {
   if (!value || typeof value === "number" || typeof value === "string") return null;
   const doc = value as MediaLike;
   return (
@@ -42,8 +42,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   manor: "Усадьба",
 };
 
-/** Сетка превью фото над списком «Галерея» — видно сразу, без скролла формы. */
-export function GalleryPhotosBoard() {
+export function useGalleryDocs(limit = 50) {
   const [docs, setDocs] = useState<GalleryDoc[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -52,7 +51,7 @@ export function GalleryPhotosBoard() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/gallery?depth=1&limit=50&sort=sortOrder", {
+      const res = await fetch(`/api/gallery?depth=1&limit=${limit}&sort=sortOrder`, {
         credentials: "include",
       });
       const data = await res.json().catch(() => ({}));
@@ -66,31 +65,115 @@ export function GalleryPhotosBoard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [limit]);
 
   useEffect(() => {
     void load();
   }, [load]);
+
+  return { docs, loading, error, reload: load };
+}
+
+type GridProps = {
+  docs: GalleryDoc[];
+  emptyText?: string;
+};
+
+/** Сетка превью — по карточке на каждое фото. */
+export function GalleryThumbsGrid({ docs, emptyText }: GridProps) {
+  if (!docs.length) {
+    return (
+      <p className="gallery-photos-board__empty">
+        {emptyText ||
+          "Пока нет фото. Нажмите «Создать» / «Добавить фото», загрузите картинку и сохраните."}
+      </p>
+    );
+  }
+
+  return (
+    <div className="gallery-photos-board__grid">
+      {docs.map((doc) => {
+        const src = mediaSrc(doc.image);
+        const href = `/admin/collections/gallery/${encodeURIComponent(String(doc.id))}`;
+        const cat = CATEGORY_LABELS[String(doc.category || "")] || doc.category || "";
+        return (
+          <Link key={String(doc.id)} className="gallery-photos-board__card" href={href} prefetch={false}>
+            <span className="gallery-photos-board__thumb">
+              {src ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={src} alt={doc.title || "Фото"} />
+              ) : (
+                <span className="gallery-photos-board__no-img">Нет файла</span>
+              )}
+            </span>
+            <span className="gallery-photos-board__meta">
+              <span className="gallery-photos-board__name">{doc.title || "Без названия"}</span>
+              <span className="gallery-photos-board__sub">
+                {cat}
+                {doc.published === false ? " · скрыто" : ""}
+              </span>
+            </span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Компактная полоса превью для панели текстов главной. */
+export function GalleryThumbsStrip() {
+  const { docs, loading, error, reload } = useGalleryDocs(24);
+
+  return (
+    <div className="gallery-thumbs-strip">
+      <div className="gallery-thumbs-strip__head">
+        <p className="gallery-thumbs-strip__title">Фото карусели — превью каждого кадра</p>
+        <div className="gallery-thumbs-strip__actions">
+          <button type="button" className="gallery-photos-board__btn gallery-photos-board__btn--ghost" onClick={() => void reload()}>
+            Обновить
+          </button>
+          <Link className="gallery-photos-board__btn" href="/admin/collections/gallery/create" prefetch={false}>
+            + Добавить
+          </Link>
+        </div>
+      </div>
+      {loading ? <p className="gallery-photos-board__mute">Загружаем превью…</p> : null}
+      {error ? <p className="gallery-photos-board__error">{error}</p> : null}
+      {!loading && !error ? <GalleryThumbsGrid docs={docs} /> : null}
+      <p className="catalog-layout-panel__hint">
+        Полный список и загрузка —{" "}
+        <Link href="/admin/collections/gallery" prefetch={false}>
+          Фото для карусели
+        </Link>
+        .
+      </p>
+    </div>
+  );
+}
+
+/** Сетка превью фото на странице коллекции «Галерея». */
+export function GalleryPhotosBoard() {
+  const { docs, loading, error, reload } = useGalleryDocs(50);
 
   return (
     <section className="gallery-photos-board">
       <div className="gallery-photos-board__head">
         <div>
           <p className="gallery-photos-board__eyebrow">Карусель на сайте</p>
-          <h2 className="gallery-photos-board__title">Превью загруженных фото</h2>
+          <h2 className="gallery-photos-board__title">Превью каждого фото</h2>
           <p className="gallery-photos-board__lead">
-            Здесь сразу видно кадры. Чтобы добавить — «Создать» сверху. Тексты первого экрана — в{" "}
+            У каждого кадра — своя миниатюра. Тексты первого экрана — только в{" "}
             <Link href="/admin/home" prefetch={false}>
               Тексты первого экрана
             </Link>
-            .
+            (здесь не дублируем).
           </p>
         </div>
         <div className="gallery-photos-board__actions">
           <Link className="gallery-photos-board__btn" href="/admin/collections/gallery/create" prefetch={false}>
             + Добавить фото
           </Link>
-          <button type="button" className="gallery-photos-board__btn gallery-photos-board__btn--ghost" onClick={() => void load()}>
+          <button type="button" className="gallery-photos-board__btn gallery-photos-board__btn--ghost" onClick={() => void reload()}>
             Обновить
           </button>
         </div>
@@ -98,47 +181,7 @@ export function GalleryPhotosBoard() {
 
       {loading ? <p className="gallery-photos-board__mute">Загружаем превью…</p> : null}
       {error ? <p className="gallery-photos-board__error">{error}</p> : null}
-
-      {!loading && !error && docs.length === 0 ? (
-        <p className="gallery-photos-board__empty">
-          Пока нет фото. Нажмите «Создать», загрузите картинку и сохраните — тогда здесь появятся
-          превью.
-        </p>
-      ) : null}
-
-      {docs.length > 0 ? (
-        <div className="gallery-photos-board__grid">
-          {docs.map((doc) => {
-            const src = mediaSrc(doc.image);
-            const href = `/admin/collections/gallery/${encodeURIComponent(String(doc.id))}`;
-            const cat = CATEGORY_LABELS[String(doc.category || "")] || doc.category || "";
-            return (
-              <Link key={String(doc.id)} className="gallery-photos-board__card" href={href} prefetch={false}>
-                <span className="gallery-photos-board__thumb">
-                  {src ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={src} alt={doc.title || "Фото"} />
-                  ) : (
-                    <span className="gallery-photos-board__no-img">Нет файла</span>
-                  )}
-                </span>
-                <span className="gallery-photos-board__meta">
-                  <span className="gallery-photos-board__name">{doc.title || "Без названия"}</span>
-                  <span className="gallery-photos-board__sub">
-                    {cat}
-                    {doc.published === false ? " · скрыто" : ""}
-                  </span>
-                </span>
-              </Link>
-            );
-          })}
-        </div>
-      ) : null}
+      {!loading && !error ? <GalleryThumbsGrid docs={docs} /> : null}
     </section>
   );
-}
-
-/** @deprecated — оставлено для совместимости importMap; используйте GalleryPhotosBoard */
-export function GalleryHomePanel() {
-  return <GalleryPhotosBoard />;
 }
