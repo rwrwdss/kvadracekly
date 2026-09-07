@@ -19,8 +19,7 @@ export const Gallery: CollectionConfig = {
   admin: {
     useAsTitle: "title",
     defaultColumns: ["image", "title", "category", "published", "sortOrder", "updatedAt"],
-    /** Скрыто из авто-группы меню — пункт один раз в HomeNav «Главная». */
-    hidden: true,
+    group: "Главная",
     description:
       "Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.",
     components: {
