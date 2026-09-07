@@ -14,8 +14,9 @@ import { CalendarBookingsView as CalendarBookingsView_3e2927e5a044149504583d9c48
 import { CalendarStopsView as CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533 } from '../../../admin/components/CalendarStopsView'
 import { TariffsLayoutPanel as TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90 } from '../../../admin/components/CatalogLayoutPanel'
 import { FleetLayoutPanel as FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012 } from '../../../admin/components/CatalogLayoutPanel'
-import { GalleryPhotosBoard as GalleryPhotosBoard_c6d7e8f90123456789abcdef01234567 } from '../../../admin/components/GalleryPhotosBoard'
-import { GalleryImageCell as GalleryImageCell_a5b60718293a4b5c6d7e8f9012345678 } from '../../../admin/components/GalleryImageCell'
+import { TariffsItemsBoard as TariffsItemsBoard_c3d4e5f60718293a4b5c6d7e8f901234 } from '../../../admin/components/CatalogItemsBoard'
+import { FleetItemsBoard as FleetItemsBoard_d4e5f60718293a4b5c6d7e8f90123456 } from '../../../admin/components/CatalogItemsBoard'
+import { GalleryAdminGone as GalleryAdminGone_e5f60718293a4b5c6d7e8f9012345678 } from '../../../admin/components/GalleryAdminGone'
 import { PathImageCell as PathImageCell_d7e8f90123456789abcdef0123456789 } from '../../../admin/components/PathImageCell'
 import { ImagePathField as ImagePathField_f4a5b60718293a4b5c6d7e8f90123456 } from '../../../admin/components/ImagePathField'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -38,8 +39,9 @@ export const importMap = {
   "./admin/components/CalendarStopsView#CalendarStopsView": CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533,
   "./admin/components/CatalogLayoutPanel#TariffsLayoutPanel": TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90,
   "./admin/components/CatalogLayoutPanel#FleetLayoutPanel": FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012,
-  "./admin/components/GalleryPhotosBoard#GalleryPhotosBoard": GalleryPhotosBoard_c6d7e8f90123456789abcdef01234567,
-  "./admin/components/GalleryImageCell#GalleryImageCell": GalleryImageCell_a5b60718293a4b5c6d7e8f9012345678,
+  "./admin/components/CatalogItemsBoard#TariffsItemsBoard": TariffsItemsBoard_c3d4e5f60718293a4b5c6d7e8f901234,
+  "./admin/components/CatalogItemsBoard#FleetItemsBoard": FleetItemsBoard_d4e5f60718293a4b5c6d7e8f90123456,
+  "./admin/components/GalleryAdminGone#GalleryAdminGone": GalleryAdminGone_e5f60718293a4b5c6d7e8f9012345678,
   "./admin/components/PathImageCell#PathImageCell": PathImageCell_d7e8f90123456789abcdef0123456789,
   "./admin/components/ImagePathField#ImagePathField": ImagePathField_f4a5b60718293a4b5c6d7e8f90123456,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

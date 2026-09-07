@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Link, useAuth } from "@payloadcms/ui";
+import { Link } from "@payloadcms/ui";
 import {
   DEFAULT_GALLERY_INTRO,
   DEFAULT_PAGE_HOME,
 } from "@/lib/cms/homeDefaults";
 import { AdminImagePathInput } from "./AdminImageThumb";
-import { GalleryThumbsStrip } from "./GalleryPhotosBoard";
 
 type HomeForm = {
   eyebrow: string;
@@ -66,13 +65,6 @@ function FieldHint({ children }: { children: React.ReactNode }) {
 
 /** Панель текстов первого экрана главной + тексты страницы галереи. */
 export function HomeLayoutPanel() {
-  const { user } = useAuth();
-  const role =
-    user && typeof user === "object" && "role" in user
-      ? String((user as { role?: string }).role || "")
-      : "";
-  const isAdmin = role === "admin";
-
   const [home, setHome] = useState<HomeForm>(() => homeFromApi(null));
   const [intro, setIntro] = useState<IntroForm>({ ...DEFAULT_GALLERY_INTRO });
   const [loading, setLoading] = useState(true);
@@ -107,7 +99,6 @@ export function HomeLayoutPanel() {
   }, [load]);
 
   async function save() {
-    if (!isAdmin) return;
     setSaving(true);
     setMessage("");
     setError("");
@@ -143,8 +134,6 @@ export function HomeLayoutPanel() {
     }
   }
 
-  if (!isAdmin) return null;
-
   return (
     <section className="catalog-layout-panel">
       <div className="catalog-layout-panel__head">
@@ -152,12 +141,7 @@ export function HomeLayoutPanel() {
           <p className="catalog-layout-panel__eyebrow">Что видит гость на сайте</p>
           <h2 className="catalog-layout-panel__title">Тексты первого экрана главной</h2>
           <p className="catalog-layout-panel__lead">
-            В полях уже стоят текущие тексты с сайта — меняйте их и нажмите «Сохранить». Фото
-            карусели меняются отдельно:{" "}
-            <Link href="/admin/collections/gallery" prefetch={false}>
-              Фото для карусели
-            </Link>
-            .
+            В полях уже стоят текущие тексты с сайта — меняйте их и нажмите «Сохранить».
           </p>
         </div>
         <button
@@ -261,9 +245,7 @@ export function HomeLayoutPanel() {
 
             <fieldset className="catalog-layout-panel__box">
               <legend>Тексты страницы «Галерея»</legend>
-              <FieldHint>
-                Заголовки на /galereya. Ниже — превью каждого загруженного фото карусели.
-              </FieldHint>
+              <FieldHint>Заголовки на /galereya. Управление фото в админке отключено.</FieldHint>
               <label>
                 <span>Главный заголовок страницы</span>
                 <input
@@ -286,7 +268,6 @@ export function HomeLayoutPanel() {
                   onChange={(e) => setIntro((p) => ({ ...p, description: e.target.value }))}
                 />
               </label>
-              <GalleryThumbsStrip />
             </fieldset>
           </div>
 
@@ -302,9 +283,6 @@ export function HomeLayoutPanel() {
             <button type="button" className="catalog-layout-panel__reload" onClick={() => void load()}>
               Вернуть с сервера
             </button>
-            <Link href="/admin/collections/gallery" prefetch={false}>
-              Перейти к фото →
-            </Link>
             <Link href="/" prefetch={false}>
               Открыть сайт →
             </Link>
@@ -315,7 +293,6 @@ export function HomeLayoutPanel() {
   );
 }
 
-/** Панель над списком фото галереи — больше не используется (см. GalleryPhotosBoard). */
 export function GalleryHomePanel() {
   return null;
 }

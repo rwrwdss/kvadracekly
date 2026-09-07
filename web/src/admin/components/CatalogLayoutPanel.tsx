@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useAuth } from "@payloadcms/ui";
+import React, { useCallback, useEffect, useState } from "react";
+import { Link } from "@payloadcms/ui";
 import {
   DEFAULT_PAGE_FLEET,
   DEFAULT_PAGE_TARIFFS,
@@ -9,7 +9,11 @@ import {
 } from "@/lib/cms/catalogPageDefaults";
 import { AdminImagePathInput } from "./AdminImageThumb";
 
-type SeasonCurrent = "atv" | "snow" | "pause";
+type SeasonForm = {
+  current: "atv" | "snow" | "pause";
+  label: string;
+  bannerText: string;
+};
 
 type PageForm = {
   title: string;
@@ -24,10 +28,10 @@ type PageForm = {
   ctaText: string;
 };
 
-type SeasonForm = {
-  current: SeasonCurrent;
-  label: string;
-  bannerText: string;
+const DEFAULT_SEASON: SeasonForm = {
+  current: "atv",
+  label: "Сезон квадроциклов",
+  bannerText: "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
 };
 
 function chipsToText(chips: { label?: string | null }[] | string[] | null | undefined): string {
@@ -67,52 +71,40 @@ function pageFromSettings(
 
 type Props = { page: "tariffs" | "fleet" };
 
+/** Лёгкая панель текстов страницы Тарифы / Техника. */
 export function CatalogLayoutPanel({ page }: Props) {
-  const { user } = useAuth();
-  const role =
-    user && typeof user === "object" && "role" in user
-      ? String((user as { role?: string }).role || "")
-      : "";
-  const isAdmin = role === "admin";
-
   const defaults = page === "tariffs" ? DEFAULT_PAGE_TARIFFS : DEFAULT_PAGE_FLEET;
   const pageLabel = page === "tariffs" ? "Тарифы" : "Техника";
   const pagePath = page === "tariffs" ? "/tarify" : "/tehnika";
 
-  const [season, setSeason] = useState<SeasonForm>({
-    current: "atv",
-    label: "Сезон квадроциклов",
-    bannerText: "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
-  });
+  const [season, setSeason] = useState<SeasonForm>(DEFAULT_SEASON);
   const [layout, setLayout] = useState<PageForm>(() => pageFromSettings(null, defaults));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
-  const [open, setOpen] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
+    setMessage("");
     try {
       const res = await fetch("/api/admin/catalog-layout", { credentials: "include" });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Ошибка загрузки");
-
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || "Не удалось загрузить тексты");
       const s = data.season || {};
+      const nextCurrent = String(s.current || "atv");
       setSeason({
-        current: (["atv", "snow", "pause"].includes(s.current) ? s.current : "atv") as SeasonCurrent,
-        label: String(s.label || "Сезон квадроциклов"),
-        bannerText: String(
-          s.bannerText ||
-            "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
-        ),
+        current: (["atv", "snow", "pause"].includes(nextCurrent)
+          ? nextCurrent
+          : "atv") as SeasonForm["current"],
+        label: String(s.label || DEFAULT_SEASON.label),
+        bannerText: String(s.bannerText || DEFAULT_SEASON.bannerText),
       });
-
       const group = page === "tariffs" ? data.pageTariffs : data.pageFleet;
       setLayout(pageFromSettings(group, defaults));
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка");
+      setError(e instanceof Error ? e.message : "Ошибка загрузки");
     } finally {
       setLoading(false);
     }
@@ -122,50 +114,27 @@ export function CatalogLayoutPanel({ page }: Props) {
     void load();
   }, [load]);
 
-  const seasonHint = useMemo(() => {
-    if (season.current === "snow") return "Зимний режим: обновите тексты и фото героя под снегоходы.";
-    if (season.current === "pause") return "Пауза: баннер может звать бронировать будущий сезон.";
-    return "Летний/квадро режим. При смене на зиму поменяйте баннер и вёрстку ниже.";
-  }, [season.current]);
-
   async function save() {
-    if (!isAdmin) return;
     setSaving(true);
     setMessage("");
     setError("");
     try {
+      const pagePayload = {
+        title: layout.title,
+        subtitle: layout.subtitle,
+        description: layout.description,
+        imageUrl: layout.imageUrl,
+        imageAlt: layout.imageAlt,
+        chips: textToChips(layout.chipsText),
+        sectionLabel: layout.sectionLabel,
+        sectionTitle: layout.sectionTitle,
+        ctaTitle: layout.ctaTitle,
+        ctaText: layout.ctaText,
+      };
       const body =
         page === "tariffs"
-          ? {
-              season,
-              pageTariffs: {
-                title: layout.title,
-                subtitle: layout.subtitle,
-                description: layout.description,
-                imageUrl: layout.imageUrl,
-                imageAlt: layout.imageAlt,
-                chips: textToChips(layout.chipsText),
-                sectionLabel: layout.sectionLabel,
-                sectionTitle: layout.sectionTitle,
-                ctaTitle: layout.ctaTitle,
-                ctaText: layout.ctaText,
-              },
-            }
-          : {
-              season,
-              pageFleet: {
-                title: layout.title,
-                subtitle: layout.subtitle,
-                description: layout.description,
-                imageUrl: layout.imageUrl,
-                imageAlt: layout.imageAlt,
-                chips: textToChips(layout.chipsText),
-                sectionLabel: layout.sectionLabel,
-                sectionTitle: layout.sectionTitle,
-                ctaTitle: layout.ctaTitle,
-                ctaText: layout.ctaText,
-              },
-            };
+          ? { season, pageTariffs: pagePayload }
+          : { season, pageFleet: pagePayload };
 
       const res = await fetch("/api/admin/catalog-layout", {
         method: "POST",
@@ -174,10 +143,8 @@ export function CatalogLayoutPanel({ page }: Props) {
         body: JSON.stringify(body),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(data.error || "Не удалось сохранить");
-      }
-      setMessage("Сохранено. Обновите страницу сайта, чтобы увидеть изменения.");
+      if (!res.ok) throw new Error(data.error || "Не удалось сохранить");
+      setMessage("Сохранено — обновите страницу сайта (F5).");
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Ошибка сохранения");
@@ -186,174 +153,140 @@ export function CatalogLayoutPanel({ page }: Props) {
     }
   }
 
-  if (!isAdmin) return null;
-
   return (
-    <section className="catalog-layout-panel">
+    <section className="catalog-layout-panel catalog-layout-panel--slim">
       <div className="catalog-layout-panel__head">
         <div>
-          <p className="catalog-layout-panel__eyebrow">Тексты страницы на сайте</p>
-          <h2 className="catalog-layout-panel__title">
-            Что написано на странице «{pageLabel}»
-          </h2>
+          <p className="catalog-layout-panel__eyebrow">Тексты страницы</p>
+          <h2 className="catalog-layout-panel__title">«{pageLabel}» на сайте</h2>
           <p className="catalog-layout-panel__lead">
-            В полях уже стоят текущие тексты. Меняйте и сохраните — так обновится страница{" "}
+            Меняйте тексты и нажмите «Сохранить». Карточки ниже — отдельные позиции каталога. Сайт:{" "}
             <Link href={pagePath} prefetch={false}>
               {pagePath}
             </Link>
-            . Список карточек ниже — отдельные позиции каталога.
           </p>
         </div>
-        <button
-          type="button"
-          className="catalog-layout-panel__toggle"
-          onClick={() => setOpen((v) => !v)}
-        >
-          {open ? "Скрыть форму" : "Показать форму"}
-        </button>
       </div>
 
-      {open ? (
-        <>
-          {loading ? <p className="catalog-layout-panel__mute">Загружаем текущие тексты…</p> : null}
-          {error ? <p className="catalog-layout-panel__error">{error}</p> : null}
-          {message ? <p className="catalog-layout-panel__ok">{message}</p> : null}
+      {loading ? <p className="catalog-layout-panel__mute">Загрузка…</p> : null}
+      {error ? <p className="catalog-layout-panel__error">{error}</p> : null}
+      {message ? <p className="catalog-layout-panel__ok">{message}</p> : null}
 
-          <div className="catalog-layout-panel__grid">
-            <fieldset className="catalog-layout-panel__box">
-              <legend>Полоска сезона под шапкой (весь сайт)</legend>
-              <p className="catalog-layout-panel__hint">{seasonHint}</p>
-              <label>
-                <span>Какой сейчас сезон</span>
-                <select
-                  value={season.current}
-                  onChange={(e) =>
-                    setSeason((s) => ({ ...s, current: e.target.value as SeasonCurrent }))
-                  }
-                >
-                  <option value="atv">Квадроциклы</option>
-                  <option value="snow">Снегоходы</option>
-                  <option value="pause">Пауза / пересменка</option>
-                </select>
-              </label>
-              <label>
-                <span>Короткая подпись сезона</span>
-                <input
-                  value={season.label}
-                  onChange={(e) => setSeason((s) => ({ ...s, label: e.target.value }))}
-                  placeholder="Сезон снегоходов"
-                />
-              </label>
-              <label>
-                <span>Текст полоски под шапкой</span>
-                <textarea
-                  rows={3}
-                  value={season.bannerText}
-                  onChange={(e) => setSeason((s) => ({ ...s, bannerText: e.target.value }))}
-                  placeholder="Сейчас сезон снегоходов…"
-                />
-              </label>
-            </fieldset>
+      <div className="catalog-layout-panel__slim-grid">
+        <label>
+          <span>Сезон сейчас</span>
+          <select
+            value={season.current}
+            onChange={(e) =>
+              setSeason((p) => ({
+                ...p,
+                current: e.target.value as SeasonForm["current"],
+              }))
+            }
+            disabled={loading}
+          >
+            <option value="atv">Квадроциклы</option>
+            <option value="snow">Снегоходы</option>
+            <option value="pause">Пауза / межсезонье</option>
+          </select>
+        </label>
+        <label>
+          <span>Подпись сезона</span>
+          <input
+            value={season.label}
+            onChange={(e) => setSeason((p) => ({ ...p, label: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Текст баннера сезона</span>
+          <textarea
+            rows={2}
+            value={season.bannerText}
+            onChange={(e) => setSeason((p) => ({ ...p, bannerText: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
 
-            <fieldset className="catalog-layout-panel__box">
-              <legend>Большой заголовок страницы «{pageLabel}»</legend>
-              <label>
-                <span>Главный заголовок</span>
-                <input
-                  value={layout.title}
-                  onChange={(e) => setLayout((p) => ({ ...p, title: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Подзаголовок</span>
-                <input
-                  value={layout.subtitle}
-                  onChange={(e) => setLayout((p) => ({ ...p, subtitle: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Текст под заголовком</span>
-                <textarea
-                  rows={3}
-                  value={layout.description}
-                  onChange={(e) => setLayout((p) => ({ ...p, description: e.target.value }))}
-                />
-              </label>
-              <AdminImagePathInput
-                label="Картинка фона первого экрана"
-                value={layout.imageUrl}
-                onChange={(imageUrl) => setLayout((p) => ({ ...p, imageUrl }))}
-                hint="Справа — превью. Путь вида /images/hero/….jpg"
-              />
-              <label>
-                <span>Описание картинки (для слабовидящих)</span>
-                <input
-                  value={layout.imageAlt}
-                  onChange={(e) => setLayout((p) => ({ ...p, imageAlt: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Короткие подписи в герое (каждая с новой строки)</span>
-                <textarea
-                  rows={4}
-                  value={layout.chipsText}
-                  onChange={(e) => setLayout((p) => ({ ...p, chipsText: e.target.value }))}
-                />
-              </label>
-            </fieldset>
+        <label>
+          <span>Главный заголовок</span>
+          <input
+            value={layout.title}
+            onChange={(e) => setLayout((p) => ({ ...p, title: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Подзаголовок</span>
+          <input
+            value={layout.subtitle}
+            onChange={(e) => setLayout((p) => ({ ...p, subtitle: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Текст под заголовком</span>
+          <textarea
+            rows={2}
+            value={layout.description}
+            onChange={(e) => setLayout((p) => ({ ...p, description: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <AdminImagePathInput
+          label="Картинка фона"
+          value={layout.imageUrl}
+          onChange={(imageUrl) => setLayout((p) => ({ ...p, imageUrl }))}
+        />
+        <label>
+          <span>Короткие подписи (по строке)</span>
+          <textarea
+            rows={3}
+            value={layout.chipsText}
+            onChange={(e) => setLayout((p) => ({ ...p, chipsText: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Заголовок над списком</span>
+          <input
+            value={layout.sectionTitle}
+            onChange={(e) => setLayout((p) => ({ ...p, sectionTitle: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Нижний блок: заголовок</span>
+          <input
+            value={layout.ctaTitle}
+            onChange={(e) => setLayout((p) => ({ ...p, ctaTitle: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+        <label>
+          <span>Нижний блок: текст</span>
+          <textarea
+            rows={2}
+            value={layout.ctaText}
+            onChange={(e) => setLayout((p) => ({ ...p, ctaText: e.target.value }))}
+            disabled={loading}
+          />
+        </label>
+      </div>
 
-            <fieldset className="catalog-layout-panel__box">
-              <legend>Секция списка и нижний призыв</legend>
-              <label>
-                <span>Мелкий лейбл над списком</span>
-                <input
-                  value={layout.sectionLabel}
-                  onChange={(e) => setLayout((p) => ({ ...p, sectionLabel: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Заголовок над списком</span>
-                <input
-                  value={layout.sectionTitle}
-                  onChange={(e) => setLayout((p) => ({ ...p, sectionTitle: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Заголовок нижнего блока «записаться»</span>
-                <input
-                  value={layout.ctaTitle}
-                  onChange={(e) => setLayout((p) => ({ ...p, ctaTitle: e.target.value }))}
-                />
-              </label>
-              <label>
-                <span>Текст нижнего блока</span>
-                <textarea
-                  rows={2}
-                  value={layout.ctaText}
-                  onChange={(e) => setLayout((p) => ({ ...p, ctaText: e.target.value }))}
-                />
-              </label>
-            </fieldset>
-          </div>
-
-          <div className="catalog-layout-panel__actions">
-            <button
-              type="button"
-              className="catalog-layout-panel__save"
-              disabled={saving || loading}
-              onClick={() => void save()}
-            >
-              {saving ? "Сохраняем…" : "Сохранить изменения"}
-            </button>
-            <button type="button" className="catalog-layout-panel__reload" onClick={() => void load()}>
-              Вернуть с сервера
-            </button>
-            <Link href="/admin/globals/site-settings" prefetch={false}>
-              Все настройки сайта →
-            </Link>
-          </div>
-        </>
-      ) : null}
+      <div className="catalog-layout-panel__actions">
+        <button
+          type="button"
+          className="catalog-layout-panel__save"
+          disabled={saving || loading}
+          onClick={() => void save()}
+        >
+          {saving ? "Сохраняем…" : "Сохранить тексты"}
+        </button>
+        <button type="button" className="catalog-layout-panel__reload" onClick={() => void load()} disabled={loading}>
+          Обновить
+        </button>
+      </div>
     </section>
   );
 }
