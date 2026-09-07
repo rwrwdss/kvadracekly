@@ -18,13 +18,16 @@ export const Gallery: CollectionConfig = {
   labels: { singular: "Фото", plural: "Фото для карусели" },
   admin: {
     useAsTitle: "title",
-    defaultColumns: ["title", "category", "published", "sortOrder", "updatedAt"],
+    defaultColumns: ["image", "title", "category", "published", "sortOrder", "updatedAt"],
     group: "Главная страница",
     description:
       "Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.",
     components: {
       beforeListTable: ["./admin/components/HomeLayoutPanel#GalleryHomePanel"],
     },
+  },
+  defaultPopulate: {
+    image: true,
   },
   access: {
     read: () => true,
@@ -55,6 +58,9 @@ export const Gallery: CollectionConfig = {
       admin: {
         description:
           "Нажмите «Choose from existing» или создайте новый файл (Create New) и выберите картинку.",
+        components: {
+          Cell: "./admin/components/GalleryImageCell#GalleryImageCell",
+        },
       },
     },
     {
