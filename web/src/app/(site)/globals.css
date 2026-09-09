@@ -301,7 +301,7 @@ body {
   height: 1.55rem;
   border-radius: 50%;
   background: var(--text-on-accent);
-  color: var(--bg-void);
+  color: #fff;
   font-size: 0.78rem;
   line-height: 1;
   font-weight: 700;
