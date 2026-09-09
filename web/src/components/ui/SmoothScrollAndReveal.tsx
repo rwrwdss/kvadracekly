@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import { subscribeLenisStopped } from "@/lib/lenisControl";
 
 function isInViewport(el: HTMLElement) {
   const rect = el.getBoundingClientRect();
@@ -30,6 +31,13 @@ export function SmoothScrollAndReveal() {
         smoothWheel: true,
         wheelMultiplier: 0.8,
         touchMultiplier: 1.05,
+        // Модалки / внутренние скролл-контейнеры — не отдавать колесо Lenis
+        prevent: (node) =>
+          Boolean(
+            node.closest("[data-lenis-prevent]") ||
+              node.closest(".booking-sheet") ||
+              node.closest('[role="dialog"]'),
+          ),
       });
 
       const raf = (time: number) => {
@@ -39,6 +47,12 @@ export function SmoothScrollAndReveal() {
       rafId = window.requestAnimationFrame(raf);
     }
 
+    const unsub = subscribeLenisStopped((stopped) => {
+      if (!lenis) return;
+      if (stopped) lenis.stop();
+      else lenis.start();
+    });
+
     const mark = (el: HTMLElement) => {
       if (el.classList.contains("is-revealed")) return;
       el.classList.add("is-revealed");
@@ -47,6 +61,7 @@ export function SmoothScrollAndReveal() {
     if (reduce) {
       document.querySelectorAll<HTMLElement>("[data-reveal]").forEach(mark);
       return () => {
+        unsub();
         if (rafId) cancelAnimationFrame(rafId);
         lenis?.destroy();
       };
@@ -85,6 +100,7 @@ export function SmoothScrollAndReveal() {
     const t2 = window.setTimeout(bind, 400);
 
     return () => {
+      unsub();
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       io.disconnect();

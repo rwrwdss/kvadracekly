@@ -13,6 +13,7 @@ import {
   type ProgressInfo,
 } from "@/lib/booking/progress";
 import { resolveDurationMinutes } from "@/lib/booking/slots";
+import { acquireLenisLock, releaseLenisLock } from "@/lib/lenisControl";
 
 function readUtmFromUrl() {
   if (typeof window === "undefined") return {};
@@ -103,9 +104,13 @@ export function BookingModal() {
     };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("lenis-stopped");
+    acquireLenisLock();
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      document.documentElement.classList.remove("lenis-stopped");
+      releaseLenisLock();
     };
   }, [open, closeBooking]);
 
@@ -217,7 +222,10 @@ export function BookingModal() {
         onClick={closeBooking}
       />
 
-      <div className="booking-sheet relative w-full sm:max-w-xl bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)] max-h-[min(92dvh,920px)] overflow-y-auto overscroll-contain">
+      <div
+        className="booking-sheet relative w-full sm:max-w-xl bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)] max-h-[min(92dvh,920px)] overflow-y-auto overscroll-contain"
+        data-lenis-prevent
+      >
         <div className="sticky top-0 z-10 flex justify-center pt-3 pb-1 sm:hidden bg-elevated">
           <span className="h-1 w-10 rounded-full bg-white/20" aria-hidden />
         </div>

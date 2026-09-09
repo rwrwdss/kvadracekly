@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useId, useState } from "react";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 import { formatPhoneInput } from "@/lib/phone";
+import { acquireLenisLock, releaseLenisLock } from "@/lib/lenisControl";
 
 export function AuthModal() {
   const { authOpen, closeAuth, login, consumePendingAction } = useCustomerAuth();
@@ -21,9 +22,13 @@ export function AuthModal() {
     };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("lenis-stopped");
+    acquireLenisLock();
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      document.documentElement.classList.remove("lenis-stopped");
+      releaseLenisLock();
     };
   }, [authOpen, closeAuth]);
 
@@ -57,7 +62,10 @@ export function AuthModal() {
         onClick={closeAuth}
       />
 
-      <div className="relative w-full sm:max-w-md overflow-hidden bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
+      <div
+        className="relative w-full sm:max-w-md overflow-hidden bg-elevated border border-[var(--border-subtle)] border-b-0 sm:border-b shadow-[0_-12px_40px_rgba(0,0,0,0.45)] sm:shadow-[0_20px_60px_rgba(0,0,0,0.55)]"
+        data-lenis-prevent
+      >
         <button
           type="button"
           onClick={closeAuth}
