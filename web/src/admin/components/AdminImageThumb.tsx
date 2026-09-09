@@ -34,7 +34,7 @@ export function AdminImageThumb({
   );
 }
 
-/** Поле «путь к картинке» + миниатюра для панелей каталога/главной. */
+/** Поле «путь к картинке» + крупное превью для панелей каталога/главной. */
 export function AdminImagePathInput({
   label,
   value,
@@ -47,12 +47,19 @@ export function AdminImagePathInput({
   hint?: string;
 }) {
   return (
-    <label className="admin-image-path">
-      <span>{label}</span>
-      <div className="admin-image-path__row">
-        <input value={value} onChange={(e) => onChange(e.target.value)} />
-        <AdminImageThumb src={value} alt={label} />
+    <label className="admin-image-path admin-image-path--preview-first">
+      <span className="admin-image-path__label">{label}</span>
+      <div className="admin-image-path__preview">
+        <AdminImageThumb src={value} alt={label} className="admin-image-thumb--lg" />
       </div>
+      <span className="admin-image-path__path-label">Путь к файлу</span>
+      <input
+        className="admin-image-path__path"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        spellCheck={false}
+        autoComplete="off"
+      />
       {hint ? <p className="catalog-layout-panel__hint">{hint}</p> : null}
     </label>
   );
