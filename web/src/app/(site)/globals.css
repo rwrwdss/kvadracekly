@@ -371,6 +371,94 @@ body {
   .card-dark {
     transition: none;
   }
+
+  .call-fab,
+  .call-fab__pulse {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .call-fab {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Плавающая кнопка звонка */
+@keyframes call-fab-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.25rem, 0) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes call-fab-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+.call-fab {
+  position: fixed;
+  z-index: 45;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: calc(1.15rem + env(safe-area-inset-bottom, 0px));
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #1a1510;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translate3d(0, 1.25rem, 0) scale(0.86);
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+  will-change: transform, opacity;
+}
+
+.call-fab--in {
+  animation: call-fab-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.call-fab:hover,
+.call-fab:focus-visible {
+  background: var(--accent-hover);
+  box-shadow: 0 12px 32px rgba(212, 164, 90, 0.35);
+  outline: none;
+}
+
+.call-fab__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 2px solid var(--accent);
+  pointer-events: none;
+}
+
+.call-fab--in .call-fab__pulse {
+  animation: call-fab-pulse 2.4s ease-out 0.7s infinite;
+}
+
+@media (max-width: 767px) {
+  .call-fab {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 /* Small gold sticker icons — float + soft glow on hover */
