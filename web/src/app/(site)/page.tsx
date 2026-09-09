@@ -4,6 +4,7 @@ import { IMAGES, ROUTES, SITE } from "@/data/site";
 import { BookButton } from "@/components/ui/BookButton";
 import { RouteCard } from "@/components/routes/RouteCard";
 import { HomeGalleryCarousel } from "@/components/home/HomeGalleryCarousel";
+import { GiftCertificateSection } from "@/components/home/GiftCertificateSection";
 import { getHomeCarousel, getHomePageLayout } from "@/lib/cms/home";
 import {
   IconAtv,
@@ -143,6 +144,17 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="age-widget" aria-label="Возраст для детей">
+        <div className="container-wide">
+          <div className="age-widget__inner" data-reveal="soft">
+            <span className="age-widget__mark">6+</span>
+            <p className="age-widget__text">возраст, с которого катаются дети</p>
+          </div>
+        </div>
+      </section>
+
+      <GiftCertificateSection />
+
       {hero.facts.length > 0 ? (
         <section className="bg-void border-b border-[var(--border-subtle)]" aria-label="Коротко о формате">
           <div className="container-wide py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
@@ -278,7 +290,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative py-20 md:py-28">
+      <section id="zayavka" className="relative py-20 md:py-28 scroll-mt-28">
         <div
           className="absolute inset-0 bg-cover bg-center opacity-40"
           role="img"

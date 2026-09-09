@@ -408,6 +408,208 @@ html.lenis.lenis-stopped {
   }
 }
 
+/* Подарочный сертификат — полноэкранный блок */
+.gift-cert {
+  display: flex;
+  align-items: stretch;
+  min-height: 100svh;
+  padding-block: clamp(1.25rem, 3vw, 2rem);
+  padding-inline: clamp(0.75rem, 2.5vw, 1.5rem);
+  background:
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(212, 164, 90, 0.08), transparent 55%),
+    var(--bg-base);
+}
+
+.gift-cert__frame {
+  display: grid;
+  grid-template-columns: 1fr;
+  flex: 1;
+  width: min(1280px, 100%);
+  margin-inline: auto;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+}
+
+@media (min-width: 900px) {
+  .gift-cert__frame {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  }
+}
+
+.gift-cert__media {
+  position: relative;
+  min-height: clamp(14rem, 42vw, 22rem);
+}
+
+@media (min-width: 900px) {
+  .gift-cert__media {
+    min-height: 100%;
+  }
+}
+
+.gift-cert__photo {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+}
+
+.gift-cert__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 55%, rgba(21, 28, 24, 0.55) 100%);
+  pointer-events: none;
+}
+
+@media (max-width: 899px) {
+  .gift-cert__photo::after {
+    background: linear-gradient(180deg, transparent 45%, rgba(21, 28, 24, 0.75) 100%);
+  }
+}
+
+.gift-cert__badge {
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-start: 1rem;
+  z-index: 1;
+  padding: 0.45rem 0.85rem;
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+
+.gift-cert__body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.15rem;
+  padding: clamp(1.35rem, 3.5vw, 2.75rem);
+}
+
+.gift-cert__title {
+  margin: 0;
+  font-family: var(--font-proxima-nova), "Montserrat", system-ui, sans-serif;
+  font-size: clamp(1.85rem, 4.2vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: var(--text-primary);
+}
+
+.gift-cert__title span {
+  color: var(--accent);
+}
+
+.gift-cert__lead {
+  margin: 0;
+  max-width: 36rem;
+  color: var(--text-secondary);
+  font-size: clamp(0.92rem, 1.6vw, 1.05rem);
+  line-height: 1.55;
+}
+
+.gift-cert__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gift-cert__features li {
+  padding: 0.55rem 0.9rem;
+  border: 1px solid var(--accent-border);
+  color: var(--text-primary);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+}
+
+.gift-cert__steps {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0.35rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gift-cert__steps li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.gift-cert__step-num {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 1.65rem;
+  height: 1.65rem;
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.gift-cert__cta {
+  align-self: flex-start;
+  margin-block-start: 0.35rem;
+  min-width: min(100%, 16rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gift-cert__cta {
+    transition: none;
+  }
+}
+
+/* Возраст детей — сразу после героя */
+.age-widget {
+  background: var(--bg-void);
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.age-widget__inner {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.85rem, 2.5vw, 1.35rem);
+  padding-block: clamp(1.15rem, 3vw, 1.65rem);
+}
+
+.age-widget__mark {
+  flex-shrink: 0;
+  font-family: var(--font-cinzel), serif;
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--accent);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.age-widget__text {
+  margin: 0;
+  max-width: 22rem;
+  color: var(--text-secondary);
+  font-size: clamp(0.78rem, 1.8vw, 0.92rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
 .card-dark {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
