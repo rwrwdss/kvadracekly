@@ -297,6 +297,44 @@ body {
   border-color: var(--accent);
 }
 
+/* Плавное появление текста героя при загрузке */
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.15rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.hero-reveal {
+  opacity: 0;
+  animation: hero-reveal 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+.hero-reveal--1 {
+  animation-delay: 0.12s;
+}
+
+.hero-reveal--2 {
+  animation-delay: 0.28s;
+}
+
+.hero-reveal--3 {
+  animation-delay: 0.44s;
+}
+
+.hero-reveal--4 {
+  animation-delay: 0.62s;
+}
+
+.hero-reveal--5 {
+  animation-delay: 0.8s;
+}
+
 @media (max-width: 479px) {
   .hero-copy__title {
     font-size: clamp(1.75rem, 8.2vw, 2.45rem);
@@ -491,8 +529,14 @@ body {
   .animate-fade-up,
   .animate-fade-up-delay,
   .animate-fade-up-delay-2,
+  .hero-reveal,
   .sticker-icon {
     animation: none;
+  }
+
+  .hero-reveal {
+    opacity: 1;
+    transform: none;
   }
 
   .btn,

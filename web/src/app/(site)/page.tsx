@@ -102,18 +102,20 @@ export default async function HomePage() {
 
         <div className="relative container-wide w-full pt-28 pb-16 md:pt-32 md:pb-20">
           <div className="hero-copy">
-            <p className="hero-copy__eyebrow animate-fade-up">
+            <p className="hero-copy__eyebrow hero-reveal hero-reveal--1">
               <span className="hero-copy__eyebrow-dot" aria-hidden />
               {hero.eyebrow}
             </p>
-            <h1 className="hero-copy__title animate-fade-up-delay">
-              <span className="hero-copy__title-line">{hero.titleLine1}</span>
-              <span className="hero-copy__title-line">
+            <h1 className="hero-copy__title">
+              <span className="hero-copy__title-line hero-reveal hero-reveal--2">
+                {hero.titleLine1}
+              </span>
+              <span className="hero-copy__title-line hero-reveal hero-reveal--3">
                 {hero.titleLine2.replace(/\s*Вольницей\.?\s*$/i, "").trim() || hero.titleLine2}{" "}
                 <span className="hero-copy__brand-script">Вольницей.</span>
               </span>
             </h1>
-            <p className="hero-copy__tagline animate-fade-up-delay">
+            <p className="hero-copy__tagline hero-reveal hero-reveal--4">
               {hero.tagline.split("\n").map((line, i, arr) => (
                 <span
                   key={`${line}-${i}`}
@@ -124,7 +126,7 @@ export default async function HomePage() {
               ))}
             </p>
 
-            <div className="hero-copy__actions animate-fade-up-delay-2">
+            <div className="hero-copy__actions hero-reveal hero-reveal--5">
               <BookButton
                 className="hero-copy__cta"
                 variant="primary"
