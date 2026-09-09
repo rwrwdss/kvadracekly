@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties, ReactNode } from "react";
 
 export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
   return (
@@ -34,7 +35,7 @@ export function PageHero({
   description?: string;
   image: string;
   imageAlt?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <section className="relative min-h-[48vh] sm:min-h-[52vh] md:min-h-[58vh] flex items-end">
@@ -47,16 +48,36 @@ export function PageHero({
       <div className="absolute inset-0 hero-overlay" />
       <div className="relative container-site pb-10 pt-24 sm:pb-12 sm:pt-28 md:pb-16 md:pt-32 w-full">
         <Breadcrumbs items={breadcrumbs} />
-        <h1 className="section-title animate-fade-up">{title}</h1>
+        <h1 className="section-title" data-reveal>
+          {title}
+        </h1>
         {subtitle && (
-          <p className="section-label mt-3 animate-fade-up-delay drop-shadow">{subtitle}</p>
+          <p
+            className="section-label mt-3 drop-shadow"
+            data-reveal
+            style={{ "--reveal-delay": "0.22s" } as CSSProperties}
+          >
+            {subtitle}
+          </p>
         )}
         {description && (
-          <p className="mt-4 max-w-2xl text-mute text-[15px] sm:text-sm md:text-[1rem] leading-relaxed animate-fade-up-delay drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+          <p
+            className="mt-4 max-w-2xl text-mute text-[15px] sm:text-sm md:text-[1rem] leading-relaxed drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]"
+            data-reveal
+            style={{ "--reveal-delay": "0.38s" } as CSSProperties}
+          >
             {description}
           </p>
         )}
-        {children && <div className="mt-6 sm:mt-8 animate-fade-up-delay-2">{children}</div>}
+        {children && (
+          <div
+            className="mt-6 sm:mt-8"
+            data-reveal
+            style={{ "--reveal-delay": "0.52s" } as CSSProperties}
+          >
+            {children}
+          </div>
+        )}
       </div>
     </section>
   );
@@ -67,7 +88,7 @@ export function IconStat({
   icon,
 }: {
   label: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
 }) {
   return (
     <div className="flex items-start gap-3">

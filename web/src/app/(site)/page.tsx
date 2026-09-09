@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import { IMAGES, ROUTES, SITE } from "@/data/site";
 import { BookButton } from "@/components/ui/BookButton";
 import { RouteCard } from "@/components/routes/RouteCard";
@@ -148,7 +149,12 @@ export default async function HomePage() {
             {hero.facts.map((text, i) => {
               const Icon = HERO_FACT_ICONS[i % HERO_FACT_ICONS.length];
               return (
-                <div key={`${text}-${i}`} className="flex items-start gap-2.5 sm:gap-3">
+                <div
+                  key={`${text}-${i}`}
+                  className="flex items-start gap-2.5 sm:gap-3"
+                  data-reveal="soft"
+                  style={{ "--reveal-delay": `${0.1 + i * 0.14}s` } as CSSProperties}
+                >
                   <span className="text-accent shrink-0 mt-0.5">
                     <Icon size={22} />
                   </span>
@@ -165,7 +171,12 @@ export default async function HomePage() {
       <section className="py-16 md:py-20 bg-void">
         <div className="container-site grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {INFO_CARDS.map(({ t, d, Icon }, i) => (
-            <article key={t} className="card-dark p-5 sm:p-6 group">
+            <article
+              key={t}
+              className="card-dark p-5 sm:p-6 group"
+              data-reveal="up"
+              style={{ "--reveal-delay": `${0.12 + i * 0.16}s` } as CSSProperties}
+            >
               <span
                 className="sticker-icon mb-4 inline-flex text-accent"
                 style={{ animationDelay: `${i * 0.12}s` }}
@@ -183,11 +194,18 @@ export default async function HomePage() {
 
       <section className="py-16 md:py-24">
         <div className="container-site">
-          <p className="section-label">Почему Вольница</p>
-          <h2 className="section-title mt-2">Почему выбирают Вольницу</h2>
+          <div data-reveal>
+            <p className="section-label">Почему Вольница</p>
+            <h2 className="section-title mt-2">Почему выбирают Вольницу</h2>
+          </div>
           <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {WHY.map((item) => (
-              <article key={item.t} className="card-dark overflow-hidden flex flex-col group">
+            {WHY.map((item, i) => (
+              <article
+                key={item.t}
+                className="card-dark overflow-hidden flex flex-col group"
+                data-reveal="up"
+                style={{ "--reveal-delay": `${0.12 + i * 0.16}s` } as CSSProperties}
+              >
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <div
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.04]"
@@ -214,7 +232,11 @@ export default async function HomePage() {
             ))}
           </div>
 
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border border-[var(--border-subtle)] p-6 md:p-8">
+          <div
+            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border border-[var(--border-subtle)] p-6 md:p-8"
+            data-reveal
+            style={{ "--reveal-delay": "0.18s" } as CSSProperties}
+          >
             {STATS.map(({ n, l, Icon }) => (
               <div key={l} className="text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 text-accent mb-1">
@@ -230,7 +252,10 @@ export default async function HomePage() {
 
       <section className="py-16 md:py-24 bg-void">
         <div className="container-site">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+          <div
+            className="flex flex-wrap items-end justify-between gap-4 mb-10"
+            data-reveal
+          >
             <div>
               <p className="section-label">Маршруты</p>
               <h2 className="section-title mt-2">Выберите приключение</h2>
@@ -240,8 +265,14 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {ROUTES.map((route) => (
-              <RouteCard key={route.id} route={route} />
+            {ROUTES.map((route, i) => (
+              <div
+                key={route.id}
+                data-reveal="up"
+                style={{ "--reveal-delay": `${0.1 + i * 0.14}s` } as CSSProperties}
+              >
+                <RouteCard route={route} />
+              </div>
             ))}
           </div>
         </div>
@@ -257,7 +288,7 @@ export default async function HomePage() {
           }}
         />
         <div className="absolute inset-0 bg-[rgba(4,6,5,0.82)]" />
-        <div className="relative container-site text-center max-w-3xl mx-auto">
+        <div className="relative container-site text-center max-w-3xl mx-auto" data-reveal>
           <h2 className="section-title">Готовы к территории свободы?</h2>
           <p className="mt-4 text-mute">
             Оставьте заявку — подберём маршрут под ваш уровень и состав группы.

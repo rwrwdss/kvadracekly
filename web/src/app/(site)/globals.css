@@ -50,7 +50,15 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
   -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    /* Чуть «мягче» якоря / программный скролл */
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -335,6 +343,32 @@ body {
   animation-delay: 1.55s;
 }
 
+/* Появление блоков при скролле */
+[data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 1.35rem, 0);
+  transition:
+    opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1.4s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0.12s);
+  will-change: opacity, transform;
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+[data-reveal="soft"] {
+  transform: translate3d(0, 0.85rem, 0);
+  transition-duration: 1.55s;
+}
+
+[data-reveal="up"] {
+  transform: translate3d(0, 1.75rem, 0);
+  transition-duration: 1.5s;
+}
+
 @media (max-width: 479px) {
   .hero-copy__title {
     font-size: clamp(1.75rem, 8.2vw, 2.45rem);
@@ -537,6 +571,12 @@ body {
   .hero-reveal {
     opacity: 1;
     transform: none;
+  }
+
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 
   .btn,

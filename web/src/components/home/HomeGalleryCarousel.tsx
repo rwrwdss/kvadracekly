@@ -28,7 +28,7 @@ export function HomeGalleryCarousel({ items }: { items: Item[] }) {
 
   return (
     <section className="py-14 sm:py-16 md:py-20 border-t border-[var(--border-subtle)]">
-      <div className="container-site">
+      <div className="container-site" data-reveal>
         <p className="section-label">Галерея</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
           <h2 className="section-title text-[clamp(1.35rem,3.5vw,2rem)]">Кадры с маршрутов</h2>
@@ -42,6 +42,8 @@ export function HomeGalleryCarousel({ items }: { items: Item[] }) {
         ref={scrollerRef}
         className="mt-8 flex gap-3 overflow-x-auto snap-x snap-mandatory hide-scrollbar px-4 sm:px-[max(1rem,calc((100vw-72rem)/2))]"
         aria-label="Карусель фото галереи"
+        data-reveal="soft"
+        style={{ ["--reveal-delay" as string]: "0.2s" }}
       >
         {items.map((item, i) => (
           <figure
