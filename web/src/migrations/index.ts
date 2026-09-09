@@ -9,6 +9,7 @@ import * as migration_20260907_144500_seed_catalog_texts from './20260907_144500
 import * as migration_20260907_150000_hero_usp_experience from './20260907_150000_hero_usp_experience';
 import * as migration_20260909_100000_hero_escape_city from './20260909_100000_hero_escape_city';
 import * as migration_20260909_110000_lead_has_children from './20260909_110000_lead_has_children';
+import * as migration_20260909_120000_hero_aristocrat from './20260909_120000_hero_aristocrat';
 
 export const migrations = [
   {
@@ -65,5 +66,10 @@ export const migrations = [
     up: migration_20260909_110000_lead_has_children.up,
     down: migration_20260909_110000_lead_has_children.down,
     name: '20260909_110000_lead_has_children',
+  },
+  {
+    up: migration_20260909_120000_hero_aristocrat.up,
+    down: migration_20260909_120000_hero_aristocrat.down,
+    name: '20260909_120000_hero_aristocrat',
   },
 ];

@@ -15,10 +15,11 @@ export type HomePageDefaults = {
 };
 
 export const DEFAULT_PAGE_HOME: HomePageDefaults = {
-  eyebrow: "Не почасовка — уровни маршрутов",
-  titleLine1: "Вырвись",
-  titleLine2: "из города",
-  tagline: "Грязь. Лес. Адреналин.\nИ ни одной городской пробки.",
+  eyebrow: "Премиальный отдых на природе",
+  titleLine1: "Погрузись в атмосферу",
+  titleLine2: "аристократа с Вольницей.",
+  tagline:
+    "Вольница — место, где история усадеб встречается\nс духом настоящего приключения.",
   imageUrl: IMAGES.heroHome.src,
   imageAlt: IMAGES.heroHome.alt,
   primaryCtaLabel: "Смотреть уровни →",

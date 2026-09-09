@@ -206,26 +206,34 @@ body {
   flex-shrink: 0;
 }
 
-/* Крупный вертикальный блок заголовка */
+/* Крупный заголовок — плотно к eyebrow */
 .hero-copy__title {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.02em;
-  margin: 1.1em 0 0;
+  gap: 0.08em;
+  margin: 0.35em 0 0;
   font-family: var(--font-cinzel), "Times New Roman", serif;
-  font-size: clamp(2.85rem, 11.5vw, 6.5rem);
+  font-size: clamp(1.85rem, 5.8vw, 3.65rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  text-transform: none;
   color: var(--text-primary);
   text-shadow: 0 2px 22px rgba(0, 0, 0, 0.5);
 }
 
 .hero-copy__title-line {
   display: block;
-  line-height: 0.95;
-  white-space: nowrap;
+  line-height: 1.05;
+  white-space: normal;
+  max-width: 18ch;
+}
+
+@media (min-width: 768px) {
+  .hero-copy__title-line {
+    max-width: none;
+    white-space: nowrap;
+  }
 }
 
 .hero-copy__title-line--accent {
@@ -237,9 +245,8 @@ body {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.28em;
-  /* воздух после стены заголовка */
-  margin: 1.6em 0 0;
-  max-width: min(28rem, 100%);
+  margin: 1.15em 0 0;
+  max-width: min(32rem, 100%);
   color: var(--text-secondary);
   font-family: var(--font-manrope), system-ui, sans-serif;
   font-size: clamp(0.95rem, 2vw, 1.15rem);
@@ -253,8 +260,8 @@ body {
 }
 
 .hero-copy__tagline-line--accent {
-  color: var(--accent);
-  font-weight: 600;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .hero-copy__actions {
@@ -305,8 +312,8 @@ body {
 }
 
 @media (max-width: 479px) {
-  .hero-copy__title-line {
-    white-space: normal;
+  .hero-copy__title {
+    font-size: clamp(1.65rem, 8.2vw, 2.35rem);
   }
 }
 
