@@ -311,28 +311,28 @@ body {
 
 .hero-reveal {
   opacity: 0;
-  animation: hero-reveal 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: hero-reveal 1.45s cubic-bezier(0.22, 1, 0.36, 1) both;
   will-change: opacity, transform;
 }
 
 .hero-reveal--1 {
-  animation-delay: 0.12s;
+  animation-delay: 0.2s;
 }
 
 .hero-reveal--2 {
-  animation-delay: 0.28s;
+  animation-delay: 0.5s;
 }
 
 .hero-reveal--3 {
-  animation-delay: 0.44s;
+  animation-delay: 0.85s;
 }
 
 .hero-reveal--4 {
-  animation-delay: 0.62s;
+  animation-delay: 1.2s;
 }
 
 .hero-reveal--5 {
-  animation-delay: 0.8s;
+  animation-delay: 1.55s;
 }
 
 @media (max-width: 479px) {
