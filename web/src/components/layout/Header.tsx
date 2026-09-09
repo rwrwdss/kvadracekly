@@ -43,9 +43,12 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    if (!menuOpen) return;
+    document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("lenis-stopped");
     return () => {
       document.body.style.overflow = "";
+      document.documentElement.classList.remove("lenis-stopped");
     };
   }, [menuOpen]);
 
@@ -78,8 +81,8 @@ export function Header() {
             className="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-medium tracking-wide text-accent hover:text-[var(--accent-hover)] transition-colors whitespace-nowrap"
             aria-label={`Позвонить ${SITE.phone}`}
           >
-            <PhoneIcon className="hidden sm:block opacity-90" />
-            <span className="tabular-nums">{SITE.phone}</span>
+            <PhoneIcon className="opacity-90 shrink-0" />
+            <span className="tabular-nums hidden min-[420px]:inline">{SITE.phone}</span>
           </a>
 
           {!loading && user ? (
@@ -94,7 +97,7 @@ export function Header() {
 
           <button
             type="button"
-            className="btn btn-ghost hidden sm:inline-flex !py-2.5 !px-3.5"
+            className="btn btn-ghost hidden md:inline-flex !py-2.5 !px-3.5"
             onClick={() => openBooking({ source: "header" })}
           >
             <CalendarIcon />

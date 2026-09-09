@@ -390,7 +390,54 @@ html.lenis.lenis-stopped {
 
 @media (max-width: 479px) {
   .hero-copy__title {
-    font-size: clamp(1.75rem, 8.2vw, 2.45rem);
+    font-size: clamp(1.4rem, 7vw, 1.85rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-copy {
+    max-width: 100%;
+  }
+
+  .hero-copy__eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    max-width: 100%;
+    line-height: 1.35;
+  }
+
+  .hero-copy__title {
+    font-size: clamp(1.5rem, 7.2vw, 2.15rem);
+    width: 100%;
+  }
+
+  .hero-copy__title-line {
+    white-space: normal;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-copy__brand-script {
+    font-size: 1.18em;
+  }
+
+  .hero-copy__tagline {
+    font-size: clamp(0.95rem, 3.6vw, 1.15rem);
+  }
+
+  .hero-copy__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+    margin-top: 1.5rem;
+  }
+
+  .hero-copy__cta {
+    width: 100%;
+  }
+
+  .hero-copy__link {
+    align-self: flex-start;
   }
 }
 
@@ -508,6 +555,23 @@ html.lenis.lenis-stopped {
   background:
     radial-gradient(ellipse 70% 50% at 80% 20%, rgba(212, 164, 90, 0.08), transparent 55%),
     var(--bg-base);
+}
+
+@media (max-width: 899px) {
+  .gift-cert {
+    min-height: auto;
+    padding-block: clamp(1.5rem, 5vw, 2.25rem);
+  }
+
+  .gift-cert__cta {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .gift-cert__features li {
+    font-size: 0.68rem;
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 .gift-cert__frame {
@@ -698,6 +762,21 @@ html.lenis.lenis-stopped {
   letter-spacing: 0.12em;
   line-height: 1.35;
   text-transform: uppercase;
+}
+
+@media (max-width: 479px) {
+  .age-widget__inner {
+    gap: 0.7rem;
+  }
+
+  .age-widget__mark {
+    font-size: 1.75rem;
+  }
+
+  .age-widget__text {
+    letter-spacing: 0.06em;
+    font-size: 0.72rem;
+  }
 }
 
 .card-dark {

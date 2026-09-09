@@ -103,7 +103,7 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 hero-overlay" />
 
-        <div className="relative container-wide w-full pt-28 pb-16 md:pt-32 md:pb-20">
+        <div className="relative container-wide w-full pt-28 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] md:pt-32 md:pb-20">
           <div className="hero-copy">
             <p className="hero-copy__eyebrow hero-reveal hero-reveal--1">
               <span className="hero-copy__eyebrow-dot" aria-hidden />
