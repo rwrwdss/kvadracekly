@@ -206,17 +206,17 @@ body {
   flex-shrink: 0;
 }
 
-/* Крупный заголовок — плотно к eyebrow */
+/* Заголовок: Proxima Nova Medium (стек) + Great Vibes для бренда */
 .hero-copy__title {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.08em;
+  gap: 0.12em;
   margin: 0.35em 0 0;
-  font-family: var(--font-cinzel), "Times New Roman", serif;
-  font-size: clamp(2.45rem, 8.2vw, 5.15rem);
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-family: "Proxima Nova", var(--font-proxima-nova), system-ui, sans-serif;
+  font-size: clamp(2.05rem, 6.8vw, 4.25rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
   text-transform: none;
   color: var(--text-primary);
   text-shadow: 0 2px 22px rgba(0, 0, 0, 0.5);
@@ -224,9 +224,9 @@ body {
 
 .hero-copy__title-line {
   display: block;
-  line-height: 1.05;
+  line-height: 1.08;
   white-space: normal;
-  max-width: 16ch;
+  max-width: 18ch;
 }
 
 @media (min-width: 768px) {
@@ -236,19 +236,20 @@ body {
   }
 }
 
-.hero-copy__title-line--accent {
+.hero-copy__title-line--brand {
   color: var(--accent);
+  margin-top: 0.06em;
 }
 
 .hero-copy__brand-script {
   font-family: var(--font-great-vibes), "Great Vibes", cursive;
   font-weight: 400;
   font-style: normal;
-  font-size: 1.22em;
+  font-size: 1.28em;
   letter-spacing: 0.01em;
   line-height: 1;
   display: inline-block;
-  padding-inline: 0.06em;
+  padding-inline: 0.04em;
   color: var(--accent);
 }
 
@@ -325,7 +326,7 @@ body {
 
 @media (max-width: 479px) {
   .hero-copy__title {
-    font-size: clamp(2.05rem, 9.5vw, 2.85rem);
+    font-size: clamp(1.75rem, 8.2vw, 2.45rem);
   }
 }
 

@@ -17,7 +17,7 @@ export type HomePageDefaults = {
 export const DEFAULT_PAGE_HOME: HomePageDefaults = {
   eyebrow: "Премиальный отдых на природе",
   titleLine1: "Погрузись в атмосферу",
-  titleLine2: "аристократа с Вольницей.",
+  titleLine2: "аристократа с",
   tagline:
     "Вольница — место, где история усадеб встречается\nс духом настоящего приключения.",
   imageUrl: IMAGES.heroHome.src,

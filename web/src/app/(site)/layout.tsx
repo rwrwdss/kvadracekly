@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Great_Vibes, Manrope } from "next/font/google";
+import { Cinzel, Great_Vibes, Manrope, Montserrat } from "next/font/google";
 import { CustomerAuthProvider } from "@/components/auth/CustomerAuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { BookingProvider } from "@/components/booking/BookingContext";
@@ -19,6 +19,13 @@ const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
+});
+
+/** Ближайший свободный аналог Proxima Nova Medium с кириллицей. */
+const proximaLike = Montserrat({
+  variable: "--font-proxima-nova",
+  subsets: ["latin", "cyrillic"],
+  weight: ["500"],
 });
 
 const greatVibes = Great_Vibes({
@@ -49,7 +56,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   return (
     <html
       lang="ru"
-      className={`${cinzel.variable} ${manrope.variable} ${greatVibes.variable} h-full`}
+      className={`${cinzel.variable} ${manrope.variable} ${proximaLike.variable} ${greatVibes.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-canvas text-ink antialiased">
         <CustomerAuthProvider>

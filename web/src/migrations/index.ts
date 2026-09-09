@@ -10,6 +10,7 @@ import * as migration_20260907_150000_hero_usp_experience from './20260907_15000
 import * as migration_20260909_100000_hero_escape_city from './20260909_100000_hero_escape_city';
 import * as migration_20260909_110000_lead_has_children from './20260909_110000_lead_has_children';
 import * as migration_20260909_120000_hero_aristocrat from './20260909_120000_hero_aristocrat';
+import * as migration_20260909_130000_hero_title_brand_line from './20260909_130000_hero_title_brand_line';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20260909_120000_hero_aristocrat.up,
     down: migration_20260909_120000_hero_aristocrat.down,
     name: '20260909_120000_hero_aristocrat',
+  },
+  {
+    up: migration_20260909_130000_hero_title_brand_line.up,
+    down: migration_20260909_130000_hero_title_brand_line.down,
+    name: '20260909_130000_hero_title_brand_line',
   },
 ];
