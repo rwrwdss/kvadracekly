@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cinzel, Manrope } from "next/font/google";
+import { Cinzel, Great_Vibes, Manrope } from "next/font/google";
 import { CustomerAuthProvider } from "@/components/auth/CustomerAuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { BookingProvider } from "@/components/booking/BookingContext";
@@ -19,6 +19,12 @@ const manrope = Manrope({
   variable: "--font-manrope",
   subsets: ["latin", "cyrillic"],
   weight: ["400", "500", "600", "700"],
+});
+
+const greatVibes = Great_Vibes({
+  variable: "--font-great-vibes",
+  subsets: ["latin", "cyrillic"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -41,7 +47,10 @@ export const metadata: Metadata = {
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ru" className={`${cinzel.variable} ${manrope.variable} h-full`}>
+    <html
+      lang="ru"
+      className={`${cinzel.variable} ${manrope.variable} ${greatVibes.variable} h-full`}
+    >
       <body className="min-h-full flex flex-col bg-canvas text-ink antialiased">
         <CustomerAuthProvider>
           <BookingProvider>

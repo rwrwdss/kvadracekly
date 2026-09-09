@@ -109,7 +109,15 @@ export default async function HomePage() {
             <h1 className="hero-copy__title animate-fade-up-delay">
               <span className="hero-copy__title-line">{hero.titleLine1}</span>
               <span className="hero-copy__title-line hero-copy__title-line--accent">
-                {hero.titleLine2}
+                {hero.titleLine2.split(/(Вольницей\.?)/).map((part, i) =>
+                  part.startsWith("Вольницей") ? (
+                    <span key={i} className="hero-copy__brand-script">
+                      {part}
+                    </span>
+                  ) : (
+                    <span key={i}>{part}</span>
+                  ),
+                )}
               </span>
             </h1>
             <p className="hero-copy__tagline animate-fade-up-delay">
