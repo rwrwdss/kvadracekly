@@ -225,20 +225,7 @@ body {
 .hero-copy__title-line {
   display: block;
   line-height: 1.08;
-  white-space: normal;
-  max-width: 18ch;
-}
-
-@media (min-width: 768px) {
-  .hero-copy__title-line {
-    max-width: none;
-    white-space: nowrap;
-  }
-}
-
-.hero-copy__title-line--brand {
-  color: var(--accent);
-  margin-top: 0.06em;
+  white-space: nowrap;
 }
 
 .hero-copy__brand-script {
@@ -248,9 +235,10 @@ body {
   font-size: 1.28em;
   letter-spacing: 0.01em;
   line-height: 1;
-  display: inline-block;
+  display: inline;
   padding-inline: 0.04em;
   color: var(--accent);
+  white-space: nowrap;
 }
 
 .hero-copy__tagline {

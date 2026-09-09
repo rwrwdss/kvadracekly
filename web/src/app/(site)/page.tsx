@@ -109,9 +109,7 @@ export default async function HomePage() {
             <h1 className="hero-copy__title animate-fade-up-delay">
               <span className="hero-copy__title-line">{hero.titleLine1}</span>
               <span className="hero-copy__title-line">
-                {hero.titleLine2.replace(/\s*Вольницей\.?\s*$/i, "").trim() || hero.titleLine2}
-              </span>
-              <span className="hero-copy__title-line hero-copy__title-line--brand">
+                {hero.titleLine2.replace(/\s*Вольницей\.?\s*$/i, "").trim() || hero.titleLine2}{" "}
                 <span className="hero-copy__brand-script">Вольницей.</span>
               </span>
             </h1>
