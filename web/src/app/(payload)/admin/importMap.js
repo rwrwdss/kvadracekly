@@ -17,6 +17,8 @@ import { FleetItemsBoard as FleetItemsBoard_d4e5f60718293a4b5c6d7e8f90123456 } f
 import { GalleryAdminGone as GalleryAdminGone_e5f60718293a4b5c6d7e8f9012345678 } from '../../../admin/components/GalleryAdminGone'
 import { PathImageCell as PathImageCell_d7e8f90123456789abcdef0123456789 } from '../../../admin/components/PathImageCell'
 import { ImagePathField as ImagePathField_f4a5b60718293a4b5c6d7e8f90123456 } from '../../../admin/components/ImagePathField'
+import { NewLeadNav as NewLeadNav_f6a7b8c9d0e1f203948576a1b2c3d4e5 } from '../../../admin/components/NewLeadNav'
+import { NewLeadView as NewLeadView_e5d4c3b2a1f09876543210fedcba9876 } from '../../../admin/components/NewLeadView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -28,11 +30,13 @@ export const importMap = {
   "./admin/components/Icon#Icon": Icon_135ae2f1be4b2909007cab274b5af740,
   "./admin/components/Logo#Logo": Logo_276f3912b9b9f21dadd87b9106c9274a,
   "./admin/components/CalendarNav#CalendarNav": CalendarNav_253cbf2cbcb8623a23254c74359b283d,
+  "./admin/components/NewLeadNav#NewLeadNav": NewLeadNav_f6a7b8c9d0e1f203948576a1b2c3d4e5,
   "./admin/components/CrmHome#CrmHome": CrmHome_c388d00f178c70a86c30fb07e5d303be,
   "./admin/components/RoleTheme#RoleTheme": RoleTheme_28136a8e250682589881c9da47119b94,
   "./admin/components/ManagerAccountView#ManagerAccountView": ManagerAccountView_5a0a4e28a49349b41960f1d685bb8939,
   "./admin/components/CalendarBookingsView#CalendarBookingsView": CalendarBookingsView_3e2927e5a044149504583d9c48d42db7,
   "./admin/components/CalendarStopsView#CalendarStopsView": CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533,
+  "./admin/components/NewLeadView#NewLeadView": NewLeadView_e5d4c3b2a1f09876543210fedcba9876,
   "./admin/components/CatalogLayoutPanel#TariffsLayoutPanel": TariffsLayoutPanel_a1b2c3d4e5f60718293a4b5c6d7e8f90,
   "./admin/components/CatalogLayoutPanel#FleetLayoutPanel": FleetLayoutPanel_b2c3d4e5f60718293a4b5c6d7e8f9012,
   "./admin/components/CatalogItemsBoard#TariffsItemsBoard": TariffsItemsBoard_c3d4e5f60718293a4b5c6d7e8f901234,

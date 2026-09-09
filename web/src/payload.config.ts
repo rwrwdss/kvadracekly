@@ -78,6 +78,7 @@ export default buildConfig({
       beforeDashboard: ["./admin/components/CrmHome#CrmHome"],
       afterNavLinks: [
         "./admin/components/CalendarNav#CalendarNav",
+        "./admin/components/NewLeadNav#NewLeadNav",
       ],
       logout: {
         Button: "./admin/components/ManagerLogout#ManagerLogout",
@@ -101,6 +102,12 @@ export default buildConfig({
           path: "/calendar/stops",
           exact: true,
           meta: { title: "Календарь · Остановка" },
+        },
+        newLead: {
+          Component: "./admin/components/NewLeadView#NewLeadView",
+          path: "/leads/new",
+          exact: true,
+          meta: { title: "Новая заявка" },
         },
       },
     },

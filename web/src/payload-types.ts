@@ -481,6 +481,10 @@ export interface Lead {
   contactPrefer?: string | null;
   date?: string | null;
   guests?: number | null;
+  /**
+   * В группе есть дети от 6 лет.
+   */
+  hasChildren?: boolean | null;
   route?: string | null;
   tariff?: string | null;
   /**
@@ -854,6 +858,7 @@ export interface LeadsSelect<T extends boolean = true> {
   contactPrefer?: T;
   date?: T;
   guests?: T;
+  hasChildren?: T;
   route?: T;
   tariff?: T;
   riderExperience?: T;

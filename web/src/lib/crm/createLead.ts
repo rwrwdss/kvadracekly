@@ -26,6 +26,9 @@ export type CreateLeadInput = {
   durationMinutes?: number | string;
   contactPrefer?: string;
   riderExperience?: "novice" | "experienced" | "regular" | string;
+  /** Есть ли дети 6+ в группе */
+  hasChildren?: boolean;
+  assigneeId?: number | string;
   utm?: {
     source?: string;
     medium?: string;
@@ -33,6 +36,13 @@ export type CreateLeadInput = {
     content?: string;
     term?: string;
   };
+};
+
+export type CreateLeadOptions = {
+  /** Пропустить антиспам 2 мин (ручная заявка из CRM). */
+  skipAntispam?: boolean;
+  /** Не блокировать маршруты по прогрессу клиента. */
+  skipProgressLock?: boolean;
 };
 
 export type CreateLeadResult =
@@ -52,6 +62,7 @@ function detectNight(input: CreateLeadInput): boolean {
 export async function createLead(
   payload: Payload,
   input: CreateLeadInput,
+  options: CreateLeadOptions = {},
 ): Promise<CreateLeadResult> {
   const name = input.name?.trim() || "";
   const phoneRaw = input.phone?.trim() || "";
@@ -64,6 +75,7 @@ export async function createLead(
       : 1;
   const isNight = detectNight(input);
   const contactPrefer = String(input.contactPrefer || "").trim();
+  const hasChildren = Boolean(input.hasChildren);
   const riderExperienceRaw = String(input.riderExperience || "").trim();
   const riderExperience = (["novice", "experienced", "regular"].includes(riderExperienceRaw)
     ? riderExperienceRaw
@@ -90,29 +102,31 @@ export async function createLead(
 
   const now = new Date();
 
-  const recent = await payload.find({
-    collection: "leads",
-    where: {
-      and: [
-        { phone: { equals: phone } },
-        {
-          createdAt: {
-            greater_than_equal: new Date(now.getTime() - ANTISPAM_MS).toISOString(),
+  if (!options.skipAntispam) {
+    const recent = await payload.find({
+      collection: "leads",
+      where: {
+        and: [
+          { phone: { equals: phone } },
+          {
+            createdAt: {
+              greater_than_equal: new Date(now.getTime() - ANTISPAM_MS).toISOString(),
+            },
           },
-        },
-      ],
-    },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  });
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    });
 
-  if (recent.docs[0]) {
-    return {
-      ok: false,
-      error: "Заявка уже отправлена. Подождите пару минут перед следующей.",
-      status: 429,
-    };
+    if (recent.docs[0]) {
+      return {
+        ok: false,
+        error: "Заявка уже отправлена. Подождите пару минут перед следующей.",
+        status: 429,
+      };
+    }
   }
 
   const existing = await payload.find({
@@ -157,10 +171,17 @@ export async function createLead(
       ? Number(input.productId)
       : undefined;
 
+  const assigneeRaw = input.assigneeId;
+  const assigneeId =
+    assigneeRaw !== undefined && assigneeRaw !== "" && assigneeRaw !== null
+      ? Number(assigneeRaw)
+      : undefined;
+
   const messageParts = [
     input.message?.trim() || "",
     contactPrefer ? `Связь: ${contactPrefer}` : "",
     riderExperienceLabel ? `Опыт за рулём: ${riderExperienceLabel}` : "",
+    hasChildren ? "С детьми 6+" : "",
   ].filter(Boolean);
   const message = messageParts.join("\n");
 
@@ -175,6 +196,7 @@ export async function createLead(
         date: "Согласуем в переписке",
         route: nightRoute,
         guests,
+        hasChildren,
         message,
         source: input.source?.trim() || "night_quest",
         tariff: input.tariff?.trim() || nightRoute,
@@ -183,6 +205,7 @@ export async function createLead(
         bookingKind: "night",
         contactPrefer: contactPrefer || undefined,
         ...(riderExperience ? { riderExperience } : {}),
+        ...(Number.isFinite(assigneeId) ? { assignee: assigneeId } : {}),
         utm: input.utm || {},
         ...(Number.isFinite(productId) ? { product: productId } : {}),
       },
@@ -254,9 +277,11 @@ export async function createLead(
     };
   }
 
-  const locked = bookableError(routeTitle, completedThrough);
-  if (locked) {
-    return { ok: false, error: locked, status: 403 };
+  if (!options.skipProgressLock) {
+    const locked = bookableError(routeTitle, completedThrough);
+    if (locked) {
+      return { ok: false, error: locked, status: 403 };
+    }
   }
 
   const lead = await payload.create({
@@ -270,6 +295,7 @@ export async function createLead(
       date: dateDisplay,
       route: routeTitle,
       guests,
+      hasChildren,
       message,
       source: input.source?.trim() || "booking_modal",
       tariff: input.tariff?.trim() || "",
@@ -279,6 +305,7 @@ export async function createLead(
       durationMinutes,
       contactPrefer: contactPrefer || undefined,
       ...(riderExperience ? { riderExperience } : {}),
+      ...(Number.isFinite(assigneeId) ? { assignee: assigneeId } : {}),
       utm: input.utm || {},
       ...(Number.isFinite(productId) ? { product: productId } : {}),
     },

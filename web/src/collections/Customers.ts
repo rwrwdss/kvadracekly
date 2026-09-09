@@ -15,7 +15,8 @@ export const Customers: CollectionConfig = {
     },
   },
   access: {
-    create: ({ req }) => !req.user || isAdmin(req.user),
+    // Клиенты создаются при заявке (createLead / CRM «Новая заявка»).
+    create: () => false,
     read: ({ req }) => isStaff(req.user),
     update: ({ req }) => isAdmin(req.user),
     delete: ({ req }) => isAdmin(req.user),

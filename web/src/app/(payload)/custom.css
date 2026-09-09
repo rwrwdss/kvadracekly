@@ -912,6 +912,172 @@ textarea,
   text-transform: uppercase;
 }
 
+/* «Новая заявка» — в конце сайдбара */
+.admin-new-lead-nav {
+  margin: 1.25rem 0 0.75rem;
+  padding: 0.85rem 0 0;
+  border-top: 1px solid var(--crm-line);
+}
+
+.admin-new-lead-nav__link {
+  display: flex !important;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700 !important;
+  color: var(--crm-ink) !important;
+}
+
+.admin-new-lead-nav__icon {
+  flex-shrink: 0;
+  color: var(--crm-gold);
+}
+
+.admin-new-lead {
+  display: grid;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding-block: 0.25rem 2.5rem;
+  padding-inline: 0.75rem;
+  box-sizing: border-box;
+}
+
+.admin-new-lead__header {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.admin-new-lead__form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.admin-new-lead__fields {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 720px) {
+  .admin-new-lead__fields {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-new-lead__fieldset {
+    grid-column: 1 / -1;
+  }
+}
+
+.admin-new-lead__field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--crm-mute);
+}
+
+.admin-new-lead__field span {
+  font-weight: 600;
+  color: var(--crm-ink);
+}
+
+.admin-new-lead__fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-new-lead__fieldset legend {
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--crm-ink);
+}
+
+.admin-new-lead__toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.admin-new-lead__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--crm-line);
+  border-radius: 999px;
+  background: var(--crm-canvas);
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--crm-mute);
+}
+
+.admin-new-lead__toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-new-lead__toggle.is-on {
+  border-color: var(--crm-gold);
+  color: var(--crm-ink);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--crm-gold) 14%, transparent);
+}
+
+.admin-new-lead__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.admin-cal--picker {
+  max-width: none;
+  padding-inline: 0;
+  border: 1px solid var(--crm-line);
+  border-radius: 12px;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--crm-canvas) 70%, #fff);
+}
+
+.admin-cal-day--past {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.admin-cal__slot--pick {
+  cursor: pointer;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+.admin-cal__slot--pick:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.admin-cal__slot--selected {
+  border-color: var(--crm-gold);
+  background: color-mix(in srgb, var(--crm-gold) 18%, transparent);
+  font-weight: 600;
+}
+
+/* Скрыть «Создать» на Заявках и Клиентах (создание — через «Новая заявка») */
+a[href="/admin/collections/leads/create"],
+a[href="/admin/collections/customers/create"],
+a[href$="/collections/leads/create"],
+a[href$="/collections/customers/create"],
+.collection-list a[href*="/leads/create"],
+.collection-list a[href*="/customers/create"] {
+  display: none !important;
+}
+
 .admin-cal {
   display: grid;
   gap: 1.25rem;

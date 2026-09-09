@@ -55,8 +55,8 @@ export const Leads: CollectionConfig = {
     },
   },
   access: {
-    // Публичные заявки только через /api/booking → createLead (overrideAccess).
-    create: ({ req }) => isAdmin(req.user),
+    // Создание только через /api/booking и /api/admin/leads/create (overrideAccess).
+    create: () => false,
     read: ({ req }) => isStaff(req.user),
     update: ({ req }) => isAdmin(req.user),
     delete: ({ req }) => isAdmin(req.user),
@@ -201,6 +201,15 @@ export const Leads: CollectionConfig = {
       defaultValue: 1,
       min: 1,
       max: 20,
+    },
+    {
+      name: "hasChildren",
+      type: "checkbox",
+      label: "Есть дети 6+",
+      defaultValue: false,
+      admin: {
+        description: "В группе есть дети от 6 лет.",
+      },
     },
     { name: "route", type: "text", label: "Маршрут" },
     { name: "tariff", type: "text", label: "Тариф" },
