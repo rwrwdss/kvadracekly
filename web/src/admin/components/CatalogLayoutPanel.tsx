@@ -9,12 +9,6 @@ import {
 } from "@/lib/cms/catalogPageDefaults";
 import { AdminImagePathInput } from "./AdminImageThumb";
 
-type SeasonForm = {
-  current: "atv" | "snow" | "pause";
-  label: string;
-  bannerText: string;
-};
-
 type PageForm = {
   title: string;
   subtitle: string;
@@ -26,12 +20,6 @@ type PageForm = {
   sectionTitle: string;
   ctaTitle: string;
   ctaText: string;
-};
-
-const DEFAULT_SEASON: SeasonForm = {
-  current: "atv",
-  label: "Сезон квадроциклов",
-  bannerText: "Сейчас сезон квадроциклов. Можно оставить заявку на ближайшие даты.",
 };
 
 function chipsToText(chips: { label?: string | null }[] | string[] | null | undefined): string {
@@ -77,7 +65,6 @@ export function CatalogLayoutPanel({ page }: Props) {
   const pageLabel = page === "tariffs" ? "Тарифы" : "Техника";
   const pagePath = page === "tariffs" ? "/tarify" : "/tehnika";
 
-  const [season, setSeason] = useState<SeasonForm>(DEFAULT_SEASON);
   const [layout, setLayout] = useState<PageForm>(() => pageFromSettings(null, defaults));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -92,15 +79,6 @@ export function CatalogLayoutPanel({ page }: Props) {
       const res = await fetch("/api/admin/catalog-layout", { credentials: "include" });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "Не удалось загрузить тексты");
-      const s = data.season || {};
-      const nextCurrent = String(s.current || "atv");
-      setSeason({
-        current: (["atv", "snow", "pause"].includes(nextCurrent)
-          ? nextCurrent
-          : "atv") as SeasonForm["current"],
-        label: String(s.label || DEFAULT_SEASON.label),
-        bannerText: String(s.bannerText || DEFAULT_SEASON.bannerText),
-      });
       const group = page === "tariffs" ? data.pageTariffs : data.pageFleet;
       setLayout(pageFromSettings(group, defaults));
     } catch (e) {
@@ -132,9 +110,7 @@ export function CatalogLayoutPanel({ page }: Props) {
         ctaText: layout.ctaText,
       };
       const body =
-        page === "tariffs"
-          ? { season, pageTariffs: pagePayload }
-          : { season, pageFleet: pagePayload };
+        page === "tariffs" ? { pageTariffs: pagePayload } : { pageFleet: pagePayload };
 
       const res = await fetch("/api/admin/catalog-layout", {
         method: "POST",
@@ -173,41 +149,6 @@ export function CatalogLayoutPanel({ page }: Props) {
       {message ? <p className="catalog-layout-panel__ok">{message}</p> : null}
 
       <div className="catalog-layout-panel__slim-grid">
-        <label>
-          <span>Сезон сейчас</span>
-          <select
-            value={season.current}
-            onChange={(e) =>
-              setSeason((p) => ({
-                ...p,
-                current: e.target.value as SeasonForm["current"],
-              }))
-            }
-            disabled={loading}
-          >
-            <option value="atv">Квадроциклы</option>
-            <option value="snow">Снегоходы</option>
-            <option value="pause">Пауза / межсезонье</option>
-          </select>
-        </label>
-        <label>
-          <span>Подпись сезона</span>
-          <input
-            value={season.label}
-            onChange={(e) => setSeason((p) => ({ ...p, label: e.target.value }))}
-            disabled={loading}
-          />
-        </label>
-        <label>
-          <span>Текст баннера сезона</span>
-          <textarea
-            rows={2}
-            value={season.bannerText}
-            onChange={(e) => setSeason((p) => ({ ...p, bannerText: e.target.value }))}
-            disabled={loading}
-          />
-        </label>
-
         <label>
           <span>Главный заголовок</span>
           <input

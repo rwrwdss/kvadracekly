@@ -6,7 +6,6 @@ import { BookingProvider } from "@/components/booking/BookingContext";
 import { BookingModal } from "@/components/booking/BookingModal";
 import { Header } from "@/components/layout/Header";
 import { Footer, StickyBookBar } from "@/components/layout/Footer";
-import { SeasonBanner } from "@/components/layout/SeasonBanner";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -46,7 +45,6 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <CustomerAuthProvider>
           <BookingProvider>
             <Header />
-            <SeasonBanner />
             <main className="flex-1 main-with-sticky">{children}</main>
             <Footer />
             <StickyBookBar />
