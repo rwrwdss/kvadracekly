@@ -10,6 +10,7 @@ import {
   OCCUPYING_STATUSES,
 } from "@/lib/booking/slots";
 import { bookableError, clampCompletedThrough, NIGHT_QUEST_TITLE } from "@/lib/booking/progress";
+import { leadSourceLabel } from "@/data/leadSources";
 
 export type CreateLeadInput = {
   name?: string;
@@ -351,7 +352,7 @@ async function notifyLeadCreated(
     data.date ? `Дата: ${data.date}` : null,
     data.durationMinutes ? `Длительность: ~${data.durationMinutes} мин` : null,
     `Гостей: ${data.guests}`,
-    `Источник: ${data.source}`,
+    `Источник: ${leadSourceLabel(data.source)}`,
     data.message ? `Комментарий: ${data.message}` : null,
   ]
     .filter(Boolean)

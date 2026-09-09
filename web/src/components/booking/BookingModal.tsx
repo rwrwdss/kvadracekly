@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useId, useMemo, useState } from "react";
 import { ROUTES, SITE } from "@/data/site";
+import { LEAD_SOURCES, type LeadSourceValue } from "@/data/leadSources";
 import { useBooking } from "@/components/booking/BookingContext";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 import { BookingCalendar } from "@/components/booking/BookingCalendar";
@@ -51,6 +52,7 @@ export function BookingModal() {
   const [riderExperience, setRiderExperience] = useState<"novice" | "experienced" | "regular">(
     "novice",
   );
+  const [heardFrom, setHeardFrom] = useState<LeadSourceValue | "">("");
 
   const applyRouteForProgress = useCallback(
     (pref: string, completedThrough: number) => {
@@ -75,6 +77,7 @@ export function BookingModal() {
     setDateValue("");
     setGuests(1);
     setContactPrefer("WhatsApp");
+    setHeardFrom("");
     setRiderExperience(
       user?.progress?.completedThrough && user.progress.completedThrough > 0
         ? "regular"
@@ -130,6 +133,7 @@ export function BookingModal() {
     setStatus("loading");
     setErrorText("");
     const form = new FormData(e.currentTarget);
+    const heard = String(form.get("heardFrom") || heardFrom || "").trim();
     const payload = {
       name: user.name,
       phone: user.phone,
@@ -138,7 +142,7 @@ export function BookingModal() {
       guests: Number(form.get("guests") || guests) || 1,
       message: String(form.get("message") || ""),
       riderExperience: String(form.get("riderExperience") || riderExperience),
-      source: prefill.source || "booking_modal",
+      source: heard || prefill.source || "booking_modal",
       tariff: prefill.tariff || "",
       productId: prefill.productId,
       bookingKind: "day" as const,
@@ -167,6 +171,7 @@ export function BookingModal() {
     setStatus("loading");
     setErrorText("");
     const form = new FormData(e.currentTarget);
+    const heard = String(form.get("heardFrom") || heardFrom || "").trim();
     const payload = {
       name: String(form.get("name") || guestName).trim(),
       phone: String(form.get("phone") || guestPhone).trim(),
@@ -174,7 +179,7 @@ export function BookingModal() {
       guests: Number(form.get("guests") || guests) || 1,
       message: String(form.get("message") || ""),
       riderExperience: String(form.get("riderExperience") || riderExperience),
-      source: prefill.source || "night_quest",
+      source: heard || prefill.source || "night_quest",
       tariff: prefill.tariff || NIGHT_QUEST_TITLE,
       productId: prefill.productId,
       bookingKind: "night" as const,
@@ -321,6 +326,26 @@ export function BookingModal() {
               </label>
 
               <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Откуда о нас узнали</span>
+                <select
+                  name="heardFrom"
+                  className="input"
+                  value={heardFrom}
+                  onChange={(e) => setHeardFrom(e.target.value as LeadSourceValue | "")}
+                  required
+                >
+                  <option value="" disabled>
+                    Выберите вариант
+                  </option>
+                  {LEAD_SOURCES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Опыт за рулём</span>
                 <select
                   name="riderExperience"
@@ -419,6 +444,26 @@ export function BookingModal() {
                 durationMinutes={durationMinutes}
                 required
               />
+
+              <label className="grid gap-1.5 text-sm">
+                <span className="text-mute">Откуда о нас узнали</span>
+                <select
+                  name="heardFrom"
+                  className="input"
+                  value={heardFrom}
+                  onChange={(e) => setHeardFrom(e.target.value as LeadSourceValue | "")}
+                  required
+                >
+                  <option value="" disabled>
+                    Выберите вариант
+                  </option>
+                  {LEAD_SOURCES.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
               <label className="grid gap-1.5 text-sm">
                 <span className="text-mute">Опыт за рулём</span>

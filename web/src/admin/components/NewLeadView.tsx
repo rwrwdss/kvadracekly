@@ -3,19 +3,14 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "@payloadcms/ui";
 import { ROUTES } from "@/data/site";
+import { LEAD_SOURCES, type LeadSourceValue } from "@/data/leadSources";
 import { resolveDurationMinutes } from "@/lib/booking/slots";
 import { AdminSlotPicker } from "./AdminSlotPicker";
-
-const SOURCES = [
-  { value: "crm_site_call", label: "Звонок с сайта" },
-  { value: "crm_social", label: "Соцсети" },
-  { value: "crm_other", label: "Другое" },
-] as const;
 
 export function NewLeadView() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [source, setSource] = useState<(typeof SOURCES)[number]["value"]>("crm_site_call");
+  const [source, setSource] = useState<LeadSourceValue>("crm_site_call");
   const [route, setRoute] = useState(ROUTES[0]?.title || "");
   const [guests, setGuests] = useState(1);
   const [hasChildren, setHasChildren] = useState<"yes" | "no">("no");
@@ -136,9 +131,9 @@ export function NewLeadView() {
           </label>
 
           <fieldset className="admin-new-lead__fieldset">
-            <legend>Откуда клиент</legend>
-            <div className="admin-new-lead__toggles" role="radiogroup" aria-label="Откуда клиент">
-              {SOURCES.map((s) => (
+            <legend>Откуда о нас узнали</legend>
+            <div className="admin-new-lead__toggles" role="radiogroup" aria-label="Откуда о нас узнали">
+              {LEAD_SOURCES.map((s) => (
                 <label key={s.value} className={`admin-new-lead__toggle ${source === s.value ? "is-on" : ""}`}>
                   <input
                     type="radio"
