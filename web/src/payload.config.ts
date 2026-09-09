@@ -15,6 +15,7 @@ import { Fleet } from "./collections/Fleet";
 import { Leads } from "./collections/Leads";
 import { Customers } from "./collections/Customers";
 import { Notifications } from "./collections/Notifications";
+import { GiftCertificates } from "./collections/GiftCertificates";
 import { SiteSettings } from "./globals/SiteSettings";
 import { migrations } from "./migrations";
 
@@ -109,6 +110,12 @@ export default buildConfig({
           exact: true,
           meta: { title: "Новая заявка" },
         },
+        giftCertificates: {
+          Component: "./admin/components/GiftCertificatesView#GiftCertificatesView",
+          path: "/gift-certificates",
+          exact: true,
+          meta: { title: "Подарочный сертификат" },
+        },
       },
     },
   },
@@ -116,7 +123,18 @@ export default buildConfig({
     supportedLanguages: { ru },
     fallbackLanguage: "ru",
   },
-  collections: [Users, Media, Gallery, Products, Tariffs, Fleet, Customers, Leads, Notifications],
+  collections: [
+    Users,
+    Media,
+    Gallery,
+    Products,
+    Tariffs,
+    Fleet,
+    Customers,
+    Leads,
+    Notifications,
+    GiftCertificates,
+  ],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,

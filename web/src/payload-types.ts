@@ -76,6 +76,7 @@ export interface Config {
     customers: Customer;
     leads: Lead;
     notifications: Notification;
+    'gift-certificates': GiftCertificate;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -92,6 +93,7 @@ export interface Config {
     customers: CustomersSelect<false> | CustomersSelect<true>;
     leads: LeadsSelect<false> | LeadsSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
+    'gift-certificates': GiftCertificatesSelect<false> | GiftCertificatesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -213,53 +215,18 @@ export interface Media {
   };
 }
 /**
- * Фото на главной (карусель) и на странице «Галерея». Нажмите «Create New» → загрузите файл → сохраните.
+ * Раздел отключён в админке.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "gallery".
  */
 export interface Gallery {
   id: number;
-  /**
-   * Короткая подпись под кадром, например: «У пруда на закате».
-   */
   title: string;
-  /**
-   * Нажмите «Choose from existing» или создайте новый файл (Create New) и выберите картинку.
-   */
   image: number | Media;
   category: 'atv' | 'routes' | 'nature' | 'night' | 'manor';
-  /**
-   * Снимите галочку, чтобы спрятать фото без удаления.
-   */
   published?: boolean | null;
-  /**
-   * Меньше число — фото раньше в карусели. Например: 1, 2, 3…
-   */
   sortOrder?: number | null;
-  /**
-   * Мета-теги для поисковиков и соцсетей
-   */
-  seo?: {
-    /**
-     * До ~60 символов. Если пусто — берётся заголовок.
-     */
-    metaTitle?: string | null;
-    /**
-     * До ~160 символов.
-     */
-    metaDescription?: string | null;
-    /**
-     * Через запятую
-     */
-    metaKeywords?: string | null;
-    /**
-     * Картинка для соцсетей (1200×630)
-     */
-    ogImage?: (number | null) | Media;
-    canonical?: string | null;
-    noIndex?: boolean | null;
-  };
   updatedAt: string;
   createdAt: string;
 }
@@ -342,84 +309,105 @@ export interface Product {
   createdAt: string;
 }
 /**
- * Карточки на странице /tarify. Порядок — по полю «Порядок».
+ * Тексты страницы сверху, карточки тарифов ниже.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tariffs".
  */
 export interface Tariff {
   id: number;
-  title: string;
   /**
-   * Например: zelenoe-ozero
+   * Например: Зелёное озеро
    */
-  slug: string;
+  title: string;
   /**
    * Стандарт / Премиум / Премиум+ / Легенда
    */
   badge?: string | null;
+  /**
+   * Короткий текст на карточке
+   */
+  description: string;
+  /**
+   * Например: для новичков
+   */
+  audience?: string | null;
   price: number;
+  /**
+   * Например: за двоих
+   */
   priceNote?: string | null;
+  /**
+   * Например: 1,5 часа
+   */
   duration: string;
   /**
-   * Для расчёта слотов: 60 / 90 / 120 / 180.
+   * 60 / 90 / 120 / 180
    */
   durationMinutes: number;
   distance: string;
-  difficulty: 'easy' | 'medium' | 'hard';
   /**
-   * Как на сайте: Лёгкий, Средний, Средний+, Сложный
+   * Лёгкий / Средний / Сложный
    */
   difficultyLabel: string;
-  audience?: string | null;
-  description: string;
+  difficulty: 'easy' | 'medium' | 'hard';
   /**
-   * Для доступа по прогрессу клиента (как у маршрутов).
+   * 1 = первый маршрут, 2 = следующий…
    */
   progressOrder?: number | null;
   /**
-   * Например /images/routes/....jpg — если нет загруженной обложки
+   * Например /images/routes/....jpg
    */
   imageUrl?: string | null;
   cover?: (number | null) | Media;
   imageAlt: string;
+  /**
+   * Не меняйте без нужды. Например: zelenoe-ozero
+   */
+  slug: string;
+  /**
+   * Меньше число — выше в списке
+   */
   sortOrder?: number | null;
   season?: ('atv' | 'snow' | 'all' | 'future' | 'off') | null;
-  /**
-   * Можно бронировать даже вне текущего сезона (будущий сезон).
-   */
   activeForBooking?: boolean | null;
   published?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
- * Карточки на странице /tehnika. Порядок — по полю «Порядок».
+ * Тексты страницы сверху, карточки техники ниже.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "fleet".
  */
 export interface Fleet {
   id: number;
-  name: string;
   /**
-   * Уникальный ключ, например kapitan
+   * Например: Капитан
    */
-  slug: string;
+  name: string;
   /**
    * Грязь / прогулочный / …
    */
   role: string;
   color: string;
+  drive: string;
   count: number;
   seats: number;
-  drive: string;
   /**
-   * Например /images/fleet/....jpg — если нет загруженной обложки
+   * Например /images/fleet/....jpg
    */
   imageUrl?: string | null;
   cover?: (number | null) | Media;
   imageAlt: string;
+  /**
+   * Не меняйте без нужды. Например: kapitan
+   */
+  slug: string;
+  /**
+   * Меньше число — выше в списке
+   */
   sortOrder?: number | null;
   season?: ('atv' | 'snow' | 'all' | 'future' | 'off') | null;
   activeForBooking?: boolean | null;
@@ -529,6 +517,30 @@ export interface Notification {
   createdAt: string;
 }
 /**
+ * Именные сертификаты с уникальной публичной ссылкой.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gift-certificates".
+ */
+export interface GiftCertificate {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName?: string | null;
+  /**
+   * Публичная страница: /sertifikat/{slug}
+   */
+  slug: string;
+  routeSlug: string;
+  routeTitle: string;
+  status: 'active' | 'redeemed' | 'cancelled';
+  validUntil?: string | null;
+  createdBy?: (number | null) | User;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -587,6 +599,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'notifications';
         value: number | Notification;
+      } | null)
+    | ({
+        relationTo: 'gift-certificates';
+        value: number | GiftCertificate;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -716,16 +732,6 @@ export interface GallerySelect<T extends boolean = true> {
   category?: T;
   published?: T;
   sortOrder?: T;
-  seo?:
-    | T
-    | {
-        metaTitle?: T;
-        metaDescription?: T;
-        metaKeywords?: T;
-        ogImage?: T;
-        canonical?: T;
-        noIndex?: T;
-      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -784,21 +790,21 @@ export interface ProductsSelect<T extends boolean = true> {
  */
 export interface TariffsSelect<T extends boolean = true> {
   title?: T;
-  slug?: T;
   badge?: T;
+  description?: T;
+  audience?: T;
   price?: T;
   priceNote?: T;
   duration?: T;
   durationMinutes?: T;
   distance?: T;
-  difficulty?: T;
   difficultyLabel?: T;
-  audience?: T;
-  description?: T;
+  difficulty?: T;
   progressOrder?: T;
   imageUrl?: T;
   cover?: T;
   imageAlt?: T;
+  slug?: T;
   sortOrder?: T;
   season?: T;
   activeForBooking?: T;
@@ -812,15 +818,15 @@ export interface TariffsSelect<T extends boolean = true> {
  */
 export interface FleetSelect<T extends boolean = true> {
   name?: T;
-  slug?: T;
   role?: T;
   color?: T;
+  drive?: T;
   count?: T;
   seats?: T;
-  drive?: T;
   imageUrl?: T;
   cover?: T;
   imageAlt?: T;
+  slug?: T;
   sortOrder?: T;
   season?: T;
   activeForBooking?: T;
@@ -892,6 +898,24 @@ export interface NotificationsSelect<T extends boolean = true> {
   payload?: T;
   error?: T;
   lead?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "gift-certificates_select".
+ */
+export interface GiftCertificatesSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  fullName?: T;
+  slug?: T;
+  routeSlug?: T;
+  routeTitle?: T;
+  status?: T;
+  validUntil?: T;
+  createdBy?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -979,37 +1003,32 @@ export interface SiteSetting {
       | null;
   };
   /**
-   * Переключение квадро / пауза / снегоходы. При смене обновите подпись, баннер и вёрстку страниц Тарифы/Техника (зимние тексты и фото).
+   * Влияет на показ тарифов и техники (квадро / снег / пауза). Баннер на сайте отключён.
    */
   season?: {
     current?: ('atv' | 'snow' | 'pause') | null;
-    /**
-     * Короткий ярлык под шапкой. Для зимы: «Сезон снегоходов».
-     */
     label?: string | null;
-    /**
-     * Полоса под шапкой (не герой). В паузу — про бронь на будущий сезон.
-     */
     bannerText?: string | null;
   };
   /**
-   * Тексты большого заголовка на главной. Удобнее править: меню слева → «Тексты первого экрана».
+   * Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.
    */
   pageHome?: {
     /**
-     * Сейчас на сайте: «Не почасовка — уровни маршрутов»
+     * Сейчас на сайте: «Премиальный отдых на природе»
      */
     eyebrow?: string | null;
     /**
-     * Сейчас на сайте: «Прокат» (например: Прокат)
+     * Сейчас на сайте: «Погрузись в атмосферу» (например: Прокат)
      */
     titleLine1?: string | null;
     /**
-     * Сейчас на сайте: «квадроциклов»
+     * Сейчас на сайте: «аристократа с»
      */
     titleLine2?: string | null;
     /**
-     * Сейчас на сайте: «Каждый маршрут открывает следующий уровень сложности»
+     * Сейчас на сайте: «Вольница — место, где история усадеб встречается
+     * с духом настоящего приключения.»
      */
     tagline?: string | null;
     /**
@@ -1044,7 +1063,7 @@ export interface SiteSetting {
       | null;
   };
   /**
-   * Тексты и фото страницы /tarify. Удобнее править панелью над списком Тарифы — там уже заполнены текущие значения.
+   * Править панелью над списком Тарифы.
    */
   pageTariffs?: {
     /**
@@ -1098,7 +1117,7 @@ export interface SiteSetting {
     ctaText?: string | null;
   };
   /**
-   * Тексты и фото страницы /tehnika. Удобнее править панелью над списком Техника — там уже заполнены текущие значения.
+   * Править панелью над списком Техника.
    */
   pageFleet?: {
     /**
@@ -1158,7 +1177,7 @@ export interface SiteSetting {
     ogImage?: (number | null) | Media;
   };
   /**
-   * Заголовки на /galereya. Фото: меню слева → «Фото для карусели».
+   * Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.
    */
   galleryIntro?: {
     /**

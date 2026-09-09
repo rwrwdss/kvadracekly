@@ -1009,3 +1009,130 @@ html.lenis.lenis-stopped {
   transform: translateY(-2px) scale(1.06);
   filter: drop-shadow(0 0 10px rgba(212, 164, 90, 0.35));
 }
+
+/* Публичная страница именного сертификата */
+.cert-page {
+  min-height: calc(100svh - 4rem);
+  padding-block: clamp(2rem, 6vw, 4rem);
+  padding-inline: clamp(0.75rem, 3vw, 1.5rem);
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(212, 164, 90, 0.1), transparent 55%),
+    var(--bg-void);
+}
+
+.cert-page__stage {
+  width: min(720px, 100%);
+  margin-inline: auto;
+}
+
+.cert-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  min-height: min(85svh, 760px);
+}
+
+.cert-card--inactive {
+  opacity: 0.88;
+}
+
+.cert-card__bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  opacity: 0.45;
+}
+
+.cert-card__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(4, 6, 5, 0.55) 0%, rgba(4, 6, 5, 0.82) 45%, rgba(4, 6, 5, 0.94) 100%);
+}
+
+.cert-card__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+  padding: clamp(1.75rem, 5vw, 3rem) clamp(1.25rem, 4vw, 2.5rem);
+  min-height: min(85svh, 760px);
+  justify-content: center;
+}
+
+.cert-card__logo {
+  width: clamp(7rem, 22vw, 10rem);
+  height: auto;
+  margin-block-end: 0.5rem;
+  object-fit: contain;
+}
+
+.cert-card__eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cert-card__title {
+  margin: 0;
+  font-family: var(--font-proxima-nova), "Montserrat", system-ui, sans-serif;
+  font-size: clamp(1.85rem, 5vw, 3rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.cert-card__title span {
+  color: var(--accent);
+  font-family: var(--font-great-vibes), "Great Vibes", cursive;
+  font-weight: 400;
+  font-size: 1.2em;
+}
+
+.cert-card__route {
+  margin: 0.35rem 0 0;
+  color: var(--text-primary);
+  font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+  font-weight: 600;
+}
+
+.cert-card__details,
+.cert-card__valid,
+.cert-card__hint,
+.cert-card__status,
+.cert-card__code {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.cert-card__status {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cert-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-block-start: 1rem;
+}
+
+.cert-card__code {
+  margin-block-start: 1.25rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint, var(--text-secondary));
+}
+

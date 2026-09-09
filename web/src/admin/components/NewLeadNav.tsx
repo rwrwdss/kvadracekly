@@ -23,13 +23,42 @@ function PhoneIcon() {
   );
 }
 
-/** Ссылка в конце сайдбара CRM — ручная заявка для админов и менеджеров. */
+function GiftIcon() {
+  return (
+    <svg
+      className="admin-new-lead-nav__icon"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden
+    >
+      <path
+        d="M20 12v8H4v-8M2 7h20v5H2V7ZM12 7V3M12 7c-1.7 0-3-.9-3-2s1.3-2 3-2 3 .9 3 2-1.3 2-3 2ZM12 12v8"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+/** Ссылки в конце сайдбара CRM — заявка и сертификаты. */
 export function NewLeadNav() {
   return (
     <div className="admin-new-lead-nav">
       <Link className="admin-new-lead-nav__link nav__link" href="/admin/leads/new" prefetch={false}>
         <PhoneIcon />
         Новая заявка
+      </Link>
+      <Link
+        className="admin-new-lead-nav__link nav__link"
+        href="/admin/gift-certificates"
+        prefetch={false}
+      >
+        <GiftIcon />
+        Подарочный сертификат
       </Link>
     </div>
   );
