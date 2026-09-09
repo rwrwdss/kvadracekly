@@ -100,33 +100,36 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 hero-overlay" />
 
-        <div className="relative container-site w-full pb-20 pt-28 sm:pb-16 md:pb-24 md:pt-32">
-          <p className="section-label animate-fade-up">{hero.eyebrow}</p>
-          <h1 className="font-display mt-3 text-[clamp(2.35rem,9vw,5rem)] leading-[0.92] tracking-[0.04em] uppercase animate-fade-up-delay">
-            {hero.titleLine1}
-            <br />
-            {hero.titleLine2}
-          </h1>
-          <p className="mt-5 max-w-xl text-accent font-display text-[1.05rem] sm:text-xl md:text-[1.35rem] leading-snug tracking-[0.02em] whitespace-pre-line animate-fade-up-delay">
-            {hero.tagline}
-          </p>
+        <div className="relative container-wide w-full pb-20 pt-28 sm:pb-16 md:pb-24 md:pt-32">
+          <div className="hero-copy">
+            <p className="hero-copy__eyebrow animate-fade-up">{hero.eyebrow}</p>
+            <h1 className="hero-copy__title animate-fade-up-delay">
+              <span className="hero-copy__title-line">{hero.titleLine1}</span>
+              <span className="hero-copy__title-line">{hero.titleLine2}</span>
+            </h1>
+            <p className="hero-copy__tagline animate-fade-up-delay">
+              {hero.tagline.split("\n").map((line, i) => (
+                <span key={`${line}-${i}`} className="hero-copy__tagline-line">
+                  {line}
+                </span>
+              ))}
+            </p>
 
-          <div className="mt-8 flex flex-col sm:flex-row flex-wrap gap-3 animate-fade-up-delay-2">
-            <Link href="/marshruty" className="btn btn-primary w-full sm:w-auto">
-              {hero.primaryCtaLabel}
-            </Link>
-            <BookButton
-              className="w-full sm:w-auto"
-              variant="ghost"
-              prefill={{ source: "home_hero" }}
-            >
-              {hero.secondaryCtaLabel}
-            </BookButton>
+            <div className="hero-copy__actions animate-fade-up-delay-2">
+              <Link href="/marshruty" className="btn btn-primary w-full sm:w-auto">
+                {hero.primaryCtaLabel}
+              </Link>
+              <BookButton
+                className="w-full sm:w-auto"
+                variant="ghost"
+                prefill={{ source: "home_hero" }}
+              >
+                {hero.secondaryCtaLabel}
+              </BookButton>
+            </div>
+
+            <p className="hero-copy__hint animate-fade-up-delay-2">{hero.experienceHint}</p>
           </div>
-
-          <p className="mt-4 max-w-xl text-sm text-mute leading-relaxed animate-fade-up-delay-2">
-            {hero.experienceHint}
-          </p>
 
           <div className="mt-10 sm:mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6 border-t border-[var(--border-subtle)] pt-6 sm:pt-8">
             {hero.facts.map((text, i) => {

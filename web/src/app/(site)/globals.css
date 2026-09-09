@@ -176,6 +176,82 @@ body {
   text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
 }
 
+/* Герой: одна левая линия текста / кнопок */
+.hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: min(34rem, 100%);
+  text-align: left;
+}
+
+.hero-copy__eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  /* компенсируем letter-spacing у первого глифа */
+  margin-inline-start: -0.06em;
+}
+
+.hero-copy__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0.75rem 0 0;
+  font-family: var(--font-cinzel), "Times New Roman", serif;
+  font-size: clamp(2.35rem, 9vw, 5rem);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+  margin-inline-start: -0.02em;
+}
+
+.hero-copy__title-line {
+  display: block;
+}
+
+.hero-copy__tagline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 1.1rem 0 0;
+  max-width: 100%;
+  color: var(--accent);
+  font-family: var(--font-cinzel), "Times New Roman", serif;
+  font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+.hero-copy__tagline-line {
+  display: block;
+}
+
+.hero-copy__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin-top: 1.75rem;
+  width: 100%;
+}
+
+.hero-copy__hint {
+  margin: 1rem 0 0;
+  max-width: 100%;
+  color: var(--text-mute, var(--mute, #9a948a));
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
 .hero-overlay {
   background:
     linear-gradient(180deg, rgba(4, 6, 5, 0.72) 0%, rgba(4, 6, 5, 0.42) 38%, rgba(4, 6, 5, 0.92) 100%),
