@@ -91,7 +91,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative min-h-[100svh] flex items-end grain">
+      <section className="relative min-h-[100svh] flex items-center grain">
         <div
           className="absolute inset-0 bg-cover bg-center"
           role="img"
@@ -100,38 +100,51 @@ export default async function HomePage() {
         />
         <div className="absolute inset-0 hero-overlay" />
 
-        <div className="relative container-wide w-full pb-20 pt-28 sm:pb-16 md:pb-24 md:pt-32">
+        <div className="relative container-wide w-full pt-28 pb-16 md:pt-32 md:pb-20">
           <div className="hero-copy">
-            <p className="hero-copy__eyebrow animate-fade-up">{hero.eyebrow}</p>
+            <p className="hero-copy__eyebrow animate-fade-up">
+              <span className="hero-copy__eyebrow-dot" aria-hidden />
+              {hero.eyebrow}
+            </p>
             <h1 className="hero-copy__title animate-fade-up-delay">
               <span className="hero-copy__title-line">{hero.titleLine1}</span>
-              <span className="hero-copy__title-line">{hero.titleLine2}</span>
+              <span className="hero-copy__title-line hero-copy__title-line--accent">
+                {hero.titleLine2}
+              </span>
             </h1>
             <p className="hero-copy__tagline animate-fade-up-delay">
-              {hero.tagline.split("\n").map((line, i) => (
-                <span key={`${line}-${i}`} className="hero-copy__tagline-line">
+              {hero.tagline.split("\n").map((line, i, arr) => (
+                <span
+                  key={`${line}-${i}`}
+                  className={`hero-copy__tagline-line${i === arr.length - 1 ? " hero-copy__tagline-line--accent" : ""}`}
+                >
                   {line}
                 </span>
               ))}
             </p>
 
             <div className="hero-copy__actions animate-fade-up-delay-2">
-              <Link href="/marshruty" className="btn btn-primary w-full sm:w-auto">
-                {hero.primaryCtaLabel}
-              </Link>
               <BookButton
-                className="w-full sm:w-auto"
-                variant="ghost"
+                className="hero-copy__cta"
+                variant="primary"
                 prefill={{ source: "home_hero" }}
               >
                 {hero.secondaryCtaLabel}
+                <span className="hero-copy__cta-icon" aria-hidden>
+                  ↗
+                </span>
               </BookButton>
+              <Link href="/marshruty" className="hero-copy__link">
+                {hero.primaryCtaLabel}
+              </Link>
             </div>
-
-            <p className="hero-copy__hint animate-fade-up-delay-2">{hero.experienceHint}</p>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-10 sm:mt-12 md:mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6 border-t border-[var(--border-subtle)] pt-6 sm:pt-8">
+      {hero.facts.length > 0 ? (
+        <section className="bg-void border-b border-[var(--border-subtle)]" aria-label="Коротко о формате">
+          <div className="container-wide py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
             {hero.facts.map((text, i) => {
               const Icon = HERO_FACT_ICONS[i % HERO_FACT_ICONS.length];
               return (
@@ -146,8 +159,8 @@ export default async function HomePage() {
               );
             })}
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       <section className="py-16 md:py-20 bg-void">
         <div className="container-site grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
