@@ -7,7 +7,7 @@ import { BookingModal } from "@/components/booking/BookingModal";
 import { Header } from "@/components/layout/Header";
 import { Footer, StickyBookBar } from "@/components/layout/Footer";
 import { CallFab } from "@/components/layout/CallFab";
-import { RevealOnScroll } from "@/components/ui/RevealOnScroll";
+import { SmoothScrollAndReveal } from "@/components/ui/SmoothScrollAndReveal";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -67,7 +67,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <Footer />
             <StickyBookBar />
             <CallFab />
-            <RevealOnScroll />
+            <SmoothScrollAndReveal />
             <AuthModal />
             <BookingModal />
           </BookingProvider>
