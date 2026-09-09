@@ -16,9 +16,9 @@ export type HomePageDefaults = {
 
 export const DEFAULT_PAGE_HOME: HomePageDefaults = {
   eyebrow: "Не почасовка — уровни маршрутов",
-  titleLine1: "Прокат",
-  titleLine2: "квадроциклов",
-  tagline: "Каждый маршрут открывает следующий уровень сложности",
+  titleLine1: "Вырвись",
+  titleLine2: "из города",
+  tagline: "Грязь. Лес. Адреналин.\nИ ни одной городской пробки.",
   imageUrl: IMAGES.heroHome.src,
   imageAlt: IMAGES.heroHome.alt,
   primaryCtaLabel: "Смотреть уровни →",

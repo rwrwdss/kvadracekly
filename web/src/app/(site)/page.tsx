@@ -102,12 +102,12 @@ export default async function HomePage() {
 
         <div className="relative container-site w-full pb-20 pt-28 sm:pb-16 md:pb-24 md:pt-32">
           <p className="section-label animate-fade-up">{hero.eyebrow}</p>
-          <h1 className="font-display mt-3 text-[clamp(2.1rem,8vw,4.6rem)] leading-[0.95] tracking-[0.04em] uppercase animate-fade-up-delay">
+          <h1 className="font-display mt-3 text-[clamp(2.35rem,9vw,5rem)] leading-[0.92] tracking-[0.04em] uppercase animate-fade-up-delay">
             {hero.titleLine1}
             <br />
             {hero.titleLine2}
           </h1>
-          <p className="mt-4 text-accent font-display text-[1rem] sm:text-lg md:text-xl tracking-[0.14em] sm:tracking-[0.2em] uppercase animate-fade-up-delay">
+          <p className="mt-5 max-w-xl text-accent font-display text-[1.05rem] sm:text-xl md:text-[1.35rem] leading-snug tracking-[0.02em] whitespace-pre-line animate-fade-up-delay">
             {hero.tagline}
           </p>
 
