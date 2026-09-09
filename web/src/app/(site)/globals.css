@@ -247,7 +247,7 @@ body {
 .hero-copy__hint {
   margin: 1rem 0 0;
   max-width: 100%;
-  color: var(--text-mute, var(--mute, #9a948a));
+  color: var(--text-muted);
   font-size: 0.875rem;
   line-height: 1.55;
 }
