@@ -21,11 +21,11 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700"],
 });
 
-/** Ближайший свободный аналог Proxima Nova Medium с кириллицей. */
+/** Заголовок героя: Montserrat Bold; «Вольницей» — Great Vibes. */
 const proximaLike = Montserrat({
   variable: "--font-proxima-nova",
   subsets: ["latin", "cyrillic"],
-  weight: ["500"],
+  weight: ["500", "700"],
 });
 
 const greatVibes = Great_Vibes({

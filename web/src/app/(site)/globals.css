@@ -206,16 +206,16 @@ body {
   flex-shrink: 0;
 }
 
-/* Заголовок: Proxima Nova Medium (стек) + Great Vibes для бренда */
+/* Заголовок: Montserrat Bold + Great Vibes для бренда */
 .hero-copy__title {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.12em;
   margin: 0.35em 0 0;
-  font-family: "Proxima Nova", var(--font-proxima-nova), system-ui, sans-serif;
+  font-family: var(--font-proxima-nova), "Montserrat", system-ui, sans-serif;
   font-size: clamp(2.05rem, 6.8vw, 4.25rem);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: -0.015em;
   text-transform: none;
   color: var(--text-primary);
