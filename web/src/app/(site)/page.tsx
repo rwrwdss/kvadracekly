@@ -5,6 +5,7 @@ import { BookButton } from "@/components/ui/BookButton";
 import { RouteCard } from "@/components/routes/RouteCard";
 import { HomeGalleryCarousel } from "@/components/home/HomeGalleryCarousel";
 import { GiftCertificateSection } from "@/components/home/GiftCertificateSection";
+import { FindUsSection } from "@/components/home/FindUsSection";
 import { getHomeCarousel, getHomePageLayout } from "@/lib/cms/home";
 import {
   IconAtv,
@@ -289,6 +290,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <FindUsSection />
 
       <section id="zayavka" className="relative py-20 md:py-28 scroll-mt-28">
         <div
