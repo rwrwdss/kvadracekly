@@ -77,7 +77,6 @@ export default buildConfig({
       providers: ["./admin/components/RoleTheme#RoleTheme"],
       beforeDashboard: ["./admin/components/CrmHome#CrmHome"],
       afterNavLinks: [
-        "./admin/components/HomeNav#HomeNav",
         "./admin/components/CalendarNav#CalendarNav",
       ],
       logout: {
@@ -90,12 +89,6 @@ export default buildConfig({
       views: {
         account: {
           Component: "./admin/components/ManagerAccountView#ManagerAccountView",
-        },
-        homeLayout: {
-          Component: "./admin/components/HomeLayoutView#HomeLayoutView",
-          path: "/home",
-          exact: true,
-          meta: { title: "Тексты первого экрана" },
         },
         calendarBookings: {
           Component: "./admin/components/CalendarBookingsView#CalendarBookingsView",

@@ -261,7 +261,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Главная — первый экран",
       admin: {
         hidden: true,
-        description: "Править только: меню «Главная» → «Тексты первого экрана».",
+        description: "Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.",
       },
       fields: [
         {
@@ -417,7 +417,7 @@ export const SiteSettings: GlobalConfig = {
       label: "Галерея — тексты страницы",
       admin: {
         hidden: true,
-        description: "Править только: меню «Главная» → «Тексты первого экрана».",
+        description: "Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.",
       },
       fields: [
         {
