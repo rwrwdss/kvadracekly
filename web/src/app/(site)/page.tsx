@@ -133,17 +133,6 @@ export default async function HomePage() {
                 prefill={{ source: "home_hero" }}
               >
                 {hero.secondaryCtaLabel}
-                <span className="hero-copy__cta-icon" aria-hidden>
-                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                    <path
-                      d="M3.5 8.5 8.5 3.5M8.5 3.5H4.75M8.5 3.5v3.75"
-                      stroke="currentColor"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </span>
               </BookButton>
               <Link href="/marshruty" className="hero-copy__link">
                 {hero.primaryCtaLabel}
