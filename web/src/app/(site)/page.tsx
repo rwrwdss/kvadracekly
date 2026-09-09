@@ -154,8 +154,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <GiftCertificateSection />
-
       {hero.facts.length > 0 ? (
         <section className="bg-void border-b border-[var(--border-subtle)]" aria-label="Коротко о формате">
           <div className="container-wide py-8 sm:py-10 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 md:gap-6">
@@ -290,6 +288,8 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      <GiftCertificateSection />
 
       <FindUsSection />
 
