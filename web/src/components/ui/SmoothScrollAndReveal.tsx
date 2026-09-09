@@ -4,8 +4,15 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 
+function isInViewport(el: HTMLElement) {
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+  // Чуть заранее — чтобы анимация успела стартовать
+  return rect.top < vh * 0.92 && rect.bottom > vh * 0.05;
+}
+
 /**
- * Плавный скролл колёсиком + появление `[data-reveal]` при входе в вьюпорт.
+ * Плавный скролл колёсиком (Lenis) + появление `[data-reveal]` при входе в вьюпорт.
  */
 export function SmoothScrollAndReveal() {
   const pathname = usePathname();
@@ -18,11 +25,11 @@ export function SmoothScrollAndReveal() {
 
     if (!reduce) {
       lenis = new Lenis({
-        duration: 1.15,
+        duration: 1.2,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        wheelMultiplier: 0.85,
-        touchMultiplier: 1.1,
+        wheelMultiplier: 0.8,
+        touchMultiplier: 1.05,
       });
 
       const raf = (time: number) => {
@@ -32,14 +39,13 @@ export function SmoothScrollAndReveal() {
       rafId = window.requestAnimationFrame(raf);
     }
 
-    const revealAll = () => {
-      document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-        el.classList.add("is-revealed");
-      });
+    const mark = (el: HTMLElement) => {
+      if (el.classList.contains("is-revealed")) return;
+      el.classList.add("is-revealed");
     };
 
     if (reduce) {
-      revealAll();
+      document.querySelectorAll<HTMLElement>("[data-reveal]").forEach(mark);
       return () => {
         if (rafId) cancelAnimationFrame(rafId);
         lenis?.destroy();
@@ -50,36 +56,37 @@ export function SmoothScrollAndReveal() {
       (entries) => {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue;
-          const el = entry.target as HTMLElement;
-          // Двойной кадр — чтобы transition/animation точно стартовали
-          window.requestAnimationFrame(() => {
-            window.requestAnimationFrame(() => {
-              el.classList.add("is-revealed");
-            });
-          });
-          io.unobserve(el);
+          mark(entry.target as HTMLElement);
+          io.unobserve(entry.target);
         }
       },
       {
         root: null,
-        rootMargin: "0px 0px -12% 0px",
-        threshold: 0.08,
+        // Триггерим раньше, не ждём центр экрана
+        rootMargin: "0px 0px -4% 0px",
+        threshold: [0, 0.05, 0.1],
       },
     );
 
-    const observe = () => {
+    const bind = () => {
       document.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
         if (el.classList.contains("is-revealed")) return;
+        if (isInViewport(el)) {
+          // Уже на экране при загрузке — анимируем сразу
+          window.requestAnimationFrame(() => mark(el));
+          return;
+        }
         io.observe(el);
       });
     };
 
-    // После гидрации / смены маршрута
-    observe();
-    const t = window.setTimeout(observe, 120);
+    bind();
+    const t1 = window.setTimeout(bind, 80);
+    const t2 = window.setTimeout(bind, 400);
 
     return () => {
-      window.clearTimeout(t);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
       io.disconnect();
       if (rafId) cancelAnimationFrame(rafId);
       lenis?.destroy();
