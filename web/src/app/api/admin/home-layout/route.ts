@@ -19,6 +19,7 @@ type HomeBody = Partial<{
   titleLine1: string;
   titleLine2: string;
   tagline: string;
+  heroMediaType: "image" | "video";
   imageUrl: string;
   imageAlt: string;
   heroVideoUrl: string;
@@ -38,6 +39,7 @@ function normalizeHome(input: HomeBody | undefined): HomePageDefaults {
   const facts = (input?.facts || [])
     .map((f) => String(f?.label || "").trim())
     .filter(Boolean);
+  const mediaType = input?.heroMediaType === "video" ? "video" : "image";
   return {
     eyebrow: String(input?.eyebrow || DEFAULT_PAGE_HOME.eyebrow).trim() || DEFAULT_PAGE_HOME.eyebrow,
     titleLine1:
@@ -47,6 +49,7 @@ function normalizeHome(input: HomeBody | undefined): HomePageDefaults {
       String(input?.titleLine2 || DEFAULT_PAGE_HOME.titleLine2).trim() ||
       DEFAULT_PAGE_HOME.titleLine2,
     tagline: String(input?.tagline || DEFAULT_PAGE_HOME.tagline).trim() || DEFAULT_PAGE_HOME.tagline,
+    mediaType,
     imageUrl:
       String(input?.imageUrl || DEFAULT_PAGE_HOME.imageUrl).trim() || DEFAULT_PAGE_HOME.imageUrl,
     imageAlt:
@@ -121,6 +124,7 @@ export async function GET() {
                 titleLine1: home.titleLine1,
                 titleLine2: home.titleLine2,
                 tagline: home.tagline,
+                heroMediaType: home.mediaType,
                 imageUrl: home.imageUrl,
                 imageAlt: home.imageAlt,
                 heroVideoUrl: home.videoUrl || undefined,
@@ -140,6 +144,7 @@ export async function GET() {
   return NextResponse.json({
     pageHome: {
       ...home,
+      heroMediaType: home.mediaType,
       heroVideoUrl: home.videoUrl,
       facts: home.facts.map((label) => ({ label })),
     },
@@ -166,6 +171,7 @@ export async function POST(req: NextRequest) {
       titleLine1: home.titleLine1,
       titleLine2: home.titleLine2,
       tagline: home.tagline,
+      heroMediaType: home.mediaType,
       imageUrl: home.imageUrl,
       imageAlt: home.imageAlt,
       heroVideoUrl: home.videoUrl || null,

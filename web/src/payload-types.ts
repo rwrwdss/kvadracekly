@@ -1032,6 +1032,10 @@ export interface SiteSetting {
      */
     tagline?: string | null;
     /**
+     * Только одно: либо фото, либо видео — не оба сразу.
+     */
+    heroMediaType?: ('image' | 'video') | null;
+    /**
      * Превью и кнопка «Заменить фотографию». Путь — запасной вариант.
      */
     imageUrl?: string | null;
@@ -1256,6 +1260,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         titleLine1?: T;
         titleLine2?: T;
         tagline?: T;
+        heroMediaType?: T;
         imageUrl?: T;
         cover?: T;
         imageAlt?: T;

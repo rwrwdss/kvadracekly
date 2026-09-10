@@ -1,13 +1,17 @@
 import { IMAGES } from "@/data/site";
 
+export type HomeHeroMediaType = "image" | "video";
+
 export type HomePageDefaults = {
   eyebrow: string;
   titleLine1: string;
   titleLine2: string;
   tagline: string;
+  /** Что показывать на первом экране: только фото или только видео */
+  mediaType: HomeHeroMediaType;
   imageUrl: string;
   imageAlt: string;
-  /** URL фонового видео (MP4/WebM); пусто = только картинка */
+  /** URL фонового видео (MP4/WebM); используется только при mediaType=video */
   videoUrl: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
@@ -22,6 +26,7 @@ export const DEFAULT_PAGE_HOME: HomePageDefaults = {
   titleLine2: "аристократа с",
   tagline:
     "Вольница — место, где история усадеб встречается\nс духом настоящего приключения.",
+  mediaType: "image",
   imageUrl: IMAGES.heroHome.src,
   imageAlt: IMAGES.heroHome.alt,
   videoUrl: "",

@@ -13,6 +13,7 @@ type HomeForm = {
   titleLine1: string;
   titleLine2: string;
   tagline: string;
+  mediaType: "image" | "video";
   imageUrl: string;
   imageAlt: string;
   videoUrl: string;
@@ -51,6 +52,7 @@ function homeFromApi(group: Record<string, unknown> | null | undefined): HomeFor
     titleLine1: String(group?.titleLine1 || DEFAULT_PAGE_HOME.titleLine1),
     titleLine2: String(group?.titleLine2 || DEFAULT_PAGE_HOME.titleLine2),
     tagline: String(group?.tagline || DEFAULT_PAGE_HOME.tagline),
+    mediaType: group?.heroMediaType === "video" || group?.mediaType === "video" ? "video" : "image",
     imageUrl: String(group?.imageUrl || DEFAULT_PAGE_HOME.imageUrl),
     imageAlt: String(group?.imageAlt || DEFAULT_PAGE_HOME.imageAlt),
     videoUrl: String(group?.heroVideoUrl || group?.videoUrl || DEFAULT_PAGE_HOME.videoUrl),
@@ -115,6 +117,7 @@ export function HomeLayoutPanel() {
             titleLine1: home.titleLine1,
             titleLine2: home.titleLine2,
             tagline: home.tagline,
+            heroMediaType: home.mediaType,
             imageUrl: home.imageUrl,
             imageAlt: home.imageAlt,
             heroVideoUrl: home.videoUrl,
@@ -231,25 +234,52 @@ export function HomeLayoutPanel() {
                 />
               </label>
               <FieldHint>Каждый факт — с новой строки. Обычно 4 штуки.</FieldHint>
-              <AdminImagePathInput
-                label="Картинка фона первого экрана"
-                value={home.imageUrl}
-                onChange={(imageUrl) => setHome((p) => ({ ...p, imageUrl }))}
-                hint="Запасной путь вида /images/hero/….jpg"
-                replaceLabel="Заменить фотографию"
-                altForUpload="Герой главной"
-              />
-              <AdminImagePathInput
-                label="Видео фона первого экрана"
-                value={home.videoUrl}
-                onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl }))}
-                hint="MP4/WebM. Если задано — играет поверх poster-картинки."
-                accept="video/mp4,video/webm"
-                replaceLabel="Заменить видео"
-                altForUpload="Видео фона главной"
-              />
+              <fieldset className="catalog-layout-panel__box" style={{ marginTop: "0.5rem" }}>
+                <legend>Фон первого экрана</legend>
+                <FieldHint>Только одно: либо фото, либо видео.</FieldHint>
+                <div className="admin-image-path__actions" style={{ marginBottom: "0.75rem" }}>
+                  <label className="admin-image-path__label" style={{ display: "inline-flex", gap: "0.35rem", alignItems: "center" }}>
+                    <input
+                      type="radio"
+                      name="hero-media-type"
+                      checked={home.mediaType === "image"}
+                      onChange={() => setHome((p) => ({ ...p, mediaType: "image" }))}
+                    />
+                    Фото
+                  </label>
+                  <label className="admin-image-path__label" style={{ display: "inline-flex", gap: "0.35rem", alignItems: "center" }}>
+                    <input
+                      type="radio"
+                      name="hero-media-type"
+                      checked={home.mediaType === "video"}
+                      onChange={() => setHome((p) => ({ ...p, mediaType: "video" }))}
+                    />
+                    Видео
+                  </label>
+                </div>
+                {home.mediaType === "image" ? (
+                  <AdminImagePathInput
+                    label="Картинка фона"
+                    value={home.imageUrl}
+                    onChange={(imageUrl) => setHome((p) => ({ ...p, imageUrl }))}
+                    hint="Запасной путь вида /images/hero/….jpg"
+                    replaceLabel="Заменить фотографию"
+                    altForUpload="Герой главной"
+                  />
+                ) : (
+                  <AdminImagePathInput
+                    label="Видео фона"
+                    value={home.videoUrl}
+                    onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl }))}
+                    hint="MP4/WebM. Фото в этом режиме не показывается."
+                    accept="video/mp4,video/webm"
+                    replaceLabel="Заменить видео"
+                    altForUpload="Видео фона главной"
+                  />
+                )}
+              </fieldset>
               <label>
-                <span>Описание картинки для слабовидящих</span>
+                <span>Описание фона для слабовидящих</span>
                 <input
                   value={home.imageAlt}
                   onChange={(e) => setHome((p) => ({ ...p, imageAlt: e.target.value }))}

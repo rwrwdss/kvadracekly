@@ -95,14 +95,13 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative min-h-[100svh] flex items-center grain">
-        {hero.videoUrl ? (
+        {hero.mediaType === "video" && hero.videoUrl ? (
           <video
             className="absolute inset-0 h-full w-full object-cover"
             autoPlay
             muted
             loop
             playsInline
-            poster={hero.imageUrl}
             aria-label={hero.imageAlt}
           >
             <source src={hero.videoUrl} />

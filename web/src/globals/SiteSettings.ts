@@ -295,12 +295,26 @@ export const SiteSettings: GlobalConfig = {
           },
         },
         {
+          name: "heroMediaType",
+          type: "select",
+          label: "Фон первого экрана",
+          defaultValue: "image",
+          options: [
+            { label: "Фото", value: "image" },
+            { label: "Видео", value: "video" },
+          ],
+          admin: {
+            description: "Только одно: либо фото, либо видео — не оба сразу.",
+          },
+        },
+        {
           name: "imageUrl",
           type: "text",
           label: "Картинка фона первого экрана",
           defaultValue: DEFAULT_PAGE_HOME.imageUrl,
           admin: {
             description: "Превью и кнопка «Заменить фотографию». Путь — запасной вариант.",
+            condition: (_, siblingData) => siblingData?.heroMediaType !== "video",
             components: {
               Field: "./admin/components/ImagePathField#ImagePathField",
             },
@@ -312,7 +326,8 @@ export const SiteSettings: GlobalConfig = {
           relationTo: "media",
           label: "Загруженная картинка фона (Media)",
           admin: {
-            description: "Если задана — имеет приоритет над путём. Обычно достаточно кнопки «Заменить» выше.",
+            description: "Если задана — имеет приоритет над путём.",
+            condition: (_, siblingData) => siblingData?.heroMediaType !== "video",
           },
           filterOptions: {
             mimeType: { contains: "image" },
@@ -321,7 +336,7 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "imageAlt",
           type: "text",
-          label: "Описание картинки (для слабовидящих)",
+          label: "Описание фона (для слабовидящих)",
           defaultValue: DEFAULT_PAGE_HOME.imageAlt,
         },
         {
@@ -329,7 +344,8 @@ export const SiteSettings: GlobalConfig = {
           type: "text",
           label: "Видео фона первого экрана",
           admin: {
-            description: "MP4/WebM. Если задано — играет вместо статичной картинки (картинка остаётся poster).",
+            description: "MP4/WebM. При режиме «Видео» фото не показывается.",
+            condition: (_, siblingData) => siblingData?.heroMediaType === "video",
             components: {
               Field: "./admin/components/ImagePathField#ImagePathField",
             },
@@ -341,7 +357,8 @@ export const SiteSettings: GlobalConfig = {
           relationTo: "media",
           label: "Загруженное видео фона (Media)",
           admin: {
-            description: "Приоритет над путём к видео. Обычно достаточно кнопки «Заменить видео» выше.",
+            description: "Приоритет над путём к видео.",
+            condition: (_, siblingData) => siblingData?.heroMediaType === "video",
           },
           filterOptions: {
             mimeType: { contains: "video" },

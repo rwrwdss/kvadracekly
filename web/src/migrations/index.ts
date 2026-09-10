@@ -14,6 +14,7 @@ import * as migration_20260909_130000_hero_title_brand_line from './20260909_130
 import * as migration_20260909_140000_gift_certificates from './20260909_140000_gift_certificates';
 import * as migration_20260910_120000_route_photos_lesnye_tropy from './20260910_120000_route_photos_lesnye_tropy';
 import * as migration_20260910_150000_hero_video from './20260910_150000_hero_video';
+import * as migration_20260910_154500_hero_media_type from './20260910_154500_hero_media_type';
 
 export const migrations = [
   {
@@ -95,5 +96,10 @@ export const migrations = [
     up: migration_20260910_150000_hero_video.up,
     down: migration_20260910_150000_hero_video.down,
     name: '20260910_150000_hero_video',
+  },
+  {
+    up: migration_20260910_154500_hero_media_type.up,
+    down: migration_20260910_154500_hero_media_type.down,
+    name: '20260910_154500_hero_media_type',
   },
 ];

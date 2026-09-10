@@ -34,23 +34,30 @@ function mediaDocUrl(cover: unknown): string | null {
   return doc.sizes?.hero?.url || doc.sizes?.card?.url || doc.url || null;
 }
 
+function pickMediaType(value: unknown): "image" | "video" {
+  return value === "video" ? "video" : "image";
+}
+
 export async function getHomePageLayout(): Promise<HomePageLayout> {
   try {
     const payload = await getPayloadClient();
     const settings = await payload.findGlobal({ slug: "site-settings", depth: 1 });
     const home = (settings as { pageHome?: Record<string, unknown> }).pageHome;
+    const mediaType = pickMediaType(home?.heroMediaType);
     const imageUrl =
       mediaDocUrl(home?.cover) || pickString(home?.imageUrl, DEFAULT_PAGE_HOME.imageUrl);
     const videoUrl =
       mediaDocUrl(home?.heroVideo) || pickString(home?.heroVideoUrl, DEFAULT_PAGE_HOME.videoUrl);
+    const useVideo = mediaType === "video" && Boolean(videoUrl);
     return {
       eyebrow: pickString(home?.eyebrow, DEFAULT_PAGE_HOME.eyebrow),
       titleLine1: pickString(home?.titleLine1, DEFAULT_PAGE_HOME.titleLine1),
       titleLine2: pickString(home?.titleLine2, DEFAULT_PAGE_HOME.titleLine2),
       tagline: pickString(home?.tagline, DEFAULT_PAGE_HOME.tagline),
+      mediaType: useVideo ? "video" : "image",
       imageUrl,
       imageAlt: pickString(home?.imageAlt, DEFAULT_PAGE_HOME.imageAlt),
-      videoUrl,
+      videoUrl: useVideo ? videoUrl : "",
       primaryCtaLabel: pickString(home?.primaryCtaLabel, DEFAULT_PAGE_HOME.primaryCtaLabel),
       secondaryCtaLabel: pickString(
         home?.secondaryCtaLabel,
