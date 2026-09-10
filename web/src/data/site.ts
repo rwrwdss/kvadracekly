@@ -15,6 +15,8 @@ export type Route = {
   progressOrder: number;
   image: string;
   imageAlt: string;
+  /** Короткий бейдж на карточке, например «Новое!» */
+  badge?: string;
 };
 
 export type FleetItem = {
@@ -74,7 +76,7 @@ export const IMAGES = {
     alt: "Всадник на чёрном квадроцикле в грязи на лесной тропе, на фоне освещённая усадьба",
   },
   heroRoutes: {
-    src: "/images/routes/ekspediciya-gryaz-krutoj-podem.jpg",
+    src: "/images/routes/ekspediciya.jpg",
     alt: "Два райдера на квадроциклах поднимаются по крутой грязевой тропе в лесу на закате",
   },
   heroFleet: {
@@ -82,7 +84,7 @@ export const IMAGES = {
     alt: "Ряд грязных квадроциклов на каменистой тропе перед освещённой деревянной усадьбой",
   },
   heroTariffs: {
-    src: "/images/routes/pamyatnik-obelisk-lesnaya-tropa.jpg",
+    src: "/images/routes/pamyatnik.jpg",
     alt: "Вид с квадроцикла на лесную тропу к каменному обелиску на закате",
   },
   heroNight: {
@@ -121,7 +123,7 @@ export const ROUTES: Route[] = [
     description:
       "Вводный маршрут к озеру: спокойный темп, природа и первые впечатления от Вольницы.",
     progressOrder: 1,
-    image: "/images/routes/ozero-sosny-zakat.jpg",
+    image: "/images/routes/zelenoe-ozero.jpg",
     imageAlt:
       "Спокойное озеро у подножия соснового склона на закате, тропа и сосны на переднем плане",
   },
@@ -138,7 +140,7 @@ export const ROUTES: Route[] = [
     description:
       "Больше километраж и рельеф. Ключевая точка — памятник и остановки на единой карте.",
     progressOrder: 2,
-    image: "/images/routes/pamyatnik-obelisk-lesnaya-tropa.jpg",
+    image: "/images/routes/pamyatnik.jpg",
     imageAlt:
       "Вид с квадроцикла по грязной лесной тропе к каменному обелиску-памятнику",
   },
@@ -155,7 +157,7 @@ export const ROUTES: Route[] = [
     description:
       "Насыщенный маршрут к роднику: грязевые участки, смотровые и возврат на базу.",
     progressOrder: 3,
-    image: "/images/routes/rodnik-moh-solnechnye-luchi.jpg",
+    image: "/images/routes/rodnik.jpg",
     imageAlt:
       "Квадроцикл на каменистой лесной тропе у мшистых камней, солнечные лучи сквозь кроны",
   },
@@ -172,9 +174,26 @@ export const ROUTES: Route[] = [
     description:
       "Самая насыщенная дневная программа. Время и километраж — после финальных замеров.",
     progressOrder: 4,
-    image: "/images/routes/ekspediciya-gryaz-krutoj-podem.jpg",
+    image: "/images/routes/ekspediciya.jpg",
     imageAlt:
       "Два квадроцикла поднимаются по крутой грязевой тропе в хвойном лесу на закате",
+  },
+  {
+    id: "5",
+    slug: "lesnye-tropy",
+    title: "Лесные тропы",
+    difficulty: "medium",
+    difficultyLabel: "Средний",
+    duration: "1–2 ч",
+    distance: "15–20 км",
+    price: 9000,
+    audience: "После базового опыта",
+    description: "Новый маршрут по лесным тропам: есть участки с грязью.",
+    progressOrder: 5,
+    image: "/images/routes/lesnye-tropy.jpg",
+    imageAlt:
+      "Вид с квадроцикла по грязной тропе в берёзовом лесу, впереди другой райдер",
+    badge: "Новое!",
   },
 ];
 
@@ -217,7 +236,7 @@ export const NIGHT_QUEST = {
     {
       title: "Драйв",
       text: "Адреналин без лишней суеты.",
-      image: "/images/routes/ekspediciya-gryaz-krutoj-podem.jpg",
+      image: "/images/routes/ekspediciya.jpg",
       imageAlt: "Драйв на квадроциклах по грязевой тропе",
     },
   ],

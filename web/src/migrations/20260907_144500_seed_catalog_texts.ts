@@ -13,7 +13,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       ),
       "page_tariffs_image_url" = COALESCE(
         NULLIF(TRIM("page_tariffs_image_url"), ''),
-        '/images/routes/pamyatnik-obelisk-lesnaya-tropa.jpg'
+        '/images/routes/pamyatnik.jpg'
       ),
       "page_tariffs_image_alt" = COALESCE(
         NULLIF(TRIM("page_tariffs_image_alt"), ''),

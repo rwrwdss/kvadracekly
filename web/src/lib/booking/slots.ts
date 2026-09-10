@@ -31,6 +31,7 @@ export const ROUTE_DURATION_MINUTES: Record<string, number> = {
   Памятник: 90,
   Родник: 120,
   Экспедиция: 180,
+  "Лесные тропы": 90,
 };
 
 /** Statuses that occupy a slot in the queue. */

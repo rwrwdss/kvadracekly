@@ -58,9 +58,9 @@ const WHY = [
   },
   {
     t: "Авторские маршруты",
-    d: "Озеро, памятник, родник, экспедиция — по сложности и прогрессу.",
+    d: "Озеро, памятник, родник, экспедиция и лесные тропы — по сложности и прогрессу.",
     href: "/marshruty",
-    image: "/images/routes/ozero-sosny-zakat.jpg",
+    image: "/images/routes/zelenoe-ozero.jpg",
     imageAlt: "Лесная тропа и озеро на маршрутах Вольницы",
     Icon: IconTrees,
   },
@@ -84,9 +84,9 @@ const WHY = [
 
 const STATS = [
   { n: "8", l: "квадроциклов", Icon: IconAtv },
-  { n: "4", l: "авторских маршрута", Icon: IconPin },
+  { n: "5", l: "авторских маршрутов", Icon: IconPin },
   { n: "10–22", l: "режим работы", Icon: IconClock },
-  { n: "1→4", l: "прогресс трасс", Icon: IconStar },
+  { n: "1→5", l: "прогресс трасс", Icon: IconStar },
 ] as const;
 
 export default async function HomePage() {
@@ -275,7 +275,7 @@ export default async function HomePage() {
               Все маршруты
             </Link>
           </div>
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {ROUTES.map((route, i) => (
               <div
                 key={route.id}

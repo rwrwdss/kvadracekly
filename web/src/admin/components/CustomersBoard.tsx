@@ -18,11 +18,12 @@ const PROGRESS: Record<number, string> = {
   1: "Пройдено озеро · открыт «Памятник»",
   2: "Открыт «Родник»",
   3: "Открыта «Экспедиция»",
-  4: "Все маршруты пройдены",
+  4: "Открыты «Лесные тропы»",
+  5: "Все маршруты пройдены",
 };
 
 function progressLabel(value: number | null | undefined): string {
-  const n = Math.max(0, Math.min(4, Number(value || 0)));
+  const n = Math.max(0, Math.min(5, Number(value || 0)));
   return PROGRESS[n] || PROGRESS[0];
 }
 

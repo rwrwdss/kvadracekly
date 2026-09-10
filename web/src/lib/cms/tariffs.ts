@@ -7,7 +7,7 @@ import {
 } from "@/lib/cms/season";
 import { resolveDurationMinutes } from "@/lib/booking/slots";
 
-const FALLBACK_BADGES = ["Стандарт", "Премиум", "Премиум+", "Легенда"] as const;
+const FALLBACK_BADGES = ["Стандарт", "Премиум", "Премиум+", "Легенда", "Новое!"] as const;
 
 export type TariffCard = Route & {
   badge: string;
@@ -75,7 +75,7 @@ export async function getTariffs(): Promise<TariffCard[]> {
 function fallbackTariffs(current: "atv" | "snow" | "pause"): TariffCard[] {
   return ROUTES.map((route, i) => ({
     ...route,
-    badge: FALLBACK_BADGES[i] || "Тариф",
+    badge: route.badge || FALLBACK_BADGES[i] || "Тариф",
     durationMinutes: resolveDurationMinutes(route.title),
     season: "atv" as ServiceSeason,
     activeForBooking: true,

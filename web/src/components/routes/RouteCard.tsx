@@ -14,9 +14,12 @@ export function RouteCard({ route }: { route: Route }) {
           style={{ backgroundImage: `url(${route.image})` }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,15,12,0.95)] via-transparent to-transparent" />
-        <span className={`badge absolute top-3 left-3 ${difficultyClass(route.difficulty)}`}>
-          {route.difficultyLabel}
-        </span>
+        <div className="absolute top-3 left-3 flex flex-wrap gap-2 max-w-[calc(100%-1.5rem)]">
+          {route.badge ? <span className="badge badge-medium">{route.badge}</span> : null}
+          <span className={`badge ${difficultyClass(route.difficulty)}`}>
+            {route.difficultyLabel}
+          </span>
+        </div>
         <span className="absolute bottom-3 right-3 text-accent font-semibold text-sm">
           {formatPrice(route.price)}
         </span>

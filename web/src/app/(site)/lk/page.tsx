@@ -74,7 +74,8 @@ export default function LkPage() {
           <div>
             <h1 className="section-title text-[clamp(1.8rem,4vw,2.4rem)]">Мои маршруты</h1>
             <p className="mt-3 text-sm text-mute max-w-2xl leading-relaxed">
-              {user.name} · {user.phone}. Пройдено уровней {progress?.completedThrough ?? 0} из 4.
+              {user.name} · {user.phone}. Пройдено уровней {progress?.completedThrough ?? 0} из{" "}
+              {ROUTES.length}.
               Запись только на открытый маршрут.
             </p>
           </div>

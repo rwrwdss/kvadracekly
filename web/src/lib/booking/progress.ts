@@ -13,7 +13,7 @@ export type ProgressInfo = {
 export function clampCompletedThrough(value: unknown): number {
   const n = Number(value);
   if (!Number.isFinite(n) || n < 0) return 0;
-  return Math.min(4, Math.floor(n));
+  return Math.min(ROUTES.length, Math.floor(n));
 }
 
 export function findRouteByTitle(title: string): Route | undefined {
@@ -24,7 +24,7 @@ export function findRouteByTitle(title: string): Route | undefined {
 
 export function buildProgress(completedThroughRaw: unknown): ProgressInfo {
   const completedThrough = clampCompletedThrough(completedThroughRaw);
-  const unlockedOrder = Math.min(4, completedThrough + 1);
+  const unlockedOrder = Math.min(ROUTES.length, completedThrough + 1);
   return {
     completedThrough,
     unlockedOrder,

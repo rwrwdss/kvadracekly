@@ -38,11 +38,11 @@ export const Customers: CollectionConfig = {
       label: "Пройдено уровней",
       defaultValue: 0,
       min: 0,
-      max: 4,
+      max: 5,
       admin: {
         step: 1,
         description:
-          "0 — новичок · 1 — озеро → Памятник · 2 → Родник · 3 → Экспедиция · 4 — всё пройдено.",
+          "0 — новичок · 1 — озеро → Памятник · 2 → Родник · 3 → Экспедиция · 4 → Лесные тропы · 5 — всё пройдено.",
       },
     },
     { name: "notes", type: "textarea", label: "Заметки" },
