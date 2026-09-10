@@ -55,7 +55,7 @@ export function PageHero({
           <p
             className="section-label mt-3 drop-shadow"
             data-reveal
-            style={{ "--reveal-delay": "0.22s" } as CSSProperties}
+            style={{ "--reveal-delay": "0.32s" } as CSSProperties}
           >
             {subtitle}
           </p>
@@ -64,7 +64,7 @@ export function PageHero({
           <p
             className="mt-4 max-w-2xl text-mute text-[15px] sm:text-sm md:text-[1rem] leading-relaxed drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]"
             data-reveal
-            style={{ "--reveal-delay": "0.38s" } as CSSProperties}
+            style={{ "--reveal-delay": "0.5s" } as CSSProperties}
           >
             {description}
           </p>
@@ -73,7 +73,7 @@ export function PageHero({
           <div
             className="mt-6 sm:mt-8"
             data-reveal
-            style={{ "--reveal-delay": "0.52s" } as CSSProperties}
+            style={{ "--reveal-delay": "0.68s" } as CSSProperties}
           >
             {children}
           </div>

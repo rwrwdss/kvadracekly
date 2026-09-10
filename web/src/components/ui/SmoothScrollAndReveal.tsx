@@ -26,10 +26,10 @@ export function SmoothScrollAndReveal() {
 
     if (!reduce) {
       lenis = new Lenis({
-        duration: 1.2,
+        duration: 1.45,
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
         smoothWheel: true,
-        wheelMultiplier: 0.8,
+        wheelMultiplier: 0.75,
         touchMultiplier: 1.05,
         // Модалки / внутренние скролл-контейнеры — не отдавать колесо Lenis
         prevent: (node) =>

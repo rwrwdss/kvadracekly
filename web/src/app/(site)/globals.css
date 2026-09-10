@@ -370,8 +370,8 @@ body {
 }
 
 [data-reveal].is-revealed {
-  animation: scroll-reveal-in 1.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--reveal-delay, 0.15s);
+  animation: scroll-reveal-in 1.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--reveal-delay, 0.28s);
 }
 
 /* Lenis: не конфликтовать с native smooth */
