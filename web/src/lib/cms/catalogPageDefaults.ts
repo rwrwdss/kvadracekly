@@ -47,10 +47,10 @@ export function catalogPageLayoutFields(defaults: CatalogPageDefaults): Field[] 
     {
       name: "imageUrl",
       type: "text",
-      label: "Картинка фона первого экрана (путь к файлу)",
+      label: "Картинка фона первого экрана",
       defaultValue: defaults.imageUrl,
       admin: {
-        description: "Справа — превью. Можно указать путь или загрузить файл ниже.",
+        description: "Превью и кнопка «Заменить фотографию». Путь — запасной вариант.",
         components: {
           Field: "./admin/components/ImagePathField#ImagePathField",
         },
@@ -60,9 +60,12 @@ export function catalogPageLayoutFields(defaults: CatalogPageDefaults): Field[] 
       name: "cover",
       type: "upload",
       relationTo: "media",
-      label: "Или загрузить свою картинку фона",
+      label: "Загруженная картинка фона (Media)",
       admin: {
-        description: "Если загрузите файл — он заменит путь выше.",
+        description: "Если задана — имеет приоритет над путём.",
+      },
+      filterOptions: {
+        mimeType: { contains: "image" },
       },
     },
     {

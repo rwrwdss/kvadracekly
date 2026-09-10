@@ -16,7 +16,7 @@ export const Media: CollectionConfig = {
   },
   upload: {
     staticDir: "media",
-    mimeTypes: ["image/*"],
+    mimeTypes: ["image/*", "video/mp4", "video/webm"],
     imageSizes: [
       { name: "thumb", width: 400, height: 300, position: "centre" },
       { name: "card", width: 900, height: 600, position: "centre" },
@@ -29,6 +29,7 @@ export const Media: CollectionConfig = {
       type: "text",
       label: "Alt-текст",
       required: true,
+      defaultValue: "Медиафайл",
     },
   ],
 };

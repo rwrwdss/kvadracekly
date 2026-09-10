@@ -24,10 +24,14 @@ function pickFacts(
   return list.length ? list : fallback;
 }
 
-function coverUrl(cover: unknown): string | null {
+function mediaDocUrl(cover: unknown): string | null {
   if (!cover || typeof cover === "number" || typeof cover === "string") return null;
-  const doc = cover as { url?: string | null; sizes?: { card?: { url?: string | null } } };
-  return doc.sizes?.card?.url || doc.url || null;
+  const doc = cover as {
+    url?: string | null;
+    mimeType?: string | null;
+    sizes?: { card?: { url?: string | null }; hero?: { url?: string | null } };
+  };
+  return doc.sizes?.hero?.url || doc.sizes?.card?.url || doc.url || null;
 }
 
 export async function getHomePageLayout(): Promise<HomePageLayout> {
@@ -35,15 +39,18 @@ export async function getHomePageLayout(): Promise<HomePageLayout> {
     const payload = await getPayloadClient();
     const settings = await payload.findGlobal({ slug: "site-settings", depth: 1 });
     const home = (settings as { pageHome?: Record<string, unknown> }).pageHome;
+    const imageUrl =
+      mediaDocUrl(home?.cover) || pickString(home?.imageUrl, DEFAULT_PAGE_HOME.imageUrl);
+    const videoUrl =
+      mediaDocUrl(home?.heroVideo) || pickString(home?.heroVideoUrl, DEFAULT_PAGE_HOME.videoUrl);
     return {
       eyebrow: pickString(home?.eyebrow, DEFAULT_PAGE_HOME.eyebrow),
       titleLine1: pickString(home?.titleLine1, DEFAULT_PAGE_HOME.titleLine1),
       titleLine2: pickString(home?.titleLine2, DEFAULT_PAGE_HOME.titleLine2),
       tagline: pickString(home?.tagline, DEFAULT_PAGE_HOME.tagline),
-      imageUrl:
-        coverUrl(home?.cover) ||
-        pickString(home?.imageUrl, DEFAULT_PAGE_HOME.imageUrl),
+      imageUrl,
       imageAlt: pickString(home?.imageAlt, DEFAULT_PAGE_HOME.imageAlt),
+      videoUrl,
       primaryCtaLabel: pickString(home?.primaryCtaLabel, DEFAULT_PAGE_HOME.primaryCtaLabel),
       secondaryCtaLabel: pickString(
         home?.secondaryCtaLabel,

@@ -109,9 +109,9 @@ export const Fleet: CollectionConfig = {
             {
               name: "imageUrl",
               type: "text",
-              label: "Путь к картинке",
+              label: "Картинка",
               admin: {
-                description: "Например /images/fleet/....jpg",
+                description: "Кнопка «Заменить фотографию». Путь — запасной.",
                 components: {
                   Field: "./admin/components/ImagePathField#ImagePathField",
                 },
@@ -121,7 +121,13 @@ export const Fleet: CollectionConfig = {
               name: "cover",
               type: "upload",
               relationTo: "media",
-              label: "Или загрузить файл",
+              label: "Загруженный файл (Media)",
+              admin: {
+                description: "Приоритет над путём, если задан.",
+              },
+              filterOptions: {
+                mimeType: { contains: "image" },
+              },
             },
             {
               name: "imageAlt",

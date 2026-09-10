@@ -255,8 +255,7 @@ export const SiteSettings: GlobalConfig = {
       type: "group",
       label: "Главная — первый экран",
       admin: {
-        hidden: true,
-        description: "Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.",
+        description: "Тексты и медиа первого экрана главной. Картинку/видео можно заменить файлом.",
       },
       fields: [
         {
@@ -298,10 +297,10 @@ export const SiteSettings: GlobalConfig = {
         {
           name: "imageUrl",
           type: "text",
-          label: "Картинка фона первого экрана (путь к файлу)",
+          label: "Картинка фона первого экрана",
           defaultValue: DEFAULT_PAGE_HOME.imageUrl,
           admin: {
-            description: "Справа — превью текущей картинки. Можно заменить путём или файлом ниже.",
+            description: "Превью и кнопка «Заменить фотографию». Путь — запасной вариант.",
             components: {
               Field: "./admin/components/ImagePathField#ImagePathField",
             },
@@ -311,9 +310,12 @@ export const SiteSettings: GlobalConfig = {
           name: "cover",
           type: "upload",
           relationTo: "media",
-          label: "Или загрузить свою картинку фона",
+          label: "Загруженная картинка фона (Media)",
           admin: {
-            description: "Если загрузите файл — он заменит путь выше.",
+            description: "Если задана — имеет приоритет над путём. Обычно достаточно кнопки «Заменить» выше.",
+          },
+          filterOptions: {
+            mimeType: { contains: "image" },
           },
         },
         {
@@ -321,6 +323,29 @@ export const SiteSettings: GlobalConfig = {
           type: "text",
           label: "Описание картинки (для слабовидящих)",
           defaultValue: DEFAULT_PAGE_HOME.imageAlt,
+        },
+        {
+          name: "heroVideoUrl",
+          type: "text",
+          label: "Видео фона первого экрана",
+          admin: {
+            description: "MP4/WebM. Если задано — играет вместо статичной картинки (картинка остаётся poster).",
+            components: {
+              Field: "./admin/components/ImagePathField#ImagePathField",
+            },
+          },
+        },
+        {
+          name: "heroVideo",
+          type: "upload",
+          relationTo: "media",
+          label: "Загруженное видео фона (Media)",
+          admin: {
+            description: "Приоритет над путём к видео. Обычно достаточно кнопки «Заменить видео» выше.",
+          },
+          filterOptions: {
+            mimeType: { contains: "video" },
+          },
         },
         {
           name: "primaryCtaLabel",

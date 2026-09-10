@@ -21,6 +21,7 @@ type HomeBody = Partial<{
   tagline: string;
   imageUrl: string;
   imageAlt: string;
+  heroVideoUrl: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   facts: { label?: string }[];
@@ -50,6 +51,7 @@ function normalizeHome(input: HomeBody | undefined): HomePageDefaults {
       String(input?.imageUrl || DEFAULT_PAGE_HOME.imageUrl).trim() || DEFAULT_PAGE_HOME.imageUrl,
     imageAlt:
       String(input?.imageAlt || DEFAULT_PAGE_HOME.imageAlt).trim() || DEFAULT_PAGE_HOME.imageAlt,
+    videoUrl: String(input?.heroVideoUrl || DEFAULT_PAGE_HOME.videoUrl).trim(),
     primaryCtaLabel:
       String(input?.primaryCtaLabel || DEFAULT_PAGE_HOME.primaryCtaLabel).trim() ||
       DEFAULT_PAGE_HOME.primaryCtaLabel,
@@ -121,6 +123,7 @@ export async function GET() {
                 tagline: home.tagline,
                 imageUrl: home.imageUrl,
                 imageAlt: home.imageAlt,
+                heroVideoUrl: home.videoUrl || undefined,
                 primaryCtaLabel: home.primaryCtaLabel,
                 secondaryCtaLabel: home.secondaryCtaLabel,
                 experienceHint: home.experienceHint,
@@ -137,6 +140,7 @@ export async function GET() {
   return NextResponse.json({
     pageHome: {
       ...home,
+      heroVideoUrl: home.videoUrl,
       facts: home.facts.map((label) => ({ label })),
     },
     galleryIntro,
@@ -164,6 +168,7 @@ export async function POST(req: NextRequest) {
       tagline: home.tagline,
       imageUrl: home.imageUrl,
       imageAlt: home.imageAlt,
+      heroVideoUrl: home.videoUrl || null,
       primaryCtaLabel: home.primaryCtaLabel,
       secondaryCtaLabel: home.secondaryCtaLabel,
       experienceHint: home.experienceHint,

@@ -7,6 +7,8 @@ export type HomePageDefaults = {
   tagline: string;
   imageUrl: string;
   imageAlt: string;
+  /** URL фонового видео (MP4/WebM); пусто = только картинка */
+  videoUrl: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   facts: string[];
@@ -22,6 +24,7 @@ export const DEFAULT_PAGE_HOME: HomePageDefaults = {
     "Вольница — место, где история усадеб встречается\nс духом настоящего приключения.",
   imageUrl: IMAGES.heroHome.src,
   imageAlt: IMAGES.heroHome.alt,
+  videoUrl: "",
   primaryCtaLabel: "Смотреть уровни →",
   secondaryCtaLabel: "Записаться",
   facts: [

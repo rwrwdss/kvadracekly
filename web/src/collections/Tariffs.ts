@@ -164,9 +164,9 @@ export const Tariffs: CollectionConfig = {
             {
               name: "imageUrl",
               type: "text",
-              label: "Путь к картинке",
+              label: "Картинка",
               admin: {
-                description: "Например /images/routes/....jpg",
+                description: "Кнопка «Заменить фотографию». Путь — запасной.",
                 components: {
                   Field: "./admin/components/ImagePathField#ImagePathField",
                 },
@@ -176,7 +176,13 @@ export const Tariffs: CollectionConfig = {
               name: "cover",
               type: "upload",
               relationTo: "media",
-              label: "Или загрузить файл",
+              label: "Загруженный файл (Media)",
+              admin: {
+                description: "Приоритет над путём, если задан.",
+              },
+              filterOptions: {
+                mimeType: { contains: "image" },
+              },
             },
             {
               name: "imageAlt",

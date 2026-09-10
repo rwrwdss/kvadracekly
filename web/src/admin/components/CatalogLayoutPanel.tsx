@@ -178,6 +178,9 @@ export function CatalogLayoutPanel({ page }: Props) {
           label="Картинка фона"
           value={layout.imageUrl}
           onChange={(imageUrl) => setLayout((p) => ({ ...p, imageUrl }))}
+          hint="Запасной путь /images/…"
+          replaceLabel="Заменить фотографию"
+          altForUpload="Фон страницы каталога"
         />
         <label>
           <span>Короткие подписи (по строке)</span>

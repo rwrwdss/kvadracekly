@@ -1011,7 +1011,7 @@ export interface SiteSetting {
     bannerText?: string | null;
   };
   /**
-   * Скрыто в админке. Тексты первого экрана задаются в коде/дефолтах.
+   * Тексты и медиа первого экрана главной. Картинку/видео можно заменить файлом.
    */
   pageHome?: {
     /**
@@ -1032,14 +1032,22 @@ export interface SiteSetting {
      */
     tagline?: string | null;
     /**
-     * Справа — превью текущей картинки. Можно заменить путём или файлом ниже.
+     * Превью и кнопка «Заменить фотографию». Путь — запасной вариант.
      */
     imageUrl?: string | null;
     /**
-     * Если загрузите файл — он заменит путь выше.
+     * Если задана — имеет приоритет над путём.
      */
     cover?: (number | null) | Media;
     imageAlt?: string | null;
+    /**
+     * MP4/WebM. Если задано — играет вместо статичной картинки.
+     */
+    heroVideoUrl?: string | null;
+    /**
+     * Приоритет над путём к видео.
+     */
+    heroVideo?: (number | null) | Media;
     /**
      * Сейчас: «Смотреть уровни →»
      */
@@ -1251,6 +1259,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         imageUrl?: T;
         cover?: T;
         imageAlt?: T;
+        heroVideoUrl?: T;
+        heroVideo?: T;
         primaryCtaLabel?: T;
         secondaryCtaLabel?: T;
         experienceHint?: T;

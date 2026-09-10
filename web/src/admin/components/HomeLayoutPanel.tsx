@@ -15,6 +15,7 @@ type HomeForm = {
   tagline: string;
   imageUrl: string;
   imageAlt: string;
+  videoUrl: string;
   primaryCtaLabel: string;
   secondaryCtaLabel: string;
   experienceHint: string;
@@ -52,6 +53,7 @@ function homeFromApi(group: Record<string, unknown> | null | undefined): HomeFor
     tagline: String(group?.tagline || DEFAULT_PAGE_HOME.tagline),
     imageUrl: String(group?.imageUrl || DEFAULT_PAGE_HOME.imageUrl),
     imageAlt: String(group?.imageAlt || DEFAULT_PAGE_HOME.imageAlt),
+    videoUrl: String(group?.heroVideoUrl || group?.videoUrl || DEFAULT_PAGE_HOME.videoUrl),
     primaryCtaLabel: String(group?.primaryCtaLabel || DEFAULT_PAGE_HOME.primaryCtaLabel),
     secondaryCtaLabel: String(group?.secondaryCtaLabel || DEFAULT_PAGE_HOME.secondaryCtaLabel),
     experienceHint: String(group?.experienceHint || DEFAULT_PAGE_HOME.experienceHint),
@@ -115,6 +117,7 @@ export function HomeLayoutPanel() {
             tagline: home.tagline,
             imageUrl: home.imageUrl,
             imageAlt: home.imageAlt,
+            heroVideoUrl: home.videoUrl,
             primaryCtaLabel: home.primaryCtaLabel,
             secondaryCtaLabel: home.secondaryCtaLabel,
             experienceHint: home.experienceHint,
@@ -232,7 +235,18 @@ export function HomeLayoutPanel() {
                 label="Картинка фона первого экрана"
                 value={home.imageUrl}
                 onChange={(imageUrl) => setHome((p) => ({ ...p, imageUrl }))}
-                hint="Справа — превью. Путь вида /images/hero/….jpg"
+                hint="Запасной путь вида /images/hero/….jpg"
+                replaceLabel="Заменить фотографию"
+                altForUpload="Герой главной"
+              />
+              <AdminImagePathInput
+                label="Видео фона первого экрана"
+                value={home.videoUrl}
+                onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl }))}
+                hint="MP4/WebM. Если задано — играет поверх poster-картинки."
+                accept="video/mp4,video/webm"
+                replaceLabel="Заменить видео"
+                altForUpload="Видео фона главной"
               />
               <label>
                 <span>Описание картинки для слабовидящих</span>

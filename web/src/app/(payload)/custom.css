@@ -2006,6 +2006,78 @@ a[href$="/collections/customers/create"],
   text-transform: uppercase;
 }
 
+.admin-image-path__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-image-path__replace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid var(--crm-line);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--crm-accent, #c4a35a) 18%, var(--crm-card));
+  color: var(--crm-ink);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-image-path__replace:hover:not(:disabled) {
+  border-color: var(--crm-accent, #c4a35a);
+}
+
+.admin-image-path__replace:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.admin-image-path__error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.78rem;
+}
+
+.admin-image-path__details {
+  margin-top: 0.15rem;
+}
+
+.admin-image-path__details > summary {
+  cursor: pointer;
+  color: var(--crm-mute);
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-weight: 600;
+  list-style: none;
+}
+
+.admin-image-path__details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-image-path__details[open] > summary {
+  margin-bottom: 0.35rem;
+}
+
+.admin-image-thumb--video {
+  position: relative;
+  background: #0a0f0c;
+}
+
+.admin-image-thumb--video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .admin-image-path__path,
 .admin-image-path-field__path,
 .admin-image-path__row input,

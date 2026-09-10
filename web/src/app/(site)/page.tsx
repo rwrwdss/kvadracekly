@@ -95,12 +95,26 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative min-h-[100svh] flex items-center grain">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          role="img"
-          aria-label={hero.imageAlt}
-          style={{ backgroundImage: `url(${hero.imageUrl})` }}
-        />
+        {hero.videoUrl ? (
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={hero.imageUrl}
+            aria-label={hero.imageAlt}
+          >
+            <source src={hero.videoUrl} />
+          </video>
+        ) : (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            role="img"
+            aria-label={hero.imageAlt}
+            style={{ backgroundImage: `url(${hero.imageUrl})` }}
+          />
+        )}
         <div className="absolute inset-0 hero-overlay" />
 
         <div className="relative container-wide w-full pt-28 pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))] md:pt-32 md:pb-20">
