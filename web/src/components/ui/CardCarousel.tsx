@@ -73,16 +73,16 @@ export function CardCarousel({
   }
 
   return (
-    <div className={className}>
+    <div className={`min-w-0 w-full max-w-full ${className}`}>
       <div
         ref={scrollerRef}
-        className={`hide-scrollbar flex gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-4 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:overflow-visible md:snap-none md:gap-5 ${gridClassName}`}
+        className={`hide-scrollbar flex w-full min-w-0 max-w-full gap-4 overflow-x-auto overscroll-x-contain snap-x snap-mandatory scroll-px-4 pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:overflow-visible md:snap-none md:gap-5 ${gridClassName}`}
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {items.map((child, i) => (
           <div
             key={i}
-            className={`snap-center shrink-0 ${mobileSlideClassName} md:w-auto md:shrink md:snap-align-none md:max-w-none`}
+            className={`snap-center shrink-0 min-w-0 ${mobileSlideClassName} md:w-auto md:max-w-none md:shrink md:snap-align-none`}
           >
             {child}
           </div>

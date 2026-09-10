@@ -43,15 +43,18 @@ export default async function TariffsPage() {
         image={layout.imageUrl}
         imageAlt={layout.imageAlt}
       >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-3xl text-xs sm:text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3 max-w-3xl text-xs sm:text-sm">
           {layout.chips.map((t, i) => {
             const Icon = CHIP_ICONS[i % CHIP_ICONS.length];
             return (
-              <div key={`${t}-${i}`} className="chip p-3 text-ink flex items-center gap-2">
+              <div
+                key={`${t}-${i}`}
+                className="chip min-w-0 p-2.5 sm:p-3 text-ink flex items-center gap-2"
+              >
                 <span className="text-accent shrink-0">
                   <Icon size={16} />
                 </span>
-                {t}
+                <span className="leading-snug break-words">{t}</span>
               </div>
             );
           })}
@@ -59,13 +62,13 @@ export default async function TariffsPage() {
       </PageHero>
 
       <section className="py-14 sm:py-16 md:py-20">
-        <div className="container-site grid gap-8 lg:grid-cols-[1.6fr_0.8fr] lg:items-start">
-          <div>
+        <div className="container-site grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,0.8fr)] lg:items-start">
+          <div className="min-w-0">
             <p className="section-label mb-4 md:hidden">{layout.sectionLabel}</p>
             <TariffsCarousel routes={tariffs} />
           </div>
 
-          <aside className="space-y-5">
+          <aside className="min-w-0 space-y-5">
             <div className="card-dark p-5 sm:p-6">
               <p className="section-label">Дополнительно</p>
               <ul className="mt-4 space-y-4">

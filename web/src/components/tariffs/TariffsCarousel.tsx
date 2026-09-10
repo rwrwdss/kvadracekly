@@ -1,6 +1,5 @@
 "use client";
 
-import { CardCarousel } from "@/components/ui/CardCarousel";
 import { BookButton } from "@/components/ui/BookButton";
 import { IconCheck } from "@/components/ui/Icons";
 import { difficultyClass } from "@/components/ui/PageHero";
@@ -19,7 +18,7 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
   const progress = user?.progress;
 
   return (
-    <CardCarousel gridClassName="md:grid-cols-2">
+    <div className="grid min-w-0 grid-cols-1 gap-5 md:grid-cols-2">
       {routes.map((route) => {
         const unlocked = user
           ? route.progressOrder <= (progress?.unlockedOrder ?? 1)
@@ -30,7 +29,7 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
         return (
           <article
             key={route.id}
-            className={`card-dark overflow-hidden flex flex-col h-full ${unlocked ? "" : "opacity-70"}`}
+            className={`card-dark overflow-hidden flex flex-col h-full min-w-0 ${unlocked ? "" : "opacity-70"}`}
           >
             <div
               className="aspect-[16/9] bg-cover bg-center relative"
@@ -49,10 +48,12 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
                 </span>
               )}
             </div>
-            <div className="p-5 flex flex-col flex-1 gap-3">
-              <div className="flex items-center justify-between gap-2">
-                <h3 className="font-display text-xl uppercase tracking-wide">{route.title}</h3>
-                <span className={`badge ${difficultyClass(route.difficulty)}`}>
+            <div className="p-4 sm:p-5 flex flex-col flex-1 gap-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-display text-lg sm:text-xl uppercase tracking-wide min-w-0">
+                  {route.title}
+                </h3>
+                <span className={`badge shrink-0 ${difficultyClass(route.difficulty)}`}>
                   {route.difficultyLabel}
                 </span>
               </div>
@@ -84,11 +85,11 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
                   </li>
                 ))}
               </ul>
-              <div className="flex items-center justify-between gap-3 pt-2">
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                 <p className="text-accent font-semibold text-lg">{formatPrice(route.price)}</p>
                 {unlocked && route.activeForBooking ? (
                   <BookButton
-                    className="!px-3"
+                    className="!px-3 max-sm:flex-1"
                     prefill={{ route: route.title, tariff: badge, source: "tariff_select" }}
                   >
                     Выбрать
@@ -96,7 +97,7 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
                 ) : (
                   <button
                     type="button"
-                    className="btn btn-ghost !px-3 opacity-50 cursor-not-allowed"
+                    className="btn btn-ghost !px-3 opacity-50 cursor-not-allowed max-sm:flex-1"
                     disabled
                   >
                     {!route.activeForBooking ? "Скоро" : "Закрыто"}
@@ -107,6 +108,6 @@ export function TariffsCarousel({ routes }: { routes: TariffCard[] }) {
           </article>
         );
       })}
-    </CardCarousel>
+    </div>
   );
 }

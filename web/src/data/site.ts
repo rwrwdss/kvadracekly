@@ -50,13 +50,13 @@ export const NAV = [
 export const SITE = {
   name: "Вольница",
   tagline: "Территория свободы",
-  phone: "+7 (843) 560-10-32",
-  email: "5trestkazan@mail.ru",
+  phone: "+7 (986) 667-00-31",
+  email: "Volnica1818@gmail.com",
   hours: "10:00–22:00 ежедневно",
   location: "КФХ / усадьба «Берегиня», ~25 мин от Казани",
   /** YouTube id ролика; пусто = модал «скоро» */
   videoYoutubeId: "",
-  whatsapp: "https://wa.me/78435601032",
+  whatsapp: "https://wa.me/79866670031",
   telegram: "https://t.me/share/url?url=https://volnitsa.ru",
   logo: "/images/brand/logo-volnitsa-runa-transparent.png",
   logoAlt: "Вольница — территория свободы",
