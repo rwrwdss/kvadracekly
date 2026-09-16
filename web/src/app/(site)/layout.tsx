@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Cinzel, Great_Vibes, Manrope, Montserrat } from "next/font/google";
 import { CustomerAuthProvider } from "@/components/auth/CustomerAuthContext";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -70,6 +71,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <SmoothScrollAndReveal />
             <AuthModal />
             <BookingModal />
+            <Script
+              src="https://chatneuron.ru/widget.js"
+              strategy="lazyOnload"
+              data-client="cmu3sfe2c00013vpdfq1atm6d"
+              data-agent="cmu3sfe2l00033vpdt0txfdcg"
+              data-variant="card"
+              data-api-origin="https://chatneuron.ru"
+            />
           </BookingProvider>
         </CustomerAuthProvider>
       </body>
