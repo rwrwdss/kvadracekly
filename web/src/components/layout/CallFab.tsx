@@ -5,7 +5,7 @@ import { SITE } from "@/data/site";
 
 const TEL = SITE.phone.replace(/[^\d+]/g, "");
 
-/** Плавающая кнопка «позвонить» в правом нижнем углу. */
+/** Плавающая кнопка «позвонить» в левом нижнем углу (справа — виджет чата). */
 export function CallFab() {
   const [ready, setReady] = useState(false);
 

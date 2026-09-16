@@ -1016,7 +1016,7 @@ html.lenis.lenis-stopped {
 .call-fab {
   position: fixed;
   z-index: 45;
-  right: max(1rem, env(safe-area-inset-right, 0px));
+  left: max(1rem, env(safe-area-inset-left, 0px));
   bottom: calc(1.15rem + env(safe-area-inset-bottom, 0px));
   display: grid;
   place-items: center;
