@@ -1023,7 +1023,7 @@ export interface SiteSetting {
      */
     titleLine1?: string | null;
     /**
-     * Сейчас на сайте: «аристократа с»
+     * Сейчас на сайте: «свободы с»
      */
     titleLine2?: string | null;
     /**

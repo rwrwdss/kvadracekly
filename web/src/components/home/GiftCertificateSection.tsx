@@ -1,4 +1,6 @@
-import { IMAGES } from "@/data/site";
+import { IMAGES, SITE } from "@/data/site";
+
+const TEL = SITE.phone.replace(/[^\d+]/g, "");
 
 const FEATURES = [
   "Действителен в течение 3 месяцев",
@@ -55,7 +57,11 @@ export function GiftCertificateSection() {
             ))}
           </ol>
 
-          <a href="#zayavka" className="btn btn-primary gift-cert__cta">
+          <a
+            href={`tel:${TEL}`}
+            className="btn btn-primary gift-cert__cta"
+            aria-label={`Позвонить ${SITE.phone} — оформить сертификат`}
+          >
             Оформить сертификат
             <span aria-hidden>→</span>
           </a>
