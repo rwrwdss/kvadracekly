@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useId, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ROUTES, SITE } from "@/data/site";
 import { LEAD_SOURCES, type LeadSourceValue } from "@/data/leadSources";
 import { useBooking } from "@/components/booking/BookingContext";
@@ -38,10 +39,11 @@ function isNightMode(prefill: { source?: string; route?: string; bookingKind?: s
 export function BookingModal() {
   const { open, prefill, closeBooking } = useBooking();
   const { user } = useCustomerAuth();
+  const router = useRouter();
   const titleId = useId();
   const night = isNightMode(prefill);
 
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [route, setRoute] = useState("");
   const [dateValue, setDateValue] = useState("");
   const [errorText, setErrorText] = useState("");
@@ -164,7 +166,14 @@ export function BookingModal() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "fail");
-      setStatus("ok");
+      const qs = new URLSearchParams({
+        kind: "day",
+        guests: String(payload.guests || guests),
+      });
+      if (payload.route) qs.set("route", String(payload.route));
+      if (payload.date) qs.set("date", String(payload.date));
+      closeBooking();
+      router.push(`/spasibo?${qs.toString()}`);
     } catch (err) {
       setStatus("error");
       setErrorText(err instanceof Error ? err.message : "Ошибка отправки");
@@ -201,7 +210,13 @@ export function BookingModal() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || "fail");
-      setStatus("ok");
+      const qs = new URLSearchParams({
+        kind: "night",
+        guests: String(payload.guests || guests),
+        route: NIGHT_QUEST_TITLE,
+      });
+      closeBooking();
+      router.push(`/spasibo?${qs.toString()}`);
     } catch (err) {
       setStatus("error");
       setErrorText(err instanceof Error ? err.message : "Ошибка отправки");
@@ -265,28 +280,7 @@ export function BookingModal() {
             </button>
           </div>
 
-          {status === "ok" ? (
-            <div className="py-8 sm:py-10 text-center">
-              <div className="mx-auto mb-4 grid h-14 w-14 place-items-center border border-[var(--accent-border)] text-accent text-2xl">
-                ✓
-              </div>
-              <p className="text-accent section-label">Готово</p>
-              <p className="mt-3 text-lg sm:text-xl font-display tracking-wide uppercase">
-                {night ? "Заявка принята" : "Вы в очереди"}
-              </p>
-              {!night && dateValue && <p className="mt-2 text-sm text-accent">{dateValue}</p>}
-              {route && <p className="mt-1 text-sm text-mute">{route}</p>}
-              <p className="mt-1 text-sm text-mute">Гостей: {guests}</p>
-              <p className="mt-2 text-sm text-mute">
-                {night
-                  ? "Напишем в выбранный мессенджер и согласуем дату выезда."
-                  : "Скоро свяжемся по указанному телефону."}
-              </p>
-              <button type="button" className="btn btn-primary mt-8 w-full sm:w-auto" onClick={closeBooking}>
-                Закрыть
-              </button>
-            </div>
-          ) : night ? (
+          {night ? (
             <form onSubmit={onSubmitNight} className="grid gap-3.5 sm:gap-4">
               <p className="text-sm text-mute leading-relaxed border border-[var(--border-subtle)] p-3 bg-card/50">
                 Календарный слот не нужен: менеджер свяжется и подберёт ночное окно под группу.
