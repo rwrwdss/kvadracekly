@@ -68,6 +68,16 @@ export const SITE = {
   /** Компактный знак без текста (иконки, фавикон) */
   logoMark: "/images/brand/logo-volnitsa-znak.png",
   logoMarkAlt: "Знак Вольница",
+  /** Юридические реквизиты оператора ПДн (ИП) */
+  legal: {
+    form: "Индивидуальный предприниматель",
+    fullName: "Шишикин Антон Андреевич",
+    shortName: "ИП Шишикин А. А.",
+    inn: "165924577382",
+    ogrnip: "326169000221870",
+    registeredAt: "17.09.2026",
+    privacyPath: "/politika-pdn",
+  },
 };
 
 export const IMAGES = {

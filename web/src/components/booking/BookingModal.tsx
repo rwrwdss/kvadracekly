@@ -7,6 +7,7 @@ import { LEAD_SOURCES, type LeadSourceValue } from "@/data/leadSources";
 import { useBooking } from "@/components/booking/BookingContext";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
 import { BookingCalendar } from "@/components/booking/BookingCalendar";
+import { PdnConsentCheckbox } from "@/components/ui/PdnConsentCheckbox";
 import {
   NIGHT_QUEST_TITLE,
   buildProgress,
@@ -41,6 +42,7 @@ export function BookingModal() {
   const { user } = useCustomerAuth();
   const router = useRouter();
   const titleId = useId();
+  const consentId = useId();
   const night = isNightMode(prefill);
 
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -56,6 +58,8 @@ export function BookingModal() {
     "novice",
   );
   const [heardFrom, setHeardFrom] = useState<LeadSourceValue | "">("");
+  const [pdnConsent, setPdnConsent] = useState(false);
+  const [consentError, setConsentError] = useState("");
 
   const applyRouteForProgress = useCallback(
     (pref: string, completedThrough: number) => {
@@ -81,6 +85,8 @@ export function BookingModal() {
     setGuests(1);
     setContactPrefer("WhatsApp");
     setHeardFrom("");
+    setPdnConsent(false);
+    setConsentError("");
     setRiderExperience(
       user?.progress?.completedThrough && user.progress.completedThrough > 0
         ? "regular"
@@ -132,11 +138,16 @@ export function BookingModal() {
   async function onSubmitDay(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!user) return;
+    if (!pdnConsent) {
+      setConsentError("Отметьте согласие на обработку данных и cookies");
+      return;
+    }
     if (!dateValue) {
       setStatus("error");
       setErrorText("Выберите дату и время в календаре");
       return;
     }
+    setConsentError("");
     setStatus("loading");
     setErrorText("");
     const form = new FormData(e.currentTarget);
@@ -182,6 +193,11 @@ export function BookingModal() {
 
   async function onSubmitNight(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!pdnConsent) {
+      setConsentError("Отметьте согласие на обработку данных и cookies");
+      return;
+    }
+    setConsentError("");
     setStatus("loading");
     setErrorText("");
     const form = new FormData(e.currentTarget);
@@ -400,10 +416,22 @@ export function BookingModal() {
                 </p>
               )}
 
+              <div className="rounded border border-[var(--border-subtle)] bg-card/40 px-3 py-2.5">
+                <PdnConsentCheckbox
+                  id={`${consentId}-night`}
+                  checked={pdnConsent}
+                  error={consentError}
+                  onChange={(next) => {
+                    setPdnConsent(next);
+                    if (next) setConsentError("");
+                  }}
+                />
+              </div>
+
               <button
                 type="submit"
                 className="btn btn-primary mt-1 w-full"
-                disabled={status === "loading"}
+                disabled={status === "loading" || !pdnConsent}
               >
                 {status === "loading" ? "Отправка…" : "Отправить заявку"}
               </button>
@@ -523,10 +551,22 @@ export function BookingModal() {
                 <p className="text-sm text-accent leading-relaxed">{errorText}</p>
               )}
 
+              <div className="rounded border border-[var(--border-subtle)] bg-card/40 px-3 py-2.5">
+                <PdnConsentCheckbox
+                  id={`${consentId}-day`}
+                  checked={pdnConsent}
+                  error={consentError}
+                  onChange={(next) => {
+                    setPdnConsent(next);
+                    if (next) setConsentError("");
+                  }}
+                />
+              </div>
+
               <button
                 type="submit"
                 className="btn btn-primary mt-1 w-full"
-                disabled={status === "loading"}
+                disabled={status === "loading" || !pdnConsent}
               >
                 {status === "loading" ? "Отправка…" : "Встать в очередь"}
               </button>

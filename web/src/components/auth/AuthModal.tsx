@@ -1,21 +1,28 @@
 "use client";
 
 import { FormEvent, useEffect, useId, useState } from "react";
+import { SITE } from "@/data/site";
 import { useCustomerAuth } from "@/components/auth/CustomerAuthContext";
+import { PdnConsentCheckbox } from "@/components/ui/PdnConsentCheckbox";
 import { formatPhoneInput } from "@/lib/phone";
 import { acquireLenisLock, releaseLenisLock } from "@/lib/lenisControl";
 
 export function AuthModal() {
   const { authOpen, closeAuth, login, consumePendingAction } = useCustomerAuth();
   const titleId = useId();
+  const consentId = useId();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [pdnConsent, setPdnConsent] = useState(false);
+  const [consentError, setConsentError] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!authOpen) return;
     setError("");
+    setConsentError("");
+    setPdnConsent(false);
     setLoading(false);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") closeAuth();
@@ -36,6 +43,11 @@ export function AuthModal() {
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!pdnConsent) {
+      setConsentError("Отметьте согласие на обработку данных и cookies");
+      return;
+    }
+    setConsentError("");
     setLoading(true);
     setError("");
     const result = await login({ name, phone });
@@ -96,7 +108,7 @@ export function AuthModal() {
             </p>
           </div>
 
-          <form onSubmit={onSubmit} className="grid gap-3.5">
+          <form onSubmit={onSubmit} className="grid gap-3.5" noValidate>
             <label className="grid gap-1.5 text-sm">
               <span className="text-mute">Имя</span>
               <input
@@ -131,12 +143,36 @@ export function AuthModal() {
               </p>
             ) : null}
 
-            <button type="submit" className="btn btn-primary w-full mt-1" disabled={loading}>
+            <div className="rounded border border-[var(--border-subtle)] bg-card/40 px-3 py-2.5">
+              <PdnConsentCheckbox
+                id={consentId}
+                checked={pdnConsent}
+                error={consentError}
+                onChange={(next) => {
+                  setPdnConsent(next);
+                  if (next) setConsentError("");
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="btn btn-primary w-full mt-1"
+              disabled={loading || !pdnConsent}
+            >
               {loading ? "Входим…" : "Продолжить"}
             </button>
             <p className="text-[11px] text-faint text-center leading-relaxed">
               Новый гость получит доступ к «Зелёному озеру». Следующие маршруты откроются после
-              заездов.
+              заездов. Политика:{" "}
+              <a
+                href={SITE.legal.privacyPath}
+                className="text-accent hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {SITE.legal.privacyPath}
+              </a>
             </p>
           </form>
         </div>

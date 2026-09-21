@@ -6,6 +6,7 @@ import { useBooking } from "@/components/booking/BookingContext";
 
 export function Footer() {
   const { openBooking } = useBooking();
+  const { legal } = SITE;
 
   return (
     <footer className="border-t border-[var(--border-subtle)] bg-void">
@@ -46,6 +47,9 @@ export function Footer() {
             <Link href="/tarify" className="hover:text-accent">Тарифы</Link>
             <Link href="/lk" className="hover:text-accent">Личный кабинет</Link>
             <Link href="/faq" className="hover:text-accent">FAQ</Link>
+            <Link href={legal.privacyPath} className="hover:text-accent">
+              Политика ПДн
+            </Link>
           </div>
           <button
             type="button"
@@ -56,8 +60,28 @@ export function Footer() {
           </button>
         </div>
       </div>
-      <div className="border-t border-[var(--border-subtle)] py-4 text-center text-xs text-faint">
-        © {new Date().getFullYear()} {SITE.name}. Территория свободы.
+
+      <div className="border-t border-[var(--border-subtle)]">
+        <div className="container-site py-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between text-xs text-faint">
+          <div className="space-y-1 leading-relaxed">
+            <p className="text-mute">
+              © {new Date().getFullYear()} {SITE.name}. {legal.shortName}
+            </p>
+            <p>
+              ИНН {legal.inn}
+              <span className="mx-2 opacity-40" aria-hidden>
+                ·
+              </span>
+              ОГРНИП {legal.ogrnip}
+            </p>
+          </div>
+          <Link
+            href={legal.privacyPath}
+            className="text-mute hover:text-accent underline-offset-2 hover:underline shrink-0"
+          >
+            Политика обработки персональных данных
+          </Link>
+        </div>
       </div>
     </footer>
   );

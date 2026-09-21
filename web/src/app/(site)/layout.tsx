@@ -8,6 +8,7 @@ import { BookingModal } from "@/components/booking/BookingModal";
 import { Header } from "@/components/layout/Header";
 import { Footer, StickyBookBar } from "@/components/layout/Footer";
 import { CallFab } from "@/components/layout/CallFab";
+import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { SmoothScrollAndReveal } from "@/components/ui/SmoothScrollAndReveal";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <main className="flex-1 main-with-sticky">{children}</main>
             <Footer />
             <StickyBookBar />
+            <CookieConsentBanner />
             <CallFab />
             <SmoothScrollAndReveal />
             <AuthModal />
