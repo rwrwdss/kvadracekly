@@ -148,8 +148,9 @@ export default buildConfig({
       max: 1,
       idleTimeoutMillis: 10_000,
     },
-    // Только явный local-dev push. Seed/migrate/CI/Vercel — через migrations.
-    push: process.env.NODE_ENV === "development" && process.env.VERCEL !== "1",
+    // Push только по явному флагу. Иначе local `next dev` на общей Neon пишет
+    // payload_migrations(batch=-1), а Vercel зависает на интерактивном prompts (вход 60s timeout).
+    push: process.env.PAYLOAD_DATABASE_PUSH === "1" && process.env.VERCEL !== "1",
     migrationDir: path.resolve(dirname, "migrations"),
     prodMigrations: migrations,
   }),
