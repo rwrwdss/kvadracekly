@@ -84,9 +84,16 @@ export async function POST(req: NextRequest) {
         : null) ||
       null;
 
+    const { resolveAssetUrl } = await import("@/lib/assets");
+    const publicUrl =
+      resolveAssetUrl(url) ||
+      (typeof doc.filename === "string" && doc.filename
+        ? resolveAssetUrl(`/api/media/file/${doc.filename}`)
+        : null);
+
     return NextResponse.json({
       id: doc.id,
-      url,
+      url: publicUrl,
       mimeType: doc.mimeType || mime,
       filename: doc.filename || blob.name,
       alt: doc.alt || alt,

@@ -165,7 +165,8 @@ export default buildConfig({
       },
       token: blobToken,
       addRandomSuffix: true,
-      clientUploads: true,
+      // server-side upload через payload.create (админ «Заменить фото»)
+      clientUploads: false,
     }),
   ],
   sharp,

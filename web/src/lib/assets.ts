@@ -4,6 +4,15 @@
  */
 const FALLBACK_BLOB_BASE = "https://3bwdnic2wi5tyelh.public.blob.vercel-storage.com";
 
+function blobBase(): string {
+  return (
+    process.env.NEXT_PUBLIC_BLOB_BASE_URL ||
+    (process.env.VERCEL === "1" || process.env.NODE_ENV === "production"
+      ? FALLBACK_BLOB_BASE
+      : "")
+  ).replace(/\/$/, "");
+}
+
 export function resolveAssetUrl(src: string | null | undefined): string {
   const value = String(src || "").trim();
   if (!value) return "";
@@ -11,13 +20,16 @@ export function resolveAssetUrl(src: string | null | undefined): string {
     return value;
   }
 
-  const base = (
-    process.env.NEXT_PUBLIC_BLOB_BASE_URL ||
-    (process.env.VERCEL === "1" || process.env.NODE_ENV === "production"
-      ? FALLBACK_BLOB_BASE
-      : "")
-  ).replace(/\/$/, "");
+  const base = blobBase();
   if (!base) return value;
+
+  // Payload media file route → прямой публичный Blob URL
+  if (value.startsWith("/api/media/file/")) {
+    const filename = decodeURIComponent(
+      value.slice("/api/media/file/".length).split("?")[0] || "",
+    );
+    if (filename) return `${base}/${filename}`;
+  }
 
   if (value.startsWith("/images/")) {
     return `${base}${value}`;
