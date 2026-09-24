@@ -85,17 +85,16 @@ export async function POST(req: NextRequest) {
       null;
 
     const { resolveAssetUrl } = await import("@/lib/assets");
+    const filename = String(doc.filename || blob.name || "").trim();
     const publicUrl =
-      resolveAssetUrl(url) ||
-      (typeof doc.filename === "string" && doc.filename
-        ? resolveAssetUrl(`/api/media/file/${doc.filename}`)
-        : null);
+      (filename ? resolveAssetUrl(`/api/media/file/${filename}`) : null) ||
+      resolveAssetUrl(url);
 
     return NextResponse.json({
       id: doc.id,
       url: publicUrl,
       mimeType: doc.mimeType || mime,
-      filename: doc.filename || blob.name,
+      filename: filename || blob.name,
       alt: doc.alt || alt,
     });
   } catch (err) {
