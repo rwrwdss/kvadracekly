@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { Link } from "@payloadcms/ui";
+import { resolveAssetUrl } from "@/lib/assets";
 
 type TariffDoc = {
   id: number | string;
@@ -52,7 +53,7 @@ function Thumb({ src, alt }: { src?: string | null; alt: string }) {
   return (
     <span className="catalog-card__thumb">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={url} alt={alt} />
+      <img src={resolveAssetUrl(url||"")} alt={alt} />
     </span>
   );
 }
@@ -111,7 +112,7 @@ function TariffsCards() {
             key={String(doc.id)}
             className={`catalog-card${doc.published === false ? " catalog-card--off" : ""}`}
           >
-            <Thumb src={doc.imageUrl} alt={doc.title || "Тариф"} />
+            <Thumb src={resolveAssetUrl(doc.imageUrl||"")} alt={doc.title || "Тариф"} />
             <div className="catalog-card__body">
               <div className="catalog-card__top">
                 <h4 className="catalog-card__name">{doc.title || "Без названия"}</h4>
@@ -205,7 +206,7 @@ function FleetCards() {
             key={String(doc.id)}
             className={`catalog-card${doc.published === false ? " catalog-card--off" : ""}`}
           >
-            <Thumb src={doc.imageUrl} alt={doc.name || "Техника"} />
+            <Thumb src={resolveAssetUrl(doc.imageUrl||"")} alt={doc.name || "Техника"} />
             <div className="catalog-card__body">
               <div className="catalog-card__top">
                 <h4 className="catalog-card__name">{doc.name || "Без названия"}</h4>

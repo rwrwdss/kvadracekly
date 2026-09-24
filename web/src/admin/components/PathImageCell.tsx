@@ -1,3 +1,4 @@
+import { resolveAssetUrl } from "@/lib/assets";
 "use client";
 
 import React from "react";
@@ -9,7 +10,7 @@ type Props = {
 
 /** Превью картинки по пути (тарифы / техника) в таблице списка. */
 export function PathImageCell({ cellData, rowData }: Props) {
-  const src = String(cellData || rowData?.imageUrl || "").trim();
+  const src = resolveAssetUrl(String(cellData || rowData?.imageUrl || "").trim());
   const alt = String(rowData?.imageAlt || rowData?.title || rowData?.name || "Превью");
 
   if (!src) {

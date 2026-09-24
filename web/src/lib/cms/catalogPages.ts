@@ -1,4 +1,5 @@
 import { getPayloadClient } from "@/lib/payload";
+import { resolveAssetUrl } from "@/lib/assets";
 import {
   DEFAULT_PAGE_FLEET,
   DEFAULT_PAGE_TARIFFS,
@@ -13,7 +14,8 @@ export type CatalogPageLayout = CatalogPageDefaults;
 function mediaUrl(cover: unknown): string | null {
   if (!cover || typeof cover === "number" || typeof cover === "string") return null;
   const doc = cover as { url?: string | null; sizes?: { card?: { url?: string | null } } };
-  return doc.sizes?.card?.url || doc.url || null;
+  const raw = doc.sizes?.card?.url || doc.url || null;
+  return raw ? resolveAssetUrl(raw) : null;
 }
 
 function pickString(value: unknown, fallback: string): string {
@@ -53,7 +55,7 @@ function mapPage(
     title: pickString(group?.title, defaults.title),
     subtitle: pickString(group?.subtitle, defaults.subtitle),
     description: pickString(group?.description, defaults.description),
-    imageUrl: mediaUrl(group?.cover) || pickString(group?.imageUrl, defaults.imageUrl),
+    imageUrl: mediaUrl(group?.cover) || resolveAssetUrl(pickString(group?.imageUrl, defaults.imageUrl)),
     imageAlt: pickString(group?.imageAlt, defaults.imageAlt),
     chips: pickChips(group?.chips, defaults.chips),
     sectionLabel: pickString(group?.sectionLabel, defaults.sectionLabel),

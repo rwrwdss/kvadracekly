@@ -1,4 +1,5 @@
 import { getPayloadClient } from "@/lib/payload";
+import { resolveAssetUrl } from "@/lib/assets";
 import { ROUTES, type Difficulty, type Route } from "@/data/site";
 import {
   getSeasonInfo,
@@ -19,7 +20,8 @@ export type TariffCard = Route & {
 function mediaUrl(cover: unknown): string | null {
   if (!cover || typeof cover === "number" || typeof cover === "string") return null;
   const doc = cover as { url?: string | null; sizes?: { card?: { url?: string | null } } };
-  return doc.sizes?.card?.url || doc.url || null;
+  const raw = doc.sizes?.card?.url || doc.url || null;
+  return raw ? resolveAssetUrl(raw) : null;
 }
 
 export async function getTariffs(): Promise<TariffCard[]> {
@@ -58,7 +60,7 @@ export async function getTariffs(): Promise<TariffCard[]> {
           audience: String(doc.audience || ""),
           description: String(doc.description),
           progressOrder: Number(doc.progressOrder) || i + 1,
-          image: mediaUrl(doc.cover) || String(doc.imageUrl || ""),
+          image: mediaUrl(doc.cover) || resolveAssetUrl(String(doc.imageUrl || "")),
           imageAlt: String(doc.imageAlt || doc.title),
           badge: String(doc.badge || FALLBACK_BADGES[i] || "Тариф"),
           season,

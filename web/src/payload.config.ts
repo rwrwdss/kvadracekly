@@ -2,6 +2,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { buildConfig } from "payload";
 import { vercelPostgresAdapter } from "@payloadcms/db-vercel-postgres";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { ru } from "@payloadcms/translations/languages/ru";
 import sharp from "sharp";
@@ -55,6 +56,8 @@ const payloadSecret = process.env.PAYLOAD_SECRET?.trim();
 if (!payloadSecret) {
   throw new Error("PAYLOAD_SECRET is required.");
 }
+
+const blobToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
 
 export default buildConfig({
   admin: {
@@ -154,5 +157,16 @@ export default buildConfig({
     migrationDir: path.resolve(dirname, "migrations"),
     prodMigrations: migrations,
   }),
+  plugins: [
+    vercelBlobStorage({
+      enabled: Boolean(blobToken),
+      collections: {
+        media: true,
+      },
+      token: blobToken,
+      addRandomSuffix: true,
+      clientUploads: true,
+    }),
+  ],
   sharp,
 });

@@ -1,4 +1,5 @@
 import { getPayloadClient } from "@/lib/payload";
+import { resolveAssetUrl } from "@/lib/assets";
 import { FLEET, type FleetItem } from "@/data/site";
 import {
   getSeasonInfo,
@@ -14,7 +15,8 @@ export type FleetCard = FleetItem & {
 function mediaUrl(cover: unknown): string | null {
   if (!cover || typeof cover === "number" || typeof cover === "string") return null;
   const doc = cover as { url?: string | null; sizes?: { card?: { url?: string | null } } };
-  return doc.sizes?.card?.url || doc.url || null;
+  const raw = doc.sizes?.card?.url || doc.url || null;
+  return raw ? resolveAssetUrl(raw) : null;
 }
 
 export async function getFleet(): Promise<FleetCard[]> {
@@ -47,7 +49,7 @@ export async function getFleet(): Promise<FleetCard[]> {
         count: Number(doc.count) || 1,
         seats: Number(doc.seats) || 2,
         drive: String(doc.drive || "4×4"),
-        image: mediaUrl(doc.cover) || String(doc.imageUrl || ""),
+        image: mediaUrl(doc.cover) || resolveAssetUrl(String(doc.imageUrl || "")),
         imageAlt: String(doc.imageAlt || doc.name),
         season: (doc.season || "atv") as ServiceSeason,
         activeForBooking: doc.activeForBooking !== false,

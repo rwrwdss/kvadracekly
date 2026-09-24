@@ -1,4 +1,5 @@
 import { getPayloadClient, mediaUrl, type MediaDoc } from "@/lib/payload";
+import { resolveAssetUrl } from "@/lib/assets";
 import {
   DEFAULT_GALLERY_INTRO,
   DEFAULT_PAGE_HOME,
@@ -31,7 +32,8 @@ function mediaDocUrl(cover: unknown): string | null {
     mimeType?: string | null;
     sizes?: { card?: { url?: string | null }; hero?: { url?: string | null } };
   };
-  return doc.sizes?.hero?.url || doc.sizes?.card?.url || doc.url || null;
+  const raw = doc.sizes?.hero?.url || doc.sizes?.card?.url || doc.url || null;
+  return raw ? resolveAssetUrl(raw) : null;
 }
 
 function pickMediaType(value: unknown): "image" | "video" {
@@ -45,9 +47,9 @@ export async function getHomePageLayout(): Promise<HomePageLayout> {
     const home = (settings as { pageHome?: Record<string, unknown> }).pageHome;
     const mediaType = pickMediaType(home?.heroMediaType);
     const imageUrl =
-      mediaDocUrl(home?.cover) || pickString(home?.imageUrl, DEFAULT_PAGE_HOME.imageUrl);
+      mediaDocUrl(home?.cover) || resolveAssetUrl(pickString(home?.imageUrl, DEFAULT_PAGE_HOME.imageUrl));
     const videoUrl =
-      mediaDocUrl(home?.heroVideo) || pickString(home?.heroVideoUrl, DEFAULT_PAGE_HOME.videoUrl);
+      mediaDocUrl(home?.heroVideo) || resolveAssetUrl(pickString(home?.heroVideoUrl, DEFAULT_PAGE_HOME.videoUrl));
     const useVideo = mediaType === "video" && Boolean(videoUrl);
     return {
       eyebrow: pickString(home?.eyebrow, DEFAULT_PAGE_HOME.eyebrow),
