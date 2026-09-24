@@ -364,20 +364,39 @@ async function notifyLeadCreated(
 
   try {
     if (channel === "telegram") {
-      const token = process.env.TELEGRAM_BOT_TOKEN;
-      const chatId = process.env.TELEGRAM_CHAT_ID;
-      if (!token || !chatId) throw new Error("TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID не заданы");
+      const { getTelegramNotifySettings } = await import("@/lib/telegram/settings");
+      const { sendTelegramMessage } = await import("@/lib/telegram/client");
+      const settings = await getTelegramNotifySettings();
 
-      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: chatId, text }),
-      });
-      if (!res.ok) {
-        const body = await res.text();
-        throw new Error(`Telegram ${res.status}: ${body.slice(0, 200)}`);
+      if (!settings.enabled) {
+        console.info("[NOTIFY:telegram] рассылка выключена командой /notify_off");
+        status = "sent";
+      } else if (!settings.chatIds.length) {
+        throw new Error(
+          "Нет чатов для рассылки. Напишите боту /start, затем /notify_on",
+        );
+      } else {
+        const results = await Promise.allSettled(
+          settings.chatIds.map((chatId) => sendTelegramMessage(chatId, text)),
+        );
+        const failed = results.filter((r) => r.status === "rejected");
+        if (failed.length === results.length) {
+          const reason =
+            failed[0]?.status === "rejected"
+              ? String((failed[0] as PromiseRejectedResult).reason)
+              : "telegram send failed";
+          throw new Error(reason.slice(0, 200));
+        }
+        if (failed.length) {
+          console.error(
+            "[NOTIFY:telegram] частично:",
+            failed.length,
+            "/",
+            results.length,
+          );
+        }
+        status = "sent";
       }
-      status = "sent";
     } else if (channel === "email") {
       console.info("[NOTIFY:email]", text);
       if (!process.env.NOTIFY_EMAIL_TO) {
