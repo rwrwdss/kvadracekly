@@ -14,6 +14,7 @@ import { CalendarNav as CalendarNav_253cbf2cbcb8623a23254c74359b283d } from '../
 import { NewLeadNav as NewLeadNav_1d529c24d00b2c43b9bcbb40d255d7d6 } from '../../../admin/components/NewLeadNav'
 import { CrmHome as CrmHome_c388d00f178c70a86c30fb07e5d303be } from '../../../admin/components/CrmHome'
 import { RoleTheme as RoleTheme_28136a8e250682589881c9da47119b94 } from '../../../admin/components/RoleTheme'
+import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { ManagerAccountView as ManagerAccountView_5a0a4e28a49349b41960f1d685bb8939 } from '../../../admin/components/ManagerAccountView'
 import { CalendarBookingsView as CalendarBookingsView_3e2927e5a044149504583d9c48d42db7 } from '../../../admin/components/CalendarBookingsView'
 import { CalendarStopsView as CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533 } from '../../../admin/components/CalendarStopsView'
@@ -39,6 +40,7 @@ export const importMap = {
   "./admin/components/NewLeadNav#NewLeadNav": NewLeadNav_1d529c24d00b2c43b9bcbb40d255d7d6,
   "./admin/components/CrmHome#CrmHome": CrmHome_c388d00f178c70a86c30fb07e5d303be,
   "./admin/components/RoleTheme#RoleTheme": RoleTheme_28136a8e250682589881c9da47119b94,
+  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "./admin/components/ManagerAccountView#ManagerAccountView": ManagerAccountView_5a0a4e28a49349b41960f1d685bb8939,
   "./admin/components/CalendarBookingsView#CalendarBookingsView": CalendarBookingsView_3e2927e5a044149504583d9c48d42db7,
   "./admin/components/CalendarStopsView#CalendarStopsView": CalendarStopsView_d18e6ece9875f53281b90e3a11ba2533,
