@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useId, useRef, useState } from "react";
+import { upload } from "@vercel/blob/client";
 
 /** Миниатюра картинки по пути/URL в админ-формах. */
 export function AdminImageThumb({
@@ -34,10 +35,33 @@ export function AdminImageThumb({
   );
 }
 
+const MAX_BYTES = 200 * 1024 * 1024;
+/** Выше этого — только client upload в Blob (лимит body Vercel ~4.5MB). */
+const SERVER_UPLOAD_MAX = 3.5 * 1024 * 1024;
+
 export async function uploadMediaFile(
   file: File,
   alt: string,
 ): Promise<{ id: number | string; url: string }> {
+  if (file.size > MAX_BYTES) {
+    throw new Error("Файл больше 200 МБ — сожмите видео или выберите файл поменьше");
+  }
+
+  const isVideo = file.type.startsWith("video/") || /\.(mp4|webm)$/i.test(file.name);
+  const useClientBlob = isVideo || file.size > SERVER_UPLOAD_MAX;
+
+  if (useClientBlob) {
+    const safeName = file.name.replace(/[^\w.\-()+ ]+/g, "_").slice(0, 120) || "upload.bin";
+    const pathname = `media/${Date.now()}-${safeName}`;
+    const blob = await upload(pathname, file, {
+      access: "public",
+      handleUploadUrl: "/api/admin/blob-client-upload",
+      multipart: file.size > 8 * 1024 * 1024,
+    });
+    if (!blob.url) throw new Error("Blob не вернул URL");
+    return { id: blob.pathname || blob.url, url: blob.url };
+  }
+
   const body = new FormData();
   body.append("file", file);
   body.append("alt", alt);
@@ -51,6 +75,9 @@ export async function uploadMediaFile(
     id?: number | string;
     url?: string | null;
   };
+  if (res.status === 413) {
+    throw new Error("Файл слишком большой для сервера — попробуйте ещё раз (загрузка через Blob)");
+  }
   if (!res.ok || !data.id || !data.url) {
     throw new Error(data.error || "Не удалось загрузить файл");
   }
@@ -58,7 +85,7 @@ export async function uploadMediaFile(
 }
 
 export function isVideoUrl(src: string): boolean {
-  return /\.(mp4|webm)(\?|$)/i.test(src);
+  return /\.(mp4|webm)(\?|$)/i.test(src) || /blob\.vercel-storage\.com/i.test(src);
 }
 
 /** Поле превью + «Заменить» (upload) + запасной путь. */
@@ -95,7 +122,12 @@ export function AdminImagePathInput({
       const { url } = await uploadMediaFile(file, altForUpload);
       onChange(url);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Ошибка загрузки");
+      const msg = e instanceof Error ? e.message : "Ошибка загрузки";
+      if (/too large|request entity|413|payload/i.test(msg)) {
+        setError("Файл слишком большой для прямой загрузки. Обновите страницу и попробуйте снова.");
+      } else {
+        setError(msg);
+      }
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -128,7 +160,11 @@ export function AdminImagePathInput({
           disabled={uploading}
           onClick={() => fileRef.current?.click()}
         >
-          {uploading ? "Загрузка…" : replaceLabel}
+          {uploading
+            ? expectVideo
+              ? "Загрузка видео…"
+              : "Загрузка…"
+            : replaceLabel}
         </button>
         <input
           ref={fileRef}
