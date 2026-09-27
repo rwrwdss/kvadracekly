@@ -165,8 +165,8 @@ export default buildConfig({
       },
       token: blobToken,
       addRandomSuffix: true,
-      // server-side upload через payload.create (админ «Заменить фото»)
-      clientUploads: false,
+      // true: большие файлы (видео) идут с браузера прямо в Blob, минуя лимит body ~4.5MB на Vercel
+      clientUploads: true,
     }),
   ],
   sharp,
