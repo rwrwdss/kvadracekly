@@ -3,7 +3,7 @@
 import React, { useRef, useState } from "react";
 import { useField } from "@payloadcms/ui";
 import type { TextFieldClientComponent } from "payload";
-import { isVideoUrl, uploadMediaFile } from "./AdminMediaReplace";
+import { isVideoFile, isVideoUrl, uploadMediaFile } from "./AdminMediaReplace";
 
 /**
  * Поле пути к картинке/видео: превью + «Заменить» + запасной путь.
@@ -30,10 +30,6 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path, readOnly
     path.includes("heroVideo") ||
     path.includes("videoUrl") ||
     Boolean(description.toLowerCase().includes("видео"));
-  // Расширения обязательны: на Windows без .mp4 файл в диалоге часто «неактивный»
-  const accept = isVideoField
-    ? "video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
-    : "image/*,.jpg,.jpeg,.png,.webp,.gif,.avif";
   const replaceLabel = isVideoField ? "Заменить видео" : "Заменить фотографию";
   const video = Boolean(src && (isVideoField || isVideoUrl(src)));
 
@@ -42,6 +38,12 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path, readOnly
     setUploading(true);
     setError("");
     try {
+      if (isVideoField && !isVideoFile(file)) {
+        throw new Error("Выберите видео MP4 или WebM");
+      }
+      if (!isVideoField && isVideoFile(file)) {
+        throw new Error("Это поле для фото. Для видео переключите «Фон первого экрана» → Видео.");
+      }
       const { url } = await uploadMediaFile(file, isVideoField ? "Видео фона" : label);
       setBroken(false);
       setValue(url);
@@ -88,12 +90,12 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path, readOnly
           disabled={Boolean(readOnly) || uploading}
           onClick={() => fileRef.current?.click()}
         >
-          {uploading ? "Загрузка…" : replaceLabel}
+          {uploading ? (isVideoField ? "Загрузка видео…" : "Загрузка…") : replaceLabel}
         </button>
         <input
           ref={fileRef}
           type="file"
-          accept={accept}
+          {...(isVideoField ? {} : { accept: "image/*,.jpg,.jpeg,.png,.webp,.gif,.avif" })}
           className="admin-image-path__file"
           hidden
           disabled={Boolean(readOnly)}

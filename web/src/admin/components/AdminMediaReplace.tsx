@@ -42,7 +42,7 @@ const SERVER_UPLOAD_MAX = 3.5 * 1024 * 1024;
 const VIDEO_EXT = /\.(mp4|webm|mov)$/i;
 const HERO_SAFE_VIDEO = /\.(mp4|webm)$/i;
 
-function isVideoFile(file: File): boolean {
+export function isVideoFile(file: File): boolean {
   const t = (file.type || "").toLowerCase();
   return t.startsWith("video/") || VIDEO_EXT.test(file.name);
 }
@@ -58,19 +58,27 @@ export async function uploadMediaFile(
   const isVideo = isVideoFile(file);
   if (isVideo && !HERO_SAFE_VIDEO.test(file.name) && !/mp4|webm/i.test(file.type)) {
     throw new Error(
-      "Для сайта нужен MP4 (H.264) или WebM. MOV с iPhone в Chrome/Windows часто не играет — экспортируйте в MP4.",
+      "Для сайта нужен MP4 (H.264) или WebM. MOV с iPhone в Chrome часто не играет — экспортируйте в MP4.",
     );
   }
 
   const useClientBlob = isVideo || file.size > SERVER_UPLOAD_MAX;
 
   if (useClientBlob) {
-    const safeName = file.name.replace(/[^\w.\-()+ ]+/g, "_").slice(0, 120) || "upload.bin";
-    const pathname = `media/${Date.now()}-${safeName}`;
+    // Кириллица в имени → латиница/подчёркивания (иначе Blob pathname кривой)
+    const ext = (file.name.match(/\.[a-z0-9]+$/i)?.[0] || (isVideo ? ".mp4" : "")).toLowerCase();
+    const base = file.name
+      .replace(/\.[^.]+$/, "")
+      .replace(/[^\w\-()+]+/g, "_")
+      .replace(/_+/g, "_")
+      .replace(/^_|_$/g, "")
+      .slice(0, 80);
+    const pathname = `media/${Date.now()}-${base || "upload"}${ext}`;
     const blob = await upload(pathname, file, {
       access: "public",
       handleUploadUrl: "/api/admin/blob-client-upload",
       multipart: file.size > 8 * 1024 * 1024,
+      contentType: file.type || (isVideo ? "video/mp4" : undefined),
     });
     if (!blob.url) throw new Error("Blob не вернул URL");
     return { id: blob.pathname || blob.url, url: blob.url };
@@ -108,15 +116,16 @@ export function AdminImagePathInput({
   value,
   onChange,
   hint,
-  accept = "image/*",
-  replaceLabel = "Заменить фотографию",
-  altForUpload = "Фото",
+  /** video: без accept в Finder — иначе на macOS .mp4 часто серый */
+  kind = "image",
+  replaceLabel,
+  altForUpload,
 }: {
   label: string;
   value: string;
   onChange: (next: string) => void;
   hint?: string;
-  accept?: string;
+  kind?: "image" | "video";
   replaceLabel?: string;
   altForUpload?: string;
 }) {
@@ -125,15 +134,24 @@ export function AdminImagePathInput({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const src = String(value || "").trim();
-  const expectVideo = accept.includes("video");
+  const expectVideo = kind === "video";
   const video = Boolean(src && (expectVideo || isVideoUrl(src)));
+  const buttonLabel =
+    replaceLabel || (expectVideo ? "Заменить видео" : "Заменить фотографию");
+  const uploadAlt = altForUpload || (expectVideo ? "Видео фона" : "Фото");
 
   async function onFile(file: File | undefined) {
     if (!file) return;
     setUploading(true);
     setError("");
     try {
-      const { url } = await uploadMediaFile(file, altForUpload);
+      if (expectVideo && !isVideoFile(file)) {
+        throw new Error("Выберите видеофайл MP4 или WebM (Квадроциклы.mp4 и т.п.)");
+      }
+      if (!expectVideo && isVideoFile(file)) {
+        throw new Error("Сейчас режим «Фото». Переключите на «Видео», затем загрузите MP4.");
+      }
+      const { url } = await uploadMediaFile(file, uploadAlt);
       onChange(url);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Ошибка загрузки";
@@ -178,13 +196,14 @@ export function AdminImagePathInput({
             ? expectVideo
               ? "Загрузка видео…"
               : "Загрузка…"
-            : replaceLabel}
+            : buttonLabel}
         </button>
+        {/* Для видео НЕ ставим accept — на macOS иначе .mp4 часто неактивен */}
         <input
           ref={fileRef}
           id={inputId}
           type="file"
-          accept={accept}
+          {...(expectVideo ? {} : { accept: "image/*,.jpg,.jpeg,.png,.webp,.gif,.avif" })}
           className="admin-image-path__file"
           hidden
           onChange={(e) => void onFile(e.target.files?.[0])}

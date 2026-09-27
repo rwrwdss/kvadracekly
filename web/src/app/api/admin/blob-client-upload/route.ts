@@ -17,7 +17,8 @@ const ALLOWED = [
   "image/avif",
   "video/mp4",
   "video/webm",
-  // Windows часто шлёт пустой type / octet-stream; Blob всё равно проверит по whitelist
+  "video/quicktime",
+  // Windows/macOS часто шлёт пустой type / octet-stream
   "application/octet-stream",
 ];
 

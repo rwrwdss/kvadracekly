@@ -263,6 +263,7 @@ export function HomeLayoutPanel() {
                     value={home.imageUrl}
                     onChange={(imageUrl) => setHome((p) => ({ ...p, imageUrl }))}
                     hint="Запасной путь вида /images/hero/….jpg"
+                    kind="image"
                     replaceLabel="Заменить фотографию"
                     altForUpload="Герой главной"
                   />
@@ -270,9 +271,9 @@ export function HomeLayoutPanel() {
                   <AdminImagePathInput
                     label="Видео фона"
                     value={home.videoUrl}
-                    onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl }))}
-                    hint="Только MP4 (H.264) или WebM. Звук на сайте отключён. Качество = как в файле. MOV с телефона лучше сначала сохранить как MP4."
-                    accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+                    onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl, mediaType: "video" }))}
+                    hint="Сначала переключите на «Видео». Выберите любой файл — фильтр в Finder отключён (на macOS иначе .mp4 бывает серым). Нужен MP4 H.264. Звук на сайте выключен."
+                    kind="video"
                     replaceLabel="Заменить видео"
                     altForUpload="Видео фона главной"
                   />
