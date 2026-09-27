@@ -104,7 +104,7 @@ export default async function HomePage() {
             playsInline
             aria-label={hero.imageAlt}
           >
-            <source src={hero.videoUrl} />
+            <source src={hero.videoUrl} type="video/mp4" />
           </video>
         ) : (
           <div

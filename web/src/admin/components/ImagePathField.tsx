@@ -30,7 +30,10 @@ export const ImagePathField: TextFieldClientComponent = ({ field, path, readOnly
     path.includes("heroVideo") ||
     path.includes("videoUrl") ||
     Boolean(description.toLowerCase().includes("видео"));
-  const accept = isVideoField ? "video/mp4,video/webm" : "image/*";
+  // Расширения обязательны: на Windows без .mp4 файл в диалоге часто «неактивный»
+  const accept = isVideoField
+    ? "video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
+    : "image/*,.jpg,.jpeg,.png,.webp,.gif,.avif";
   const replaceLabel = isVideoField ? "Заменить видео" : "Заменить фотографию";
   const video = Boolean(src && (isVideoField || isVideoUrl(src)));
 

@@ -41,8 +41,15 @@ export async function POST(req: NextRequest) {
 
   const blob = file as File;
   const mime = String(blob.type || "").toLowerCase();
-  const isImage = mime.startsWith("image/");
-  const isVideo = mime === "video/mp4" || mime === "video/webm";
+  const name = String(blob.name || "").toLowerCase();
+  const byExtVideo = /\.(mp4|webm)$/i.test(name);
+  const byExtImage = /\.(jpe?g|png|webp|gif|avif)$/i.test(name);
+  const isImage = mime.startsWith("image/") || (!mime && byExtImage);
+  const isVideo =
+    mime === "video/mp4" ||
+    mime === "video/webm" ||
+    byExtVideo ||
+    (mime === "application/octet-stream" && byExtVideo);
   if (!isImage && !isVideo && !ALLOWED.has(mime)) {
     return NextResponse.json(
       { error: "Допустимы изображения и видео MP4/WebM" },

@@ -271,8 +271,8 @@ export function HomeLayoutPanel() {
                     label="Видео фона"
                     value={home.videoUrl}
                     onChange={(videoUrl) => setHome((p) => ({ ...p, videoUrl }))}
-                    hint="MP4/WebM. Фото в этом режиме не показывается."
-                    accept="video/mp4,video/webm"
+                    hint="Только MP4 (H.264) или WebM. Звук на сайте отключён. Качество = как в файле. MOV с телефона лучше сначала сохранить как MP4."
+                    accept="video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov"
                     replaceLabel="Заменить видео"
                     altForUpload="Видео фона главной"
                   />

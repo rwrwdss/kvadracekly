@@ -39,6 +39,14 @@ const MAX_BYTES = 200 * 1024 * 1024;
 /** Выше этого — только client upload в Blob (лимит body Vercel ~4.5MB). */
 const SERVER_UPLOAD_MAX = 3.5 * 1024 * 1024;
 
+const VIDEO_EXT = /\.(mp4|webm|mov)$/i;
+const HERO_SAFE_VIDEO = /\.(mp4|webm)$/i;
+
+function isVideoFile(file: File): boolean {
+  const t = (file.type || "").toLowerCase();
+  return t.startsWith("video/") || VIDEO_EXT.test(file.name);
+}
+
 export async function uploadMediaFile(
   file: File,
   alt: string,
@@ -47,7 +55,13 @@ export async function uploadMediaFile(
     throw new Error("Файл больше 200 МБ — сожмите видео или выберите файл поменьше");
   }
 
-  const isVideo = file.type.startsWith("video/") || /\.(mp4|webm)$/i.test(file.name);
+  const isVideo = isVideoFile(file);
+  if (isVideo && !HERO_SAFE_VIDEO.test(file.name) && !/mp4|webm/i.test(file.type)) {
+    throw new Error(
+      "Для сайта нужен MP4 (H.264) или WebM. MOV с iPhone в Chrome/Windows часто не играет — экспортируйте в MP4.",
+    );
+  }
+
   const useClientBlob = isVideo || file.size > SERVER_UPLOAD_MAX;
 
   if (useClientBlob) {
@@ -85,7 +99,7 @@ export async function uploadMediaFile(
 }
 
 export function isVideoUrl(src: string): boolean {
-  return /\.(mp4|webm)(\?|$)/i.test(src) || /blob\.vercel-storage\.com/i.test(src);
+  return /\.(mp4|webm|mov)(\?|$)/i.test(src) || /blob\.vercel-storage\.com/i.test(src);
 }
 
 /** Поле превью + «Заменить» (upload) + запасной путь. */
