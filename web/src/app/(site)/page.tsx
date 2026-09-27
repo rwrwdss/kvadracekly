@@ -89,6 +89,8 @@ const STATS = [
   { n: "1→5", l: "прогресс трасс", Icon: IconStar },
 ] as const;
 
+export const revalidate = 60;
+
 export default async function HomePage() {
   const [hero, carousel] = await Promise.all([getHomePageLayout(), getHomeCarousel(12)]);
 
@@ -102,6 +104,8 @@ export default async function HomePage() {
             muted
             loop
             playsInline
+            preload="metadata"
+            poster={hero.imageUrl || undefined}
             aria-label={hero.imageAlt}
           >
             <source src={hero.videoUrl} type="video/mp4" />

@@ -43,3 +43,5 @@ next-env.d.ts
 /data/
 /media/
 .env
+# Тяжёлые локальные видео (в прод — Vercel Blob)
+/public/videos/
