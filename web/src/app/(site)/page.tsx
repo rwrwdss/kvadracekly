@@ -10,14 +10,10 @@ import { getHomeCarousel, getHomePageLayout } from "@/lib/cms/home";
 import {
   IconAtv,
   IconClock,
-  IconEngine,
   IconHouse,
   IconMoon,
   IconPin,
   IconRoute,
-  IconShield,
-  IconStar,
-  IconTrees,
   IconUsers,
   IconHelmet,
 } from "@/components/ui/Icons";
@@ -47,46 +43,35 @@ const INFO_CARDS = [
   },
 ] as const;
 
-const WHY = [
+const WHY_CHOOSE = [
   {
-    t: "Безопасность",
-    d: "Инструктаж, экипировка и исправная техника перед каждым выездом.",
-    href: "/faq",
-    image: IMAGES.heroHome.src,
-    imageAlt: IMAGES.heroHome.alt,
-    Icon: IconShield,
+    t: "Душ после проката",
+    d: "После заезда можно принять душ на базе и не ехать домой в грязи.",
   },
   {
-    t: "Авторские маршруты",
-    d: "Озеро, памятник, родник, экспедиция и лесные тропы — по сложности и прогрессу.",
-    href: "/marshruty",
-    image: "/images/routes/zelenoe-ozero.jpg",
-    imageAlt: "Лесная тропа и озеро на маршрутах Вольницы",
-    Icon: IconTrees,
+    t: "Баня по заказу",
+    d: "Баню можно заказать отдельно — сразу после маршрута, пока ещё на усадьбе.",
   },
   {
-    t: "Мощная техника",
-    d: "8 квадроциклов: 4 грязевых и 4 прогулочных на старте.",
-    href: "/tehnika",
-    image: "/images/fleet/chernyj-kvadrocikl-gryaz-zakat.jpg",
-    imageAlt: "Мощный квадроцикл в грязи на закате",
-    Icon: IconEngine,
+    t: "25–30 минут от Казани",
+    d: "База усадьбы «Берегиня» рядом с городом, без долгой дороги.",
   },
   {
-    t: "Усадьба «Берегиня»",
-    d: "Уютная база после маршрута — природа и гостеприимство.",
-    href: "/usadba",
-    image: IMAGES.heroManor.src,
-    imageAlt: IMAGES.heroManor.alt,
-    Icon: IconHouse,
+    t: "Инструктор и экипировка",
+    d: "Перед выездом — инструктаж, шлем и техника под ваш уровень.",
   },
-] as const;
-
-const STATS = [
-  { n: "8", l: "квадроциклов", Icon: IconAtv },
-  { n: "5", l: "авторских маршрутов", Icon: IconPin },
-  { n: "10–22", l: "режим работы", Icon: IconClock },
-  { n: "1→5", l: "прогресс трасс", Icon: IconStar },
+  {
+    t: "Дети с 6 лет",
+    d: "Катаются пары, семьи и компании. Детям — с шести лет.",
+  },
+  {
+    t: "Возврат на базу",
+    d: "Все маршруты стартуют и заканчиваются на территории усадьбы.",
+  },
+  {
+    t: "Ночные выезды",
+    d: "Дневные заезды по расписанию, ночные — по записи.",
+  },
 ] as const;
 
 export const revalidate = 60;
@@ -218,65 +203,38 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <HomeGalleryCarousel items={carousel} />
-
-      <section className="py-16 md:py-24">
-        <div className="container-site">
-          <div data-reveal>
-            <p className="section-label">Почему Вольница</p>
-            <h2 className="section-title mt-2">Почему выбирают Вольницу</h2>
+      <section className="why-choose" aria-labelledby="why-choose-title">
+        <div className="container-site why-choose__grid">
+          <div className="why-choose__intro" data-reveal>
+            <p className="section-label">После маршрута и не только</p>
+            <h2 id="why-choose-title" className="section-title mt-2">
+              Почему выбирают нас
+            </h2>
+            <p className="why-choose__lead">
+              Трасса — не всё. На базе можно привести себя в порядок, заказать баню и не торопиться обратно в город.
+            </p>
           </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {WHY.map((item, i) => (
-              <article
+          <ol className="why-choose__list">
+            {WHY_CHOOSE.map((item, i) => (
+              <li
                 key={item.t}
-                className="card-dark overflow-hidden flex flex-col group"
                 data-reveal="up"
-                style={{ "--reveal-delay": `${0.12 + i * 0.16}s` } as CSSProperties}
+                style={{ "--reveal-delay": `${0.08 + i * 0.08}s` } as CSSProperties}
               >
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.04]"
-                    role="img"
-                    aria-label={item.imageAlt}
-                    style={{ backgroundImage: `url(${item.image})` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(10,15,12,0.92)] via-transparent to-transparent" />
-                  <span className="absolute top-3 left-3 grid h-9 w-9 place-items-center border border-[var(--accent-border)] bg-[rgba(10,15,12,0.55)] text-accent backdrop-blur-sm">
-                    <item.Icon size={20} />
-                  </span>
+                <span className="why-choose__index" aria-hidden>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{item.t}</h3>
+                  <p>{item.d}</p>
                 </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <h3 className="font-display uppercase tracking-wide text-accent">{item.t}</h3>
-                  <p className="mt-3 text-sm text-mute leading-relaxed flex-1">{item.d}</p>
-                  <Link
-                    href={item.href}
-                    className="inline-block mt-5 text-xs uppercase tracking-widest text-ink hover:text-accent"
-                  >
-                    Подробнее →
-                  </Link>
-                </div>
-              </article>
+              </li>
             ))}
-          </div>
-
-          <div
-            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 border border-[var(--border-subtle)] p-6 md:p-8"
-            data-reveal
-            style={{ "--reveal-delay": "0.18s" } as CSSProperties}
-          >
-            {STATS.map(({ n, l, Icon }) => (
-              <div key={l} className="text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 text-accent mb-1">
-                  <Icon size={18} />
-                </div>
-                <div className="font-display text-3xl text-accent">{n}</div>
-                <div className="mt-1 text-sm text-mute">{l}</div>
-              </div>
-            ))}
-          </div>
+          </ol>
         </div>
       </section>
+
+      <HomeGalleryCarousel items={carousel} />
 
       <section className="py-16 md:py-24 bg-void">
         <div className="container-site">
