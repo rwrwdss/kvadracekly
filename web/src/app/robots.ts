@@ -11,6 +11,5 @@ export default function robots(): MetadataRoute.Robots {
       disallow: ["/admin", "/api/", "/lk", "/spasibo", "/sertifikat"],
     },
     sitemap: `${origin}/sitemap.xml`,
-    host: origin,
   };
 }
