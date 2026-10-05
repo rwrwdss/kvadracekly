@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { mediaUrl, type MediaDoc } from "@/lib/payload";
 
+const DEFAULT_SITE_ORIGIN = "https://volnitsa-rent.com";
+
+/** Канонический origin сайта без хвостового слэша. */
+export function siteOrigin(): string {
+  return (process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_ORIGIN).replace(/\/$/, "");
+}
+
 type SeoInput = {
   metaTitle?: string | null;
   metaDescription?: string | null;
@@ -19,7 +26,7 @@ export function buildMetadata(opts: {
   const title = opts.seo?.metaTitle || opts.title;
   const description = opts.seo?.metaDescription || opts.description;
   const og = mediaUrl(opts.seo?.ogImage as MediaDoc | null);
-  const base = process.env.NEXT_PUBLIC_SITE_URL || "";
+  const base = siteOrigin();
 
   return {
     title,

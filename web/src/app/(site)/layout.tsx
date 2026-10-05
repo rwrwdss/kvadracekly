@@ -10,6 +10,7 @@ import { Footer, StickyBookBar } from "@/components/layout/Footer";
 import { CallFab } from "@/components/layout/CallFab";
 import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { SmoothScrollAndReveal } from "@/components/ui/SmoothScrollAndReveal";
+import { siteOrigin } from "@/lib/seo";
 import "./globals.css";
 
 const cinzel = Cinzel({
@@ -38,6 +39,7 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteOrigin()),
   title: {
     default: "Вольница — территория свободы",
     template: "%s · Вольница",
