@@ -8,6 +8,7 @@ import { BookingModal } from "@/components/booking/BookingModal";
 import { Header } from "@/components/layout/Header";
 import { Footer, StickyBookBar } from "@/components/layout/Footer";
 import { CallFab } from "@/components/layout/CallFab";
+import { YandexMetrika } from "@/components/analytics/YandexMetrika";
 import { CookieConsentBanner } from "@/components/layout/CookieConsentBanner";
 import { SmoothScrollAndReveal } from "@/components/ui/SmoothScrollAndReveal";
 import { siteOrigin } from "@/lib/seo";
@@ -75,6 +76,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
             <SmoothScrollAndReveal />
             <AuthModal />
             <BookingModal />
+            <YandexMetrika />
             <Script
               src="https://chatneuron.ru/widget.js"
               strategy="lazyOnload"
